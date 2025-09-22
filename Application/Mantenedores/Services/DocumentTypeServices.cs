@@ -29,7 +29,7 @@ namespace Application.Mantenedores.Services
             {
                 Data = _mapper.Map<DocumentTypeDto>(documento),
                 Message = "Documento Creado Con Exito",
-                State = true
+                Success = true
             };
 
         }
@@ -45,7 +45,7 @@ namespace Application.Mantenedores.Services
                 Message = documento.Estado == 1
                         ? "Activado con éxito"
                         : "Desactivado con éxito",
-                State = true
+                Success = true
             };
 
         }
@@ -65,7 +65,7 @@ namespace Application.Mantenedores.Services
             {
                 Data = _mapper.Map<DocumentTypeDto>(documento),
                 Message = "Documento Actualizado Con Exito",
-                State = true
+                Success = true
             };
 
         }

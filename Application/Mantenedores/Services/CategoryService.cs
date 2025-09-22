@@ -32,7 +32,7 @@ namespace Application.Mantenedores.Services
             {
                 Data = _mapper.Map<CategoryDto>(response),
                 Message = "Banco Creado Con Existo",
-                State = true
+                Success = true
             };
 
         }
@@ -53,7 +53,7 @@ namespace Application.Mantenedores.Services
                 Message = Category.Estado == 1
                         ? "Activado con éxito"
                         : "Desactivado con éxito",
-                State = true
+                Success = true
             };
 
         }
@@ -73,7 +73,7 @@ namespace Application.Mantenedores.Services
             {
                 Data = _mapper.Map<CategoryDto>(Category),
                 Message = "Banco Actualizado con éxito",
-                State = true
+                Success = true
             };
 
         }

@@ -29,7 +29,7 @@ namespace Application.Concepto.Services
             {
                 Data = _mapper.Map<ConceptoDto>(concepto),
                 Message = "Se ha Creado",
-                State = true,
+                Success = true,
             };
 
         }
@@ -43,7 +43,7 @@ namespace Application.Concepto.Services
             {
                 Data = _mapper.Map<ConceptoDto>(conceptos),
                 Message = "Se ha Desactivado",
-                State = true,
+                Success = true,
             };
         }
 
@@ -62,7 +62,7 @@ namespace Application.Concepto.Services
             {
                 Data = _mapper.Map<ConceptoDto>(conceptos),
                 Message = "Se ha actualizado",
-                State = true,
+                Success = true,
             };
 
         }

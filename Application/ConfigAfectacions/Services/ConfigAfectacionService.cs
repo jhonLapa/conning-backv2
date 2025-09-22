@@ -61,7 +61,7 @@ namespace Application.ConfigAfectacions.Services
             {
                 Data = resultList,
                 Message = "Configuraciones procesadas correctamente",
-                State = true
+                Success = true
             };
         }
 
@@ -77,7 +77,7 @@ namespace Application.ConfigAfectacions.Services
             {
                 Data = _mapper.Map<ConfigAfectacionDto>(configAfectacion),
                 Message = "Se ha Creado",
-                State = true,
+                Success = true,
             };
 
         }
@@ -91,7 +91,7 @@ namespace Application.ConfigAfectacions.Services
             {
                 Data = _mapper.Map<ConfigAfectacionDto>(configAfectacions),
                 Message = "Se ha Desactivado",
-                State = true,
+                Success = true,
             };
         }
 
@@ -110,7 +110,7 @@ namespace Application.ConfigAfectacions.Services
             {
                 Data = _mapper.Map<ConfigAfectacionDto>(configAfectacions),
                 Message = "Se ha actualizado",
-                State = true,
+                Success = true,
             };
 
         }

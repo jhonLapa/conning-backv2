@@ -29,7 +29,7 @@ namespace Application.Empleados.Services
             {
                 Data = _mapper.Map<EmployeeBankAccountDto>(employeeBankAccount),
                 Message = "Cuenta del Empleado se ha Creado",
-                State = true,
+                Success = true,
             };
 
         }
@@ -43,7 +43,7 @@ namespace Application.Empleados.Services
             {
                 Data = _mapper.Map<EmployeeBankAccountDto>(employeeBankAccounts),
                 Message = "Cuenta de el empleado se ha Desactivado",
-                State = true,
+                Success = true,
             };
         }
 
@@ -62,7 +62,7 @@ namespace Application.Empleados.Services
             {
                 Data = _mapper.Map<EmployeeBankAccountDto>(employeeBankAccounts),
                 Message = "Cuenta Bancaria de el empleado se ha actualizado",
-                State = true,
+                Success = true,
             };
 
         }

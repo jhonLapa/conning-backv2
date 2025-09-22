@@ -29,7 +29,7 @@ namespace Application.Empresas.Services
             {
                 Data = _mapper.Map<EmpresaDto>(empresa),
                 Message = "Se ha Creado",
-                State = true,
+                Success = true,
             };
 
         }
@@ -43,7 +43,7 @@ namespace Application.Empresas.Services
             {
                 Data = _mapper.Map<EmpresaDto>(empresas),
                 Message = "Se ha Desactivado",
-                State = true,
+                Success = true,
             };
         }
 
@@ -62,7 +62,7 @@ namespace Application.Empresas.Services
             {
                 Data = _mapper.Map<EmpresaDto>(empresas),
                 Message = "Se ha actualizado",
-                State = true,
+                Success = true,
             };
 
         }

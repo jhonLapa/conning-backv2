@@ -30,7 +30,7 @@ namespace Application.Mantenedores.Services
             {
                 Data = _mapper.Map<ProjectDto>(project),
                 Message = "Creado con Exito",
-                State = true
+                Success = true
             };
         }
 
@@ -49,7 +49,7 @@ namespace Application.Mantenedores.Services
                 Message = project.Estado == 1
                 ? "Activado con éxito"
                             : "Desactivado con éxito",
-                State = true
+                Success = true
             };
 
         }
@@ -71,7 +71,7 @@ namespace Application.Mantenedores.Services
             {
                 Data = _mapper.Map<ProjectDto>(project),
                 Message = "actualizado con exito",
-                State = true
+                Success = true
             };
 
         }

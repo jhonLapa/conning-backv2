@@ -33,7 +33,7 @@ namespace Application.Mantenedores.Services
             {
                 Data = _mapper.Map<GrupoConceptoDto>(grupoConcepto),
                 Message = "Creado con Exito",
-                State = true
+                Success = true
             };
         }
 
@@ -52,7 +52,7 @@ namespace Application.Mantenedores.Services
                 Message = grupoConcepto.Estado == 1
                 ? "Activado con éxito"
                             : "Desactivado con éxito",
-                State = true
+                Success = true
             };
 
         }
@@ -74,7 +74,7 @@ namespace Application.Mantenedores.Services
             {
                 Data = _mapper.Map<GrupoConceptoDto>(grupoConcepto),
                 Message = "actualizado con exito",
-                State = true
+                Success = true
             };
 
         }
