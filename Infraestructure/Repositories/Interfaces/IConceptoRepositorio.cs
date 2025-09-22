@@ -1,0 +1,12 @@
+﻿
+using Domain;
+using Infraestructure.Core.Repositories.Interfaces;
+
+namespace Infraestructure.Repositories.Interfaces
+{
+    public interface IConceptoRepositorio : ICrudCoreRespository<Concepto, int>
+    {
+    }
+}
+
+

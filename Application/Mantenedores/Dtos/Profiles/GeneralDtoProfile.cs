@@ -1,7 +1,10 @@
-﻿using Application.Mantenedores.Dtos.Bancks;
-using Application.Mantenedores.Dtos.Documentos;
+﻿using Application.Mantenedores.Dtos.Afectacions;
+using Application.Mantenedores.Dtos.Banks;
+using Application.Mantenedores.Dtos.Categorys;
+using Application.Mantenedores.Dtos.DocumentTypes;
+using Application.Mantenedores.Dtos.GrupoConceptos;
 using Application.Mantenedores.Dtos.Pensiones;
-using Application.Mantenedores.Dtos.Proyectos;
+using Application.Mantenedores.Dtos.Projects;
 using AutoMapper;
 using Domain;
 
@@ -12,24 +15,37 @@ namespace Application.Mantenedores.Dtos.Profiles
         public GeneralDtoProfile()
         {
             // Documento 
-            CreateMap<Documento, DocumentoDto>().ReverseMap();
-            CreateMap<Documento, DocumentoSaveDto>().ReverseMap();
+            CreateMap<DocumentType, DocumentTypeDto>().ReverseMap();
+            CreateMap<DocumentType, DocumentTypeSaveDto>().ReverseMap();
 
             // Banco
-            CreateMap<Banck, BanckDto>().ReverseMap();
-            CreateMap<Banck, BanckSaveDto>().ReverseMap();
+            CreateMap<Bank, BankDto>().ReverseMap();
+            CreateMap<Bank, BankSaveDto>().ReverseMap();
 
             //Pension 
             CreateMap<Pension, PensionDto>().ReverseMap();
             CreateMap<Pension, PensionSaveDto>().ReverseMap();
 
             //Proyecto
-            CreateMap<Proyecto, ProyectoDto>().ReverseMap();
-            CreateMap<Proyecto, ProyectoSaveDto>().ReverseMap();
+            CreateMap<Project, ProjectDto>().ReverseMap();
+            CreateMap<Project, ProjectSaveDto>().ReverseMap();
 
 
+            //Proyecto
+            CreateMap<Project, ProjectDto>().ReverseMap();
+            CreateMap<Project, ProjectSaveDto>().ReverseMap();
 
+            // categoria
+            CreateMap<Category, CategoryDto>().ReverseMap();
+            CreateMap<Category, CategorySaveDto>().ReverseMap();
 
+            // Afectacion
+            CreateMap<Afectacion, AfectacionDto>().ReverseMap();
+            CreateMap<Afectacion, AfectacionSaveDto>().ReverseMap();
+
+            // Grupo Concepto
+            CreateMap<GrupoConcepto, GrupoConceptoDto>().ReverseMap();
+            CreateMap<GrupoConcepto, GrupoConceptoSaveDto>().ReverseMap();
         }
     }
 }
