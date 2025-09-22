@@ -2,6 +2,8 @@
 using Application.Mantenedores.Dtos.Documentos;
 using Application.Mantenedores.Dtos.Pensiones;
 using Application.Mantenedores.Dtos.Proyectos;
+using Application.Mantenedores.Dtos.Roles;
+using Application.Usuarios.Dto;
 using AutoMapper;
 using Domain;
 
@@ -26,6 +28,10 @@ namespace Application.Mantenedores.Dtos.Profiles
             //Proyecto
             CreateMap<Proyecto, ProyectoDto>().ReverseMap();
             CreateMap<Proyecto, ProyectoSaveDto>().ReverseMap();
+
+            //Rol 
+            CreateMap<Rol , RoleDto>().ReverseMap();
+            CreateMap<Rol , RoleSaveDto>().ReverseMap();
 
 
 

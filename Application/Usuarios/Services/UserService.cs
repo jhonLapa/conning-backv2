@@ -19,6 +19,7 @@ namespace Application.Usuarios.Services
         private readonly IMapper _mapper;
         private readonly IUsuarioRepositorio _usuarioRepositorio;
         private readonly IRolRepositorio _rolRepositorio;
+        private readonly IUserRolRepositorio _userRolRepositorio;
         private readonly IJwtServices _securityService;
         private readonly IConfiguration _configuration;
         private readonly ILogger<UserService> _logger;
@@ -26,6 +27,7 @@ namespace Application.Usuarios.Services
             IMapper mapper,
             IRolRepositorio rolRepositorio ,
             IUsuarioRepositorio usuarioRepositorio, 
+            IUserRolRepositorio userRolRepositorio,
             IJwtServices securityService, 
             IConfiguration configuration, 
             ILogger<UserService> logger)
@@ -33,6 +35,7 @@ namespace Application.Usuarios.Services
             _mapper = mapper;
             _rolRepositorio = rolRepositorio;
             _usuarioRepositorio = usuarioRepositorio;
+            _userRolRepositorio = userRolRepositorio;
             _securityService = securityService;
             _configuration = configuration;
             _logger = logger;
@@ -44,27 +47,28 @@ namespace Application.Usuarios.Services
 
             var email = await _usuarioRepositorio.FindByEmailAsync(user.Email);
 
-            if (email != null) throw new NotFoundCoreException("Correo ya Registrado");
+            if (email != null)
+            {
+                throw new NotFoundCoreException("Correo ya registrado");
+            }
+            _ = await _rolRepositorio.FindByIdAsync(saveDto.Rol.RoleId) ?? throw new NotFoundCoreException("Rol es Necesario"); ;
 
-            
-            //user.Password = _securityService.HashPassword(user.Correo, user.Password);
-            //user.NombreCompleto = $"{user.Nombres} {user.Apellidos}";
-            
-            //await _usuarioRepositorio.SaveAsync(user);
+            user.Password = _securityService.HashPassword(user.Email, user.Password);
+            user.AuditCreateUser = 1;
+            user.AuditCreateDate = DateTime.Now;
 
-            //rol.CreatedAt = DateTime.Now;
-            //rol.Estado = true;
+            await _usuarioRepositorio.SaveAsync(user);
 
-            //await _rolRepositorio.SaveAsync(rol);
 
-            //var rol_usuario = new RolUser();
+            var rol_usuario = new UserRole();
 
-            //rol_usuario.IdRol = rol.IdRol;
-            //rol_usuario.IdUsuario = user.IdUsuario;
-            //rol_usuario.Estado = true;
-            //rol_usuario.CreatedAt = DateTime.Now;
+            rol_usuario.RoleId= saveDto.Rol.RoleId;
+            rol_usuario.UserId = user.UserId;
+            rol_usuario.State = true;
+            rol_usuario.AuditCreateDate= DateTime.Now;
+            rol_usuario.AuditCreateUser = 1;
 
-            //await _rolUsuarioRepositorio.SaveAsync(rol_usuario);
+            await _userRolRepositorio.SaveAsync(rol_usuario);
 
 
             return new OperationResult<UserDto>()
@@ -85,32 +89,27 @@ namespace Application.Usuarios.Services
                 throw new NotImplementedException();
             }
 
+            usuario.State= false;
+            usuario.AuditUpdateUser = 1;
+            usuario.AuditUpdateDate= DateTime.Now;
 
-            var usuarioSave = await _usuarioRepositorio.SaveAsync(usuario);
-
-            var dUser = _mapper.Map<UserDto>(usuarioSave);
+            await _usuarioRepositorio.SaveAsync(usuario);
 
             return new OperationResult<UserDto>()
             {
                 State = true,
-                Data = dUser,
-                Message = "Usuario  con exito"
+                Data = _mapper.Map<UserDto>(usuario),
+                Message = "Usuario actualizado con exito"
             };
         }
 
         public async Task<OperationResult<UserDto>> EditAsync(int id, UserRolSaveDto saveDto)
         {
-            User? user = await _usuarioRepositorio.FindByIdAsync(id);
-
-            if (user == null) throw new NotFoundCoreException("Usuario no Registrado con ese id");
-
-            //user.Estado = true;
-            //user.CreatedAt = DateTime.Now;
-            //user.Password = user.Password;
-            //user.NombreCompleto = saveDto.User.NombreCompleto;
-            //user.Photo = saveDto.User.Photo;
-            //user.Biografia = saveDto.User.Biografia;
-            //user.IdEscuela = saveDto.User.IdEscuela;
+            User user = await _usuarioRepositorio.FindByIdAsync(id) ?? throw new NotFoundCoreException("Usuario no Registrado con ese id");
+            
+            user.State = true;
+            user.AuditUpdateDate = DateTime.Now;
+            user.Password = user.Password;
 
             await _usuarioRepositorio.SaveAsync(user);
 
@@ -140,10 +139,7 @@ namespace Application.Usuarios.Services
         public async Task<LoginDto> LoginAsync(LoginRequest userAuthDto)
         {
 
-            User? user = await _usuarioRepositorio.FindByEmailAsync(userAuthDto.Email);
-            
-
-            if (user is null) throw new NotFoundCoreException("Usuario no registrado");
+            User user = await _usuarioRepositorio.FindByEmailAsync(userAuthDto.Email) ?? throw new NotFoundCoreException("Usuario no registrado"); ;
             
             bool isCorrect = _securityService.VerifyHashedPassword(user.Email, user.Password, userAuthDto.Password);
 
@@ -153,19 +149,12 @@ namespace Application.Usuarios.Services
             
             var user_securiti = _securityService.JwtSecurity(jwtSecretKey);
 
-           
             
-            byte[] randomBytes = RandomNumberGenerator.GetBytes(64);
-            
-            
-
-
             LoginDto userSecurity = new()
             {
                 AccessToken = user_securiti.Token,
                 RefreshToken = user_securiti.Token,
-                User = null,
-
+                User = _mapper.Map<UserView>(user),
             };
 
             return userSecurity;

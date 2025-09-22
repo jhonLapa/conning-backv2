@@ -15,26 +15,11 @@ namespace Infraestructure.Repositories
             _context = context;
         }
 
-        public async Task<User?> FindByEmailAsync(string email)
+        public async Task<User> FindByEmailAsync(string email)
         {
             return await _context.Set<User>()
-                .Where(t => t.Email.ToUpper().Equals(email.ToUpper()))
-                .FirstOrDefaultAsync();
+                .Where(t => t.Email == email).FirstOrDefaultAsync();
         }
 
-        
-
-        public async Task<User?> FindByPersonaAsync(string idPersona)
-        {
-            return await _context.Set<User>()
-                .FirstOrDefaultAsync();
-        }
-
-        public async override Task<User?> FindByIdAsync(int id)
-        {
-            return await _context.Set<User>()
-                .Where(t => t.UserId == id)
-                .FirstOrDefaultAsync();
-        }
     }
 }

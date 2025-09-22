@@ -9,21 +9,19 @@ namespace Application.Usuarios.Dto
 {
     public class LoginDto
     {
-        public string? AccessToken { get; set; }
-        public string? RefreshToken { get; set; }
-        public UserView? User { get; set; }
+        public string AccessToken { get; set; }
+        public string RefreshToken { get; set; }
+        public UserView User { get; set; }
     }
 
 
     public class UserView
     {
-        public int Id { get; set; }
-        public string? Name { get; set; }
-        public string? Email { get; set; }
-        public string? Type { get; set; }
-        public int? Grade { get; set; }
-        public string? Rol { get; set; }
-
+        public int UserId { get; set; }
+        public string FirstName { get; set; }
+        public string LasName { get; set; }
+        public string Email { get; set; }
+        public bool State { get; set; }
     }
 
 }
