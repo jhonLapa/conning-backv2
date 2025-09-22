@@ -16,7 +16,7 @@ namespace Infraestructure.Repositories
 
         public async Task<Rol> FillName(string name)
         {
-            var response = await _context.Set<Rol>().FirstOrDefaultAsync(t => t.Descripcion.Equals(name));
+            var response = await _context.Set<Rol>().FirstOrDefaultAsync(t => t.Name.Equals(name));
 
             return response;
         }

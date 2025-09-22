@@ -8,10 +8,16 @@ namespace Infraestructure.Configurations
     {
         public void Configure(EntityTypeBuilder<User> builder)
         {
-            builder.ToTable("Usuarios");
-
+            builder.ToTable("Users");
+            builder.HasKey(e => e.UserId);
+            builder.Property(e => e.UserId).HasColumnName("UserId");   
+            builder.Property(e => e.FirstName).HasColumnName("FirstName");   
+            builder.Property(e => e.LastName).HasColumnName("LastName");   
+            builder.Property(e => e.Email).HasColumnName("Email");   
+            builder.Property(e => e.Password).HasColumnName("Password");   
+            builder.Property(e => e.State).HasColumnName("State");   
             
-
+    
             
         }
     }

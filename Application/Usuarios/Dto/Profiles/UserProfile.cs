@@ -8,9 +8,9 @@ namespace Application.Usuarios.Dto.Profiles
     {
         public UserProfile() { 
         
-            CreateMap<User ,UserDto>().ReverseMap();
-            CreateMap<User ,UserSaveDto>().ReverseMap();
-            //CreateMap<User ,UserSecurityDto>().ReverseMap();
+            CreateMap<User , UserDto>().ReverseMap();
+            CreateMap<User , UserSaveDto>().ReverseMap();
+            CreateMap<User , UserView>().ReverseMap();
         }
     }
 }

@@ -8,12 +8,14 @@ namespace Infraestructure.Configurations
     {
         public void Configure(EntityTypeBuilder<Rol> builder)
         {
-            builder.ToTable("Rol");
+            builder.ToTable("Roles");
 
-            builder.HasKey(e => e.IdRol);
+            builder.HasKey(e => e.RoleId);
 
-            builder.Property(e => e.IdRol).HasColumnName("IdRol");
-            builder.Property(e => e.Descripcion).HasColumnName("Descripcion");
+            builder.Property(e => e.RoleId).HasColumnName("RoleId");
+            builder.Property(e => e.Name).HasColumnName("Name");
+            builder.Property(e => e.Descripcion).HasColumnName("Description");
+            builder.Property(e => e.State).HasColumnName("State");
         }
     }
 }
