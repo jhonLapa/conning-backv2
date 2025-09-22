@@ -65,13 +65,13 @@ namespace Application.Auth.Services
 
                 result.Data = token;
                 result.Message = "Token Valido";
-                result.State = true;
+                result.Success = true;
             }
             catch
             {
                 result.Data = token;
                 result.Message = "Token Invalido";
-                result.State = false;
+                result.Success = false;
             }
 
             return result;

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Infraestructure.Repositories.Interfaces
 {
-    public interface IEmployeeBankAccountRepositorio : ICrudCoreRespository<EmployeeAccountBanck, int>
+    public interface IEmployeeBankAccountRepositorio : ICrudCoreRespository<EmployeeBankAccount, int>
     {
     }
 }

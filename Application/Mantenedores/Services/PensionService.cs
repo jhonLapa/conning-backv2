@@ -33,7 +33,7 @@ namespace Application.Mantenedores.Services
             {
                 Data = _mapper.Map<PensionDto>(pension),
                 Message = "Pension Creada Con Exio",
-                State = true
+                Success = true
             };
         }
 
@@ -54,7 +54,7 @@ namespace Application.Mantenedores.Services
             {
                 Data = _mapper.Map<PensionDto>(pension),
                 Message = "Pension Actualizada Con Exio",
-                State = true
+                Success = true
             };
 
         }

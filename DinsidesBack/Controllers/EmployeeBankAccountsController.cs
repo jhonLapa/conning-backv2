@@ -1,9 +1,7 @@
-﻿using Application.Empleados.Dtos.EmployeesBanksAccounts;
+﻿using Application.Empleados.Dtos;
 using Application.Empleados.Services.Interfaces;
-using Application.Mantenedores.Dtos.Bancks;
 using Domain;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 

@@ -7,6 +7,6 @@ namespace Application.Usuarios.Services.Interface
 {
     public interface IUserService : ICrudCoreService<UserDto, UserRolSaveDto, int>
     {
-        Task<LoginDto> LoginAsync(LoginRequest userAuthDto);
+        Task<OperationResult<LoginDto>> LoginAsync(LoginRequest userAuthDto);
     }
 }

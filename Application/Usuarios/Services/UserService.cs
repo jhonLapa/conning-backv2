@@ -73,7 +73,7 @@ namespace Application.Usuarios.Services
 
             return new OperationResult<UserDto>()
             {
-                State = true,
+                Success = true,
                 Data = _mapper.Map<UserDto>(user),
                 Message = "Usuario creado con exito"
             };
@@ -97,7 +97,7 @@ namespace Application.Usuarios.Services
 
             return new OperationResult<UserDto>()
             {
-                State = true,
+                Success = true,
                 Data = _mapper.Map<UserDto>(usuario),
                 Message = "Usuario actualizado con exito"
             };
@@ -115,7 +115,7 @@ namespace Application.Usuarios.Services
 
             return new OperationResult<UserDto>()
             {
-                State = true,
+                Success = true,
                 Data = _mapper.Map<UserDto>(user),
                 Message = "Usuario actualizado con exito"
             };
@@ -136,7 +136,7 @@ namespace Application.Usuarios.Services
             return  _mapper.Map<UserDto>(response);
         }
 
-        public async Task<LoginDto> LoginAsync(LoginRequest userAuthDto)
+        public async Task<OperationResult<LoginDto>> LoginAsync(LoginRequest userAuthDto)
         {
 
             User user = await _usuarioRepositorio.FindByEmailAsync(userAuthDto.Email) ?? throw new NotFoundCoreException("Usuario no registrado"); ;
@@ -157,7 +157,14 @@ namespace Application.Usuarios.Services
                 User = _mapper.Map<UserView>(user),
             };
 
-            return userSecurity;
+
+
+            return new OperationResult<LoginDto>()
+            {
+                Data = userSecurity,
+                Message = "Sesión iniciada correctamente",
+                Success = true,
+            };
         }
 
 

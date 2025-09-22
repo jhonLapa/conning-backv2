@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Infraestructure.Repositories.Interfaces
 {
-    public interface IDocumentoRepositorio : ICrudCoreRespository<Documento, int>
+    public interface IDocumentoRepositorio : ICrudCoreRespository<DocumentType, int>
     {
     }
 }

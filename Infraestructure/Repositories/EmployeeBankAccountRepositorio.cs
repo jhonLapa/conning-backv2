@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Infraestructure.Repositories
 {
-    public class EmployeeBankAccountRepositorio: CrudCoreRespository<EmployeeAccountBanck, int> , IEmployeeBankAccountRepositorio
+    public class EmployeeBankAccountRepositorio: CrudCoreRespository<EmployeeBankAccount, int> , IEmployeeBankAccountRepositorio
     {
         private readonly ApplicationDbContext _context;
         public EmployeeBankAccountRepositorio(ApplicationDbContext context) : base(context)
@@ -19,10 +19,10 @@ namespace Infraestructure.Repositories
             _context = context;   
         }
 
-        public override async Task<IReadOnlyList<EmployeeAccountBanck>> FindAllAsync()
+        public override async Task<IReadOnlyList<EmployeeBankAccount>> FindAllAsync()
         {
-            var response = await _context.Set<EmployeeAccountBanck>().
-                Include(e => e.Banck).
+            var response = await _context.Set<EmployeeBankAccount>().
+                Include(e => e.Bank).
                 ToListAsync();
 
             return response;
