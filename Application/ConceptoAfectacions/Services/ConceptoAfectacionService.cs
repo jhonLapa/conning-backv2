@@ -18,6 +18,50 @@ namespace Application.ConceptoAfectacion.Services
             _mapper = mapper;
         }
 
+
+        public async Task<OperationResult<IEnumerable<ConceptoAfectacionDto>>> SaveArrayAsync(IEnumerable<ConceptoAfectacionSaveDto> saveDtos)
+        {
+            var resultList = new List<ConceptoAfectacionDto>();
+
+            foreach (var dto in saveDtos)
+            {
+                var entity = _mapper.Map<Domain.ConceptoAfectacion>(dto);
+
+                var existing = await _conceptoAfectacion
+                                            .FindByConceptoAndAfectacionAsync(dto.IdConcepto, dto.IdAfectacion);
+
+                if (existing != null)
+                {
+                    _mapper.Map(dto, existing);
+                    existing.FechaModificacion = DateTime.Now;
+                    existing.IdUsuarioModificacion = 1;
+                    entity.Estado = dto.Estado;
+
+                    await _conceptoAfectacion.SaveAsync(existing);
+
+                    // 👇 Agregar al resultado
+                    resultList.Add(_mapper.Map<ConceptoAfectacionDto>(existing));
+                }
+                else
+                {
+                    entity.FechaCreacion = DateTime.Now;
+                    entity.IdUsuarioCreacion = 1;
+                    entity.Estado = dto.Estado;
+
+                    await _conceptoAfectacion.SaveAsync(entity);
+
+                    // 👇 Agregar al resultado
+                    resultList.Add(_mapper.Map<ConceptoAfectacionDto>(entity));
+                }
+            }
+
+            return new OperationResult<IEnumerable<ConceptoAfectacionDto>>()
+            {
+                Data = resultList,
+                Message = "Configuraciones procesadas correctamente",
+                Success = true
+            };
+        }
         public async Task<OperationResult<ConceptoAfectacionDto>> CreateAsync(ConceptoAfectacionSaveDto saveDto)
         {
             var ConceptoAfectacion = _mapper.Map<Domain.ConceptoAfectacion>(saveDto);

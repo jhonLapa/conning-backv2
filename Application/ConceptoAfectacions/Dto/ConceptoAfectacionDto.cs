@@ -14,7 +14,7 @@ namespace Application.ConceptoAfectacions.Dto
         public DateTime? FechaModificacion { get; set; }
 
         // Relaciones
-        public Domain.Concepto Concepto { get; set; }
-        public Afectacion Afectacion { get; set; }
+        //public Domain.Concepto Concepto { get; set; }
+        //public Afectacion Afectacion { get; set; }
     }
 }

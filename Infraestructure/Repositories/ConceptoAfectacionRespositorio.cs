@@ -2,6 +2,7 @@
 using Infraestructure.Contexts;
 using Infraestructure.Core.Repositories;
 using Infraestructure.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infraestructure.Repositories
 {
@@ -13,6 +14,12 @@ namespace Infraestructure.Repositories
         public ConceptoAfectacionRespositorio(ApplicationDbContext context) : base(context)
         {
             _dbContext = context;
+        }
+
+        public async Task<ConceptoAfectacion?> FindByConceptoAndAfectacionAsync(int IdConcepto, int idAfectacion)
+        {
+            return await _dbContext.Set<ConceptoAfectacion>()
+                .FirstOrDefaultAsync(c => c.IdConcepto == IdConcepto && c.IdAfectacion == idAfectacion);
         }
 
     }

@@ -21,8 +21,10 @@ namespace Application.Concepto.Services
         public async Task<OperationResult<ConceptoDto>> CreateAsync(ConceptoSaveDto saveDto)
         {
             var concepto = _mapper.Map<Domain.Concepto>(saveDto);
+            concepto.FechaCreacion = DateTime.Now;
 
-
+            concepto.IdUsuarioCreacion = 1;
+            concepto.Estado = 1;
             await _conceptoRepositorio.SaveAsync(concepto);
 
             return new OperationResult<ConceptoDto>()

@@ -11,7 +11,7 @@ namespace Application.Conceptos.Dto
         public bool Activo { get; set; }
         public string? CtaDebe { get; set; }
         public string? CtaHaber { get; set; }
-        public bool PrincipalID { get; set; }
+        public string? PrincipalDH { get; set; }
         public bool CalculoAutomatico { get; set; }
         public bool GeneraArchivoPLAME { get; set; }
         public int Estado { get; set; }
@@ -19,6 +19,9 @@ namespace Application.Conceptos.Dto
         public DateTime FechaCreacion { get; set; }
         public int? IdUsuarioModificacion { get; set; }
         public DateTime? FechaModificacion { get; set; }
+
+        // Relaciones
         public GrupoConcepto Grupo { get; set; }
+
     }
 }

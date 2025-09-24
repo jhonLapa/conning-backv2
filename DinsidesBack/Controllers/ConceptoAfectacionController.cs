@@ -62,5 +62,14 @@ namespace DinsidesBack.Controllers
 
             return TypedResults.BadRequest();
         }
+
+        [HttpPost("save-array")]
+        [AllowAnonymous]
+        public async Task<IActionResult> SaveArray([FromBody] List<ConceptoAfectacionSaveDto> dtos)
+        {
+            var result = await _ConceptoAfectacionService.SaveArrayAsync(dtos);
+            return Ok(result);
+        }
+
     }
 }

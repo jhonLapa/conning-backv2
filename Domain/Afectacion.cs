@@ -13,6 +13,6 @@
 
         // 🔗 Relaciones
         public ICollection<ConfigAfectacion> ConfigAfectaciones { get; set; } = new HashSet<ConfigAfectacion>();
-
+        public ICollection<ConceptoAfectacion> ConceptoAfectaciones { get; set; } = new HashSet<ConceptoAfectacion>();
     }
 }
