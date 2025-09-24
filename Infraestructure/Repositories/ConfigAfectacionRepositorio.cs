@@ -6,8 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infraestructure.Repositories
 {
-    public class ConfigAfectacionRespositorio
-        : CrudCoreRespository<ConfigAfectacion, int>, IConfigAfectacionRepositorio
+    public class ConfigAfectacionRespositorio : CrudCoreRespository<ConfigAfectacion, int>, IConfigAfectacionRepositorio
     {
         private readonly ApplicationDbContext _dbContext;
 
@@ -15,7 +14,13 @@ namespace Infraestructure.Repositories
         {
             _dbContext = context;
         }
-        public async Task<ConfigAfectacion?> FindByEmpresaAndAfectacionAsync(int idEmpresa, int idAfectacion)
+
+        public async Task<IReadOnlyList<ConfigAfectacion>> FechtByIdEmpresa(int idEmpresa)
+        {
+            return await _dbContext.Set<ConfigAfectacion>().Where(t => t.IdEmpresa == idEmpresa).ToListAsync();
+        }
+
+        public async Task<ConfigAfectacion> FindByEmpresaAndAfectacionAsync(int idEmpresa, int idAfectacion)
         {
             return await _dbContext.Set<ConfigAfectacion>()
                 .FirstOrDefaultAsync(c => c.IdEmpresa == idEmpresa && c.IdAfectacion == idAfectacion);

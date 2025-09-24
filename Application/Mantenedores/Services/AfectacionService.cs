@@ -18,6 +18,15 @@ namespace Application.Mantenedores.Services
             _mapper = mapper;
         }
 
+        public async Task<PaginadoResponse<AfectacionDto>> BusquedaPaginado(PaginationRequest dto)
+        {
+            var response = await _afectacionRepositorio.BusquedaPaginado(dto);
+
+            var data = _mapper.Map<ICollection<AfectacionDto>>(response.Data);
+
+            return new PaginadoResponse<AfectacionDto>(data, response.Meta);
+        }
+
         public async Task<OperationResult<AfectacionDto>> CreateAsync(AfectacionSaveDto saveDto)
         {
             var afectacion = _mapper.Map<Afectacion>(saveDto);

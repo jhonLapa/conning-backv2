@@ -94,5 +94,12 @@ namespace Application.Mantenedores.Services
 
             return _mapper.Map<GrupoConceptoDto>(grupoConcepto);
         }
+
+        public async Task<IReadOnlyList<GrupoConceptoSelectDto>> SelectGrupoConcepto()
+        {
+            var response = await _grupoConceptoRepositorio.FindAllAsync();
+
+            return _mapper.Map<IReadOnlyList<GrupoConceptoSelectDto>>(response);
+        }
     }
 }

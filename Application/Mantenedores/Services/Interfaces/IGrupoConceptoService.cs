@@ -5,5 +5,6 @@ namespace Application.Mantenedores.Services.Interfaces
 {
     public interface IGrupoConceptoService : ICrudCoreService<GrupoConceptoDto, GrupoConceptoSaveDto, int>
     {
+        public Task<IReadOnlyList<GrupoConceptoSelectDto>> SelectGrupoConcepto();
     }
 }

@@ -11,4 +11,6 @@
         public int? IdUsuarioModificacion { get; set; }
         public DateTime? FechaModificacion { get; set; }
     }
+
+    
 }

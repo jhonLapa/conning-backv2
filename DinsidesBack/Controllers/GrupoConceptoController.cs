@@ -61,5 +61,17 @@ namespace DinsidesBack.Controllers
 
             return TypedResults.BadRequest();
         }
+
+        [HttpGet("Select")]
+        [AllowAnonymous]
+        public async Task<Results<BadRequest, Ok<IReadOnlyList<GrupoConceptoSelectDto>>>> Select()
+        {
+
+            var response = await _grupoConceptoService.SelectGrupoConcepto();
+
+            if (response != null) return TypedResults.Ok(response);
+
+            return TypedResults.BadRequest();
+        }
     }
 }
