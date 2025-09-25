@@ -69,6 +69,13 @@ namespace Application.Concepto.Services
 
         }
 
+        public async Task<IReadOnlyList<ConceptoDto>> FecthConceptoByIdGrupo(int idGrupo)
+        {
+            var response = await _conceptoRepositorio.FecthConceptoByIdGrupo(idGrupo);
+
+            return _mapper.Map<IReadOnlyList<ConceptoDto>>(response);
+        }
+
         public async Task<IReadOnlyList<ConceptoDto>> FindAllAsync()
         {
             var response = await _conceptoRepositorio.FindAllAsync();

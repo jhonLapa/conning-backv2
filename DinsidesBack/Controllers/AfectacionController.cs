@@ -72,5 +72,18 @@ namespace DinsidesBack.Controllers
 
             return TypedResults.BadRequest();
         }
+        
+        [HttpDelete("{id}")]
+        [AllowAnonymous]
+        public async Task<Results<BadRequest, Ok<OperationResult<AfectacionDto>>>> Delete(int id)
+        {
+            var response = await _afectacionService.DisabledAsync(id);
+
+            if (response != null) return TypedResults.Ok(response);
+
+            return TypedResults.BadRequest();
+
+        }
+
     }
 }

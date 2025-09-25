@@ -1,8 +1,10 @@
 ﻿using Application.Exceptions;
+using Application.Mantenedores.Dtos.Afectacions;
 using Application.Mantenedores.Dtos.Banks;
 using Application.Mantenedores.Services.Interfaces;
 using AutoMapper;
 using Domain;
+using Infraestructure.Repositories;
 using Infraestructure.Repositories.Interfaces;
 
 namespace Application.Mantenedores.Services
@@ -18,11 +20,20 @@ namespace Application.Mantenedores.Services
             _mapper = mapper;
         }
 
+        public async Task<PaginadoResponse<BankDto>> BusquedaPaginado(PaginationRequest dto)
+        {
+            var response = await _bankRepositorio.BusquedaPaginado(dto);
+
+            var data = _mapper.Map<ICollection<BankDto>>(response.Data);
+
+            return new PaginadoResponse<BankDto>(data, response.Meta);
+        }
         public async Task<OperationResult<BankDto>> CreateAsync(BankSaveDto saveDto)
         {
             var bank = _mapper.Map<Bank>(saveDto);
             bank.FechaCreacion = DateTime.Now;
             bank.IdUsuarioCreacion = 1;
+            bank.Estado = 1;
 
             await _bankRepositorio.SaveAsync(bank);
 
@@ -42,6 +53,8 @@ namespace Application.Mantenedores.Services
 
             bank.Estado = bank.Estado == 1 ? 0 : 1;
             bank.FechaModificacion = DateTime.Now;
+
+            await _bankRepositorio.SaveAsync(bank);
 
             return new OperationResult<BankDto>()
             {
