@@ -5,6 +5,8 @@ namespace Application.Conceptos.Services.Interfaces
 {
     public interface IConceptoServices : ICrudCoreService<ConceptoDto, ConceptoSaveDto, int>
     {
+        Task<IReadOnlyList<ConceptoDto>> FecthConceptoByIdGrupo(int idGrupo);
+
     }
 }
 
