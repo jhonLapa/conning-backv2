@@ -22,5 +22,7 @@ namespace Infraestructure.Repositories
                 .FirstOrDefaultAsync(c => c.IdConcepto == IdConcepto && c.IdAfectacion == idAfectacion);
         }
 
+       
+
     }
 }

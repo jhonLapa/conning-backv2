@@ -45,12 +45,12 @@ namespace Application.Mantenedores.Services
 
         public async Task<OperationResult<AfectacionDto>> DisabledAsync(int id)
         {
-            var afectacion = await _afectacionRepositorio.FindByIdAsync(id);
-
-            if (afectacion == null) throw new NotFoundCoreException("Registro no encontrado con ese Id");
-
+            var afectacion = await _afectacionRepositorio.FindByIdAsync(id) ?? throw new NotFoundCoreException("Registro no encontrado con ese Id");
+            
             afectacion.Estado = afectacion.Estado == 1 ? 0 : 1;
             afectacion.FechaModificacion = DateTime.Now;
+
+            await _afectacionRepositorio.SaveAsync(afectacion);
 
             return new OperationResult<AfectacionDto>()
             {

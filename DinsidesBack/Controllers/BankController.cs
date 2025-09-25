@@ -1,4 +1,6 @@
-﻿using Application.Mantenedores.Dtos.Banks;
+﻿using Application.Mantenedores.Dtos.Afectacions;
+using Application.Mantenedores.Dtos.Banks;
+using Application.Mantenedores.Services;
 using Application.Mantenedores.Services.Interfaces;
 using Domain;
 using Microsoft.AspNetCore.Authorization;
@@ -60,6 +62,29 @@ namespace DinsidesBack.Controllers
             if (response != null) return TypedResults.Ok(response);
 
             return TypedResults.BadRequest();
+        }
+
+        [HttpGet("BusquedaPaginado")]
+        [AllowAnonymous]
+        public async Task<Results<BadRequest, Ok<PaginadoResponse<BankDto>>>> BusquedaPaginado([FromQuery] PaginationRequest dto)
+        {
+            var response = await _bankService.BusquedaPaginado(dto);
+
+            if (response != null) return TypedResults.Ok(response);
+
+            return TypedResults.BadRequest();
+        }
+
+        [HttpDelete("{id}")]
+        [AllowAnonymous]
+        public async Task<Results<BadRequest, Ok<OperationResult<BankDto>>>> Delete(int id)
+        {
+            var response = await _bankService.DisabledAsync(id);
+
+            if (response != null) return TypedResults.Ok(response);
+
+            return TypedResults.BadRequest();
+
         }
     }
 }

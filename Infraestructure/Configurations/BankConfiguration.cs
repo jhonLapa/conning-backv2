@@ -18,10 +18,6 @@ namespace Infraestructure.Configurations
             builder.Property(e => e.SwiftCode).HasColumnName("SwiftCode");
             builder.Property(e => e.CodigoPais).HasColumnName("CodigoPais");
             builder.Property(e => e.Estado).HasColumnName("Estado");
-            builder.Property(e => e.IdUsuarioCreacion).HasColumnName("IdUsuarioCreacion");
-            builder.Property(e => e.FechaCreacion).HasColumnName("FechaCreacion");
-            builder.Property(e => e.IdUsuarioModificacion).HasColumnName("IdUsuarioModificacion");
-            builder.Property(e => e.FechaModificacion).HasColumnName("FechaModificacion");
         }
     }
 }

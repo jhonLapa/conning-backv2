@@ -42,9 +42,7 @@ namespace Infraestructure.Configurations
             builder.Property(e => e.FechaModificacion).HasColumnName("FechaModificacion");
 
             // 🔗 Relación con Bank
-            builder.HasOne(e => e.Bank)
-                   .WithMany(b => b.EmployeesBankAccounts)
-                   .HasForeignKey(e => e.IdBanco);
+            builder.HasOne(e => e.Bank).WithMany().HasForeignKey(e => e.IdBanco);
 
             // 🔗 Relación con Employee
             builder.HasOne(e => e.Employee)

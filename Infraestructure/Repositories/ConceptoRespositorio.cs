@@ -78,5 +78,10 @@ namespace Infraestructure.Repositories
         }
 
 
+        public async Task<IReadOnlyList<Concepto>> FecthConceptoByIdGrupo(int idGrupo)
+        {
+            return await _dbContext.Set<Concepto>().Where(t => t.IdGrupo == idGrupo).ToListAsync();
+        }
+
     }
 }

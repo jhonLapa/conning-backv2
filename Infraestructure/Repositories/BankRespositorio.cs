@@ -6,8 +6,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infraestructure.Repositories
 {
-    public class BankRespositorio(ApplicationDbContext context) : CrudCoreRespository<Bank , int>(context), IBankRepositorio
+    public class BankRespositorio : CrudCoreRespository<Bank , int>, IBankRepositorio
     {
+        private readonly ApplicationDbContext _context;
+        public BankRespositorio(ApplicationDbContext context) : base(context) => _context = context;
 
         public async Task<PaginadoResponse<Bank>> BusquedaPaginado(PaginationRequest dto)
         {
@@ -23,7 +25,6 @@ namespace Infraestructure.Repositories
                 contex = column switch
                 {
                     "name" => order == "desc" ? contex.OrderByDescending(p => p.Nombre) : contex.OrderBy(p => p.Nombre),
-                    "nombreCorto" => order == "desc" ? contex.OrderByDescending(p => p.NombreCorto) : contex.OrderBy(p => p.NombreCorto),
                     "status" => order == "desc" ? contex.OrderByDescending(p => p.Estado) : contex.OrderBy(p => p.Estado),
                     "createAt" => order == "desc" ? contex.OrderByDescending(p => p.FechaCreacion) : contex.OrderBy(p => p.FechaCreacion),
                 };
@@ -69,7 +70,6 @@ namespace Infraestructure.Repositories
 
             return response;
         }
-    
-    
+
     }
 }
