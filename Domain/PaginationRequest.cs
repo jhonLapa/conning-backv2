@@ -8,13 +8,11 @@ namespace Domain
 {
     public class PaginationRequest
     {
-        public int Page { get; set; } = 1;
+        public int? Page { get; set; } = 1;
 
-        public int Limit { get; set; } = 6;
+        public int? Take { get; set; } = 6;
 
-        public string? Sort { get; set; } = "";
-
-        public string? Query { get; set; } = "";
+        public string? Sort { get; set; } = "createAt.desc";
 
         public string[]? Filters { get; set; }
     }

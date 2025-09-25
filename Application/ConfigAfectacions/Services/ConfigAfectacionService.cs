@@ -129,8 +129,11 @@ namespace Application.ConfigAfectacions.Services
             return _mapper.Map<ConfigAfectacionDto>(response);
         }
 
+        public async Task<IReadOnlyList<ConfigAfectacionDto>> FechtByIdEmpresa(int idEmpresa)
+        {
+            var response = await _configAfectacionRepositorio.FechtByIdEmpresa(idEmpresa);
 
-
-
+            return _mapper.Map<IReadOnlyList<ConfigAfectacionDto>>(response);
+        }
     }
 }

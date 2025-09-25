@@ -49,6 +49,7 @@ namespace Application.Mantenedores.Dtos.Profiles
             // Grupo Concepto
             CreateMap<GrupoConcepto, GrupoConceptoDto>().ReverseMap();
             CreateMap<GrupoConcepto, GrupoConceptoSaveDto>().ReverseMap();
+            CreateMap<GrupoConcepto, GrupoConceptoSelectDto>().ReverseMap();
         }
     }
 }

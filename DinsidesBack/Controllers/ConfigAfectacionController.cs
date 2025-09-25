@@ -65,10 +65,25 @@ namespace DinsidesBack.Controllers
 
         [HttpPost("save-array")]
         [AllowAnonymous]
-        public async Task<IActionResult> SaveArray([FromBody] List<ConfigAfectacionSaveDto> dtos)
+        public async Task<Results<BadRequest, Ok<OperationResult<IEnumerable<ConfigAfectacionDto>>>>> SaveArray([FromBody] List<ConfigAfectacionSaveDto> dtos)
         {
             var result = await _configAfectacionService.SaveArrayAsync(dtos);
-            return Ok(result);
+
+            if (result != null) return TypedResults.Ok(result);
+
+            return TypedResults.BadRequest();
+        }
+
+        [HttpGet("masivo/{idEmpresa}")]
+        [AllowAnonymous]
+        public async Task<Results<BadRequest, Ok<IReadOnlyList<ConfigAfectacionDto>>>> GetMasivo(int idEmpresa)
+        {
+
+            var response = await _configAfectacionService.FechtByIdEmpresa(idEmpresa);
+
+            if (response != null) return TypedResults.Ok(response);
+
+            return TypedResults.BadRequest();
         }
     }
 }
