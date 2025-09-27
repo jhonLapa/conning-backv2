@@ -20,11 +20,7 @@ namespace Infraestructure.Configurations
             builder.Property(e => e.FechaCreacion).HasColumnName("FechaCreacion");
             builder.Property(e => e.IdUsuarioModificacion).HasColumnName("IdUsuarioModificacion");
             builder.Property(e => e.FechaModificacion).HasColumnName("FechaModificacion");
-
-            // Relación con Conceptos
-            builder.HasMany(e => e.Conceptos)
-                   .WithOne(c => c.Grupo)
-                   .HasForeignKey(c => c.IdGrupo);
+        
         }
     }
 }

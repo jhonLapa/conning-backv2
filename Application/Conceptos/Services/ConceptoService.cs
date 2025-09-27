@@ -1,8 +1,10 @@
 ﻿using Application.Conceptos.Dto;
 using Application.Conceptos.Services.Interfaces;
 using Application.Exceptions;
+using Application.Mantenedores.Dtos.Afectacions;
 using AutoMapper;
 using Domain;
+using Infraestructure.Repositories;
 using Infraestructure.Repositories.Interfaces;
 
 namespace Application.Concepto.Services
@@ -16,6 +18,15 @@ namespace Application.Concepto.Services
         {
             _conceptoRepositorio = conceptoRepositorio;
             _mapper = mapper;
+        }
+
+        public async Task<PaginadoResponse<ConceptoDto>> BusquedaPaginado(PaginationRequest dto)
+        {
+            var response = await _conceptoRepositorio.BusquedaPaginado(dto);
+
+            var data = _mapper.Map<ICollection<ConceptoDto>>(response.Data);
+
+            return new PaginadoResponse<ConceptoDto>(data, response.Meta);
         }
 
         public async Task<OperationResult<ConceptoDto>> CreateAsync(ConceptoSaveDto saveDto)
@@ -39,7 +50,12 @@ namespace Application.Concepto.Services
         public async Task<OperationResult<ConceptoDto>> DisabledAsync(int id)
         {
             var conceptos = await _conceptoRepositorio.FindByIdAsync(id);
+
             if (conceptos == null) throw new NotFoundCoreException("Registro no encontrado con el id");
+
+            conceptos.Estado = conceptos.Estado == 1 ? 0 : 1;
+
+            await _conceptoRepositorio.SaveAsync(conceptos);
 
             return new OperationResult<ConceptoDto>()
             {

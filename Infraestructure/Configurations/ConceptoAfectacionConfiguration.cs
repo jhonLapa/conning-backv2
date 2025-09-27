@@ -22,14 +22,10 @@ namespace Infraestructure.Configurations
             builder.Property(e => e.FechaModificacion).HasColumnName("FechaModificacion").HasColumnType("datetime2");
 
             // 🔹 Relación con Concepto
-            builder.HasOne(e => e.Concepto)
-                   .WithMany(c => c.ConceptoAfectaciones)
-                   .HasForeignKey(e => e.IdConcepto);
+            builder.HasOne(e => e.Concepto).WithMany().HasForeignKey(e => e.IdConcepto);
 
             // 🔹 Relación con Afectacion
-            builder.HasOne(e => e.Afectacion)
-                   .WithMany(a => a.ConceptoAfectaciones)
-                   .HasForeignKey(e => e.IdAfectacion);
+            builder.HasOne(e => e.Afectacion).WithMany().HasForeignKey(e => e.IdAfectacion);
         }
     }
 }

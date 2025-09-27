@@ -124,5 +124,12 @@ namespace Application.ConceptoAfectacion.Services
 
             return _mapper.Map<ConceptoAfectacionDto>(response);
         }
+
+        public async Task<IReadOnlyList<ConceptoAfectacionDto>> FechtByIdConceptos(int idConcepto)
+        {
+            var response = await _conceptoAfectacion.FechtByIdConceptos(idConcepto);
+
+            return _mapper.Map<IReadOnlyList<ConceptoAfectacionDto>>(response);
+        }
     }
 }

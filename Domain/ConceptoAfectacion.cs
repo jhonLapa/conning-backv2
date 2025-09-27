@@ -12,7 +12,7 @@
         public DateTime? FechaModificacion { get; set; }
 
         // Relaciones
-        public Concepto Concepto { get; set; }
-        public Afectacion Afectacion { get; set; }
+        public Concepto? Concepto { get; set; }
+        public Afectacion? Afectacion { get; set; }
     }
 }

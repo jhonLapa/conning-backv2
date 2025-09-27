@@ -39,9 +39,7 @@ namespace Infraestructure.Configurations
                 .WithMany(c => c.ConfigAfectaciones)
                 .HasForeignKey(e => e.IdEmpresa);
 
-            builder.HasOne(e => e.Afectacion)
-                .WithMany(c => c.ConfigAfectaciones)
-                .HasForeignKey(e => e.IdAfectacion);
+            builder.HasOne(e => e.Afectacion).WithMany().HasForeignKey(e => e.IdAfectacion);
         }
     }
 }

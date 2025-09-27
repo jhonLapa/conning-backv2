@@ -5,6 +5,7 @@ namespace Infraestructure.Repositories.Interfaces
 {
     public interface IGrupoConceptoRepositorio : ICrudCoreRespository<GrupoConcepto, int>
     {
+        Task<PaginadoResponse<GrupoConcepto>> BusquedaPaginado(PaginationRequest dto);
     }
 }
 

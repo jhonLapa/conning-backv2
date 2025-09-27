@@ -70,12 +70,8 @@ namespace Infraestructure.Configurations
 
             // Relaciones
             builder.HasOne(e => e.Grupo)
-                   .WithMany(g => g.Conceptos)
+                   .WithMany()
                    .HasForeignKey(e => e.IdGrupo);
-
-            builder.HasMany(e => e.ConceptoAfectaciones)
-                   .WithOne(a => a.Concepto)
-                   .HasForeignKey(a => a.IdConcepto);
         }
     }
 }

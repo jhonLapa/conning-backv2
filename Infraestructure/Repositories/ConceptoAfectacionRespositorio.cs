@@ -16,11 +16,20 @@ namespace Infraestructure.Repositories
             _dbContext = context;
         }
 
-        public async Task<ConceptoAfectacion?> FindByConceptoAndAfectacionAsync(int IdConcepto, int idAfectacion)
+        public async Task<ConceptoAfectacion> FindByConceptoAndAfectacionAsync(int IdConcepto, int idAfectacion)
         {
             return await _dbContext.Set<ConceptoAfectacion>()
                 .FirstOrDefaultAsync(c => c.IdConcepto == IdConcepto && c.IdAfectacion == idAfectacion);
         }
+
+
+        public async Task<IReadOnlyList<ConceptoAfectacion>> FechtByIdConceptos(int idConcepto)
+        {
+            return await _dbContext.Set<ConceptoAfectacion>()
+                .Include(i => i.Afectacion)
+                .Where(s => s.IdConcepto == idConcepto).ToListAsync();
+        }
+
 
        
 
