@@ -7,6 +7,7 @@ namespace Application.ConceptoAfectacions.Services.Interfaces
     public interface IConceptoAfectacionServices : ICrudCoreService<ConceptoAfectacionDto, ConceptoAfectacionSaveDto, int>
     {
         Task<OperationResult<IEnumerable<ConceptoAfectacionDto>>> SaveArrayAsync(IEnumerable<ConceptoAfectacionSaveDto> saveDtos);
+        Task<IReadOnlyList<ConceptoAfectacionDto>> FechtByIdConceptos(int idConcepto);
     }
 }
 

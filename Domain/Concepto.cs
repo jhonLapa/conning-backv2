@@ -18,9 +18,7 @@
         public int? IdUsuarioModificacion { get; set; }
         public DateTime? FechaModificacion { get; set; }
 
-        // Relaciones
-        public GrupoConcepto Grupo { get; set; }
-        public ICollection<ConceptoAfectacion> ConceptoAfectaciones { get; set; }
+        public GrupoConcepto? Grupo { get; set; }
 
     }
 }

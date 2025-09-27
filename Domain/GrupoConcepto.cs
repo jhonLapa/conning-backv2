@@ -11,7 +11,5 @@
         public int? IdUsuarioModificacion { get; set; }
         public DateTime? FechaModificacion { get; set; }
 
-        // 🔗 Relación inversa
-        public ICollection<Concepto> Conceptos { get; set; } = new List<Concepto>();
     }
 }

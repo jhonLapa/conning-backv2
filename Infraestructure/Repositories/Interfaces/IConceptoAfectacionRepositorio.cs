@@ -5,8 +5,8 @@ namespace Infraestructure.Repositories.Interfaces
 {
     public interface IConceptoAfectacionRepositorio : ICrudCoreRespository<ConceptoAfectacion, int>
     {
-        Task<ConceptoAfectacion?> FindByConceptoAndAfectacionAsync(int IdConcepto, int idAfectacion);
-
+        Task<ConceptoAfectacion> FindByConceptoAndAfectacionAsync(int IdConcepto, int idAfectacion);
+        Task<IReadOnlyList<ConceptoAfectacion>> FechtByIdConceptos(int idConcepto);
     }
 }
 

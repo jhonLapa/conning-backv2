@@ -2,7 +2,8 @@
 {
     public class GrupoConceptoSelectDto
     {
-        public string Codigo { get; set; } = null!;
-        public string Nombre { get; set; } = null!;
+        public int IdGrupo { get; set; }
+        public string Codigo { get; set; }
+        public string Nombre { get; set; }
     }
 }

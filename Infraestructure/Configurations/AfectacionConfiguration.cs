@@ -21,16 +21,6 @@ namespace Infraestructure.Configurations
             builder.Property(e => e.IdUsuarioModificacion).HasColumnName("IdUsuarioModificacion");
             builder.Property(e => e.FechaModificacion).HasColumnName("FechaModificacion");
 
-            // 🔗 Relación con ConfigAfectacion
-            builder.HasMany(e => e.ConfigAfectaciones)
-                   .WithOne(c => c.Afectacion)
-                   .HasForeignKey(c => c.IdAfectacion);
-
-            // 🔗 Relación con ConceptoAfectacion
-            builder.HasMany(e => e.ConceptoAfectaciones)
-                   .WithOne(ca => ca.Afectacion)
-                   .HasForeignKey(ca => ca.IdAfectacion);
-
         }
     }
 }

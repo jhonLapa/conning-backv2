@@ -1,4 +1,6 @@
-﻿using Application.Mantenedores.Dtos.GrupoConceptos;
+﻿using Application.Mantenedores.Dtos.Afectacions;
+using Application.Mantenedores.Dtos.GrupoConceptos;
+using Application.Mantenedores.Services;
 using Application.Mantenedores.Services.Interfaces;
 using Domain;
 using Microsoft.AspNetCore.Authorization;
@@ -56,6 +58,17 @@ namespace DinsidesBack.Controllers
         {
 
             var response = await _grupoConceptoService.EditAsync(id, request);
+
+            if (response != null) return TypedResults.Ok(response);
+
+            return TypedResults.BadRequest();
+        }
+
+        [HttpGet("BusquedaPaginado")]
+        [AllowAnonymous]
+        public async Task<Results<BadRequest, Ok<PaginadoResponse<GrupoConceptoDto>>>> BusquedaPaginado([FromQuery] PaginationRequest dto)
+        {
+            var response = await _grupoConceptoService.BusquedaPaginado(dto);
 
             if (response != null) return TypedResults.Ok(response);
 

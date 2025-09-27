@@ -1,10 +1,12 @@
 ﻿
 
 using Application.Exceptions;
+using Application.Mantenedores.Dtos.Afectacions;
 using Application.Mantenedores.Dtos.GrupoConceptos;
 using Application.Mantenedores.Services.Interfaces;
 using AutoMapper;
 using Domain;
+using Infraestructure.Repositories;
 using Infraestructure.Repositories.Interfaces;
 
 namespace Application.Mantenedores.Services
@@ -19,7 +21,14 @@ namespace Application.Mantenedores.Services
             _grupoConceptoRepositorio = GrupoConceptoRepositorio;
             _mapper = mapper;
         }
+        public async Task<PaginadoResponse<GrupoConceptoDto>> BusquedaPaginado(PaginationRequest dto)
+        {
+            var response = await _grupoConceptoRepositorio.BusquedaPaginado(dto);
 
+            var data = _mapper.Map<ICollection<GrupoConceptoDto>>(response.Data);
+
+            return new PaginadoResponse<GrupoConceptoDto>(data, response.Meta);
+        }
         public async Task<OperationResult<GrupoConceptoDto>> CreateAsync(GrupoConceptoSaveDto saveDto)
         {
             var grupoConcepto = _mapper.Map<GrupoConcepto>(saveDto);

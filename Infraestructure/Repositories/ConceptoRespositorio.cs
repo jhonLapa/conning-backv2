@@ -16,6 +16,16 @@ namespace Infraestructure.Repositories
             _dbContext = context;
         }
 
+        public override async Task<Concepto> FindByIdAsync(int id)
+        {
+            return await _dbContext.Set<Concepto>().Include(t => t.Grupo).FirstOrDefaultAsync(t => t.IdConcepto == id);
+        }
+        
+        public async Task<IReadOnlyList<Concepto>> FecthConceptoByIdGrupo(int idGrupo)
+        {
+            return await _dbContext.Set<Concepto>().Where(t => t.IdGrupo == idGrupo).ToListAsync();
+        }
+
         public async Task<PaginadoResponse<Concepto>> BusquedaPaginado(PaginationRequest dto)
         {
             var contex = _context.Set<Concepto>().AsQueryable();
@@ -77,11 +87,6 @@ namespace Infraestructure.Repositories
             return response;
         }
 
-
-        public async Task<IReadOnlyList<Concepto>> FecthConceptoByIdGrupo(int idGrupo)
-        {
-            return await _dbContext.Set<Concepto>().Where(t => t.IdGrupo == idGrupo).ToListAsync();
-        }
 
     }
 }

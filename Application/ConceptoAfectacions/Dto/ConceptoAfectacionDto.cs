@@ -15,6 +15,6 @@ namespace Application.ConceptoAfectacions.Dto
 
         // Relaciones
         //public Domain.Concepto Concepto { get; set; }
-        //public Afectacion Afectacion { get; set; }
+        public Afectacion Afectacion { get; set; }
     }
 }

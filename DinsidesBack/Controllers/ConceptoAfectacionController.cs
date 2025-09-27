@@ -71,5 +71,17 @@ namespace DinsidesBack.Controllers
             return Ok(result);
         }
 
+        [HttpGet("afectacion/{idConcepto}")]
+        [AllowAnonymous]
+        public async Task<Results<BadRequest, Ok<IReadOnlyList<ConceptoAfectacionDto>>>> AfectacionesMasivo(int idConcepto)
+        {
+
+            var response = await _ConceptoAfectacionService.FechtByIdConceptos(idConcepto);
+
+            if (response != null) return TypedResults.Ok(response);
+
+            return TypedResults.BadRequest();
+        }
+
     }
 }
