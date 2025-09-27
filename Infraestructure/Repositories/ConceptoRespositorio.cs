@@ -20,10 +20,12 @@ namespace Infraestructure.Repositories
         {
             return await _dbContext.Set<Concepto>().Include(t => t.Grupo).FirstOrDefaultAsync(t => t.IdConcepto == id);
         }
+        
         public async Task<IReadOnlyList<Concepto>> FecthConceptoByIdGrupo(int idGrupo)
         {
             return await _dbContext.Set<Concepto>().Where(t => t.IdGrupo == idGrupo).ToListAsync();
         }
+
         public async Task<PaginadoResponse<Concepto>> BusquedaPaginado(PaginationRequest dto)
         {
             var contex = _context.Set<Concepto>().AsQueryable();
@@ -37,7 +39,7 @@ namespace Infraestructure.Repositories
 
                 contex = column switch
                 {
-                    "code" => order == "desc" ? contex.OrderByDescending(p => p.Codigo) : contex.OrderBy(p => p.Descripcion),
+                    "code" => order == "desc" ? contex.OrderByDescending(p => p.Codigo) : contex.OrderBy(p => p.Codigo),
                     "descripcion" => order == "desc" ? contex.OrderByDescending(p => p.Descripcion) : contex.OrderBy(p => p.Descripcion),
                     "status" => order == "desc" ? contex.OrderByDescending(p => p.Estado) : contex.OrderBy(p => p.Estado),
                     "createAt" => order == "desc" ? contex.OrderByDescending(p => p.FechaCreacion) : contex.OrderBy(p => p.FechaCreacion),
@@ -60,7 +62,7 @@ namespace Infraestructure.Repositories
                         if (value == "activo") contex = contex.Where(p => p.Estado == 1);
                         if (value == "inactivo") contex = contex.Where(p => p.Estado == 0);
                     }
-                    else if (id == "code") contex = contex.Where(p => p.Codigo.Contains(value));
+                    else if (id == "descripcion") contex = contex.Where(p => p.Descripcion.Contains(value));
 
                 }
             }
@@ -84,7 +86,6 @@ namespace Infraestructure.Repositories
 
             return response;
         }
-
 
 
     }
