@@ -2,6 +2,7 @@
 using Application.Mantenedores.Dtos.Banks;
 using Application.Mantenedores.Dtos.Categorys;
 using Application.Mantenedores.Dtos.DocumentTypes;
+using Application.Mantenedores.Dtos.EntidadPrevisionals;
 using Application.Mantenedores.Dtos.GrupoConceptos;
 using Application.Mantenedores.Dtos.Pensiones;
 using Application.Mantenedores.Dtos.Projects;
@@ -50,6 +51,13 @@ namespace Application.Mantenedores.Dtos.Profiles
             CreateMap<GrupoConcepto, GrupoConceptoDto>().ReverseMap();
             CreateMap<GrupoConcepto, GrupoConceptoSaveDto>().ReverseMap();
             CreateMap<GrupoConcepto, GrupoConceptoSelectDto>().ReverseMap();
+
+
+            // EntidadPrevisional
+            CreateMap<EntidadPrevisional, EntidadPrevisionalDto>().ReverseMap();
+            CreateMap<EntidadPrevisional, EntidadPrevisionalSaveDto>().ReverseMap();
+
+
         }
     }
 }

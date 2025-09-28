@@ -1,6 +1,6 @@
-﻿namespace Domain
+﻿namespace Application.Mantenedores.Dtos.EntidadPrevisionals
 {
-    public class EntidadPrevisional
+    public class EntidadPrevisionalDto
     {
         public int IdEntidad { get; set; }
         public string Codigo { get; set; } = null!;
@@ -12,8 +12,5 @@
         public DateTime FechaCreacion { get; set; }
         public int? IdUsuarioModificacion { get; set; }
         public DateTime? FechaModificacion { get; set; }
-
-        // 🔗 Relación: una Entidad tiene muchas comisiones
-        public ICollection<EntidadComision> Comisiones { get; set; } = new List<EntidadComision>();
     }
 }

@@ -1,6 +1,6 @@
-﻿namespace Domain
+﻿namespace Application.EntidadComisiones.Dto
 {
-    public class EntidadComision
+    public class EntidadComisionDto
     {
         public int IdComision { get; set; }
         public int IdEntidad { get; set; }
@@ -20,8 +20,5 @@
         public DateTime FechaCreacion { get; set; }
         public int? IdUsuarioModificacion { get; set; }
         public DateTime? FechaModificacion { get; set; }
-
-        // 🔗 Relación: cada comisión pertenece a una entidad
-        public EntidadPrevisional Entidad { get; set; } = null!;
     }
 }
