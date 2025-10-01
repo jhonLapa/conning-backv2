@@ -25,6 +25,7 @@
         // Relaciones
         public Categoria Categoria { get; set; }
         public RegimenPrevisional Regimen { get; set; }
+        public TipoDocumento TipoDocumento { get; set; } = null!;
         public ICollection<CuentaBancariaTrabajador> CuentasBancarias { get; set; }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using Application.Mantenedores.Dtos.RegimenesPrevisionales;
 using Application.Mantenedores.Dtos.Bancos;
 using Application.Mantenedores.Dtos.Categorias;
-using Application.Mantenedores.Dtos.DocumentTypes;
+using Application.Mantenedores.Dtos.TiposDocumento;
 using Application.Mantenedores.Dtos.EntidadPrevisionals;
 using Application.Mantenedores.Dtos.GrupoConceptos;
 using Application.Mantenedores.Dtos.Pensiones;
@@ -18,8 +18,8 @@ namespace Application.Mantenedores.Dtos.Profiles
         public GeneralDtoProfile()
         {
             // Documento 
-            CreateMap<DocumentType, DocumentTypeDto>().ReverseMap();
-            CreateMap<DocumentType, DocumentTypeSaveDto>().ReverseMap();
+            CreateMap<TipoDocumento, TipoDocumentoDto>().ReverseMap();
+            CreateMap<TipoDocumento, TipoDocumentoSaveDto>().ReverseMap();
 
             // Banco
             CreateMap<Banco, BancoDto>().ReverseMap();

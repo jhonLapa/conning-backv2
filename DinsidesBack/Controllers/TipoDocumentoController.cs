@@ -1,4 +1,4 @@
-﻿using Application.Mantenedores.Dtos.DocumentTypes;
+﻿using Application.Mantenedores.Dtos.TiposDocumento;
 using Application.Mantenedores.Services.Interfaces;
 using Application.Usuarios.Dto;
 using Domain;
@@ -11,15 +11,15 @@ namespace DinsidesBack.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class DocumentTypeController : ControllerBase
+    public class TipoDocumentoController : ControllerBase
     {
-        private readonly IDocumentTypeServices _documentoServices;
+        private readonly ITipoDocumentoService _documentoServices;
 
-        public DocumentTypeController(IDocumentTypeServices documentoServices) => _documentoServices = documentoServices;
+        public TipoDocumentoController(ITipoDocumentoService documentoServices) => _documentoServices = documentoServices;
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<Results<BadRequest, Ok<IReadOnlyList<DocumentTypeDto>>>> Get()
+        public async Task<Results<BadRequest, Ok<IReadOnlyList<TipoDocumentoDto>>>> Get()
         {
 
             var response = await _documentoServices.FindAllAsync();
@@ -31,7 +31,7 @@ namespace DinsidesBack.Controllers
 
         [HttpGet("{id}")]
         [AllowAnonymous]
-        public async Task<Results<BadRequest, Ok<DocumentTypeDto>>> Get(int id)
+        public async Task<Results<BadRequest, Ok<TipoDocumentoDto>>> Get(int id)
         {
             var response = await _documentoServices.FindByIdAsync(id);
 
@@ -43,7 +43,7 @@ namespace DinsidesBack.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<Results<BadRequest, Ok<OperationResult<DocumentTypeDto>>>> Post([FromBody] DocumentTypeSaveDto request)
+        public async Task<Results<BadRequest, Ok<OperationResult<TipoDocumentoDto>>>> Post([FromBody] TipoDocumentoSaveDto request)
         {
 
             var response = await _documentoServices.CreateAsync(request);
@@ -55,7 +55,7 @@ namespace DinsidesBack.Controllers
 
         [HttpPut("{id}")]
         [AllowAnonymous]
-        public async Task<Results<BadRequest, Ok<OperationResult<DocumentTypeDto>>>> Put(int id, [FromBody] DocumentTypeSaveDto request)
+        public async Task<Results<BadRequest, Ok<OperationResult<TipoDocumentoDto>>>> Put(int id, [FromBody] TipoDocumentoSaveDto request)
         {
 
             var response = await _documentoServices.EditAsync(id, request);

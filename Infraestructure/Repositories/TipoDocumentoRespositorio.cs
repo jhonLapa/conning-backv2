@@ -6,11 +6,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infraestructure.Repositories
 {
-    public class DocumentTypeRepositorio(ApplicationDbContext context) : CrudCoreRespository<DocumentType, int>(context) , IDocumentoRepositorio
+    public class TipoDocumentoRespositorio(ApplicationDbContext context) : CrudCoreRespository<TipoDocumento, int>(context) , ITipoDocumentoRepositorio
     {
-        public async Task<PaginadoResponse<DocumentType>> BusquedaPaginado(PaginationRequest dto)
+        public async Task<PaginadoResponse<TipoDocumento>> BusquedaPaginado(PaginationRequest dto)
         {
-            var contex = _context.Set<DocumentType>().AsQueryable();
+            var contex = _context.Set<TipoDocumento>().AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(dto.Sort))
             {
@@ -63,7 +63,7 @@ namespace Infraestructure.Repositories
             };
 
 
-            PaginadoResponse<DocumentType> response = new(data, meta);
+            PaginadoResponse<TipoDocumento> response = new(data, meta);
 
             return response;
         }

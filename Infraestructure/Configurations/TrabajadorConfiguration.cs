@@ -24,5 +24,9 @@ public class TrabajadorConfiguration : IEntityTypeConfiguration<Trabajador>
         builder.HasOne(t => t.Regimen)
                .WithMany(r => r.Trabajadores)
                .HasForeignKey(t => t.IdRegimen);
+
+        builder.HasOne(p => p.TipoDocumento)
+               .WithMany(t => t.Trabajadores)
+               .HasForeignKey(p => p.TipoDocumentoId);
     }
 }
