@@ -25,10 +25,6 @@ namespace Application.Mantenedores.Dtos.Profiles
             CreateMap<Banco, BancoDto>().ReverseMap();
             CreateMap<Banco, BancoSaveDto>().ReverseMap();
 
-            //Pension 
-            CreateMap<Pension, PensionDto>().ReverseMap();
-            CreateMap<Pension, PensionSaveDto>().ReverseMap();
-
             //Proyecto
             CreateMap<Project, ProjectDto>().ReverseMap();
             CreateMap<Project, ProjectSaveDto>().ReverseMap();
@@ -47,15 +43,7 @@ namespace Application.Mantenedores.Dtos.Profiles
             CreateMap<RegimenPrevisional, RegimenPrevisionalDto>().ReverseMap();
             CreateMap<RegimenPrevisional, RegimenPrevisionalSaveDto>().ReverseMap();
 
-            // Grupo Concepto
-            CreateMap<GrupoConcepto, GrupoConceptoDto>().ReverseMap();
-            CreateMap<GrupoConcepto, GrupoConceptoSaveDto>().ReverseMap();
-            CreateMap<GrupoConcepto, GrupoConceptoSelectDto>().ReverseMap();
 
-
-            // EntidadPrevisional
-            CreateMap<EntidadPrevisional, EntidadPrevisionalDto>().ReverseMap();
-            CreateMap<EntidadPrevisional, EntidadPrevisionalSaveDto>().ReverseMap();
 
 
         }
