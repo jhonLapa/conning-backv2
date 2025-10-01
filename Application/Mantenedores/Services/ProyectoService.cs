@@ -7,18 +7,18 @@ using Infraestructure.Repositories.Interfaces;
 
 namespace Application.Mantenedores.Services
 {
-    public class ProjectService : IProjectService
+    public class ProyectoService : IProyectoService
     {
         private readonly IProyectoRepositorio _projectRepositorio;
         private readonly IMapper _mapper;
 
-        public ProjectService(IProyectoRepositorio ProjectRepositorio, IMapper mapper)
+        public ProyectoService(IProyectoRepositorio ProjectRepositorio, IMapper mapper)
         {
             _projectRepositorio = ProjectRepositorio;
             _mapper = mapper;
         }
 
-        public async Task<OperationResult<ProjectDto>> CreateAsync(ProjectSaveDto saveDto)
+        public async Task<OperationResult<ProyectoDto>> CreateAsync(ProyectoSaveDto saveDto)
         {
             var project = _mapper.Map<Proyecto>(saveDto);
             project.FechaCreacion = DateTime.Now;
@@ -26,15 +26,15 @@ namespace Application.Mantenedores.Services
 
             await _projectRepositorio.SaveAsync(project);
 
-            return new OperationResult<ProjectDto>()
+            return new OperationResult<ProyectoDto>()
             {
-                Data = _mapper.Map<ProjectDto>(project),
+                Data = _mapper.Map<ProyectoDto>(project),
                 Message = "Creado con Exito",
                 Success = true
             };
         }
 
-        public async Task<OperationResult<ProjectDto>> DisabledAsync(int id)
+        public async Task<OperationResult<ProyectoDto>> DisabledAsync(int id)
         {
             var project = await _projectRepositorio.FindByIdAsync(id);
 
@@ -43,9 +43,9 @@ namespace Application.Mantenedores.Services
             project.Estado = project.Estado == 1 ? 0 : 1;
             project.FechaModificacion = DateTime.Now;
 
-            return new OperationResult<ProjectDto>()
+            return new OperationResult<ProyectoDto>()
             {
-                Data = _mapper.Map<ProjectDto>(project),
+                Data = _mapper.Map<ProyectoDto>(project),
                 Message = project.Estado == 1
                 ? "Activado con éxito"
                             : "Desactivado con éxito",
@@ -54,7 +54,7 @@ namespace Application.Mantenedores.Services
 
         }
 
-        public async Task<OperationResult<ProjectDto>> EditAsync(int id, ProjectSaveDto saveDto)
+        public async Task<OperationResult<ProyectoDto>> EditAsync(int id, ProyectoSaveDto saveDto)
         {
             var project = await _projectRepositorio.FindByIdAsync(id);
 
@@ -66,29 +66,29 @@ namespace Application.Mantenedores.Services
 
             await _projectRepositorio.SaveAsync(project);
 
-            return new OperationResult<ProjectDto>()
+            return new OperationResult<ProyectoDto>()
             {
-                Data = _mapper.Map<ProjectDto>(project),
+                Data = _mapper.Map<ProyectoDto>(project),
                 Message = "actualizado con exito",
                 Success = true
             };
 
         }
 
-        public async Task<IReadOnlyList<ProjectDto>> FindAllAsync()
+        public async Task<IReadOnlyList<ProyectoDto>> FindAllAsync()
         {
             var response = await _projectRepositorio.FindAllAsync();
 
-            return _mapper.Map<IReadOnlyList<ProjectDto>>(response);
+            return _mapper.Map<IReadOnlyList<ProyectoDto>>(response);
         }
 
-        public async Task<ProjectDto> FindByIdAsync(int id)
+        public async Task<ProyectoDto> FindByIdAsync(int id)
         {
             var project = await _projectRepositorio.FindByIdAsync(id);
 
             if (project == null) throw new NotFoundCoreException("Registro no encontrado con ese id");
 
-            return _mapper.Map<ProjectDto>(project);
+            return _mapper.Map<ProyectoDto>(project);
         }
     }
 }

@@ -3,7 +3,7 @@ using Application.Mantenedores.Dtos.Proyectos;
 
 namespace Application.Mantenedores.Services.Interfaces
 {
-    public interface IProjectService : ICrudCoreService<ProjectDto , ProjectSaveDto , int>
+    public interface IProyectoService : ICrudCoreService<ProyectoDto , ProyectoSaveDto , int>
     {
     }
 }

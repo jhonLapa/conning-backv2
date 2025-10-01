@@ -9,15 +9,15 @@ namespace DinsidesBack.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ProjectController : ControllerBase
+    public class ProyectoController : ControllerBase
     {
-        private readonly IProjectService _proyectoService;
+        private readonly IProyectoService _proyectoService;
 
-        public ProjectController(IProjectService proyectoService) => _proyectoService = proyectoService;
+        public ProyectoController(IProyectoService proyectoService) => _proyectoService = proyectoService;
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<Results<BadRequest, Ok<IReadOnlyList<ProjectDto>>>> Get()
+        public async Task<Results<BadRequest, Ok<IReadOnlyList<ProyectoDto>>>> Get()
         {
 
             var response = await _proyectoService.FindAllAsync();
@@ -29,7 +29,7 @@ namespace DinsidesBack.Controllers
 
         [HttpGet("{id}")]
         [AllowAnonymous]
-        public async Task<Results<BadRequest, Ok<ProjectDto>>> Get(int id)
+        public async Task<Results<BadRequest, Ok<ProyectoDto>>> Get(int id)
         {
             var response = await _proyectoService.FindByIdAsync(id);
 
@@ -41,7 +41,7 @@ namespace DinsidesBack.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<Results<BadRequest, Ok<OperationResult<ProjectDto>>>> Post([FromBody] ProjectSaveDto request)
+        public async Task<Results<BadRequest, Ok<OperationResult<ProyectoDto>>>> Post([FromBody] ProyectoSaveDto request)
         {
 
             var response = await _proyectoService.CreateAsync(request);
@@ -53,7 +53,7 @@ namespace DinsidesBack.Controllers
 
         [HttpPut("{id}")]
         [AllowAnonymous]
-        public async Task<Results<BadRequest, Ok<OperationResult<ProjectDto>>>> Put(int id, [FromBody] ProjectSaveDto request)
+        public async Task<Results<BadRequest, Ok<OperationResult<ProyectoDto>>>> Put(int id, [FromBody] ProyectoSaveDto request)
         {
 
             var response = await _proyectoService.EditAsync(id, request);
