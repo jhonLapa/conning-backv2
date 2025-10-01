@@ -1,5 +1,5 @@
 ﻿using Application.Core.Services.Interfaces;
-using Application.Mantenedores.Dtos.Projects;
+using Application.Mantenedores.Dtos.Proyectos;
 
 namespace Application.Mantenedores.Services.Interfaces
 {

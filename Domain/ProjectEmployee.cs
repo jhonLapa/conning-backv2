@@ -18,7 +18,7 @@
         public DateTime? FechaModificacion { get; set; }
 
         // 🔗 Relaciones
-        public Project Project { get; set; } = null!;
+        public Proyecto Project { get; set; } = null!;
         public Trabajador Employee { get; set; } = null!;
         public Categoria Category { get; set; } = null!;
     }

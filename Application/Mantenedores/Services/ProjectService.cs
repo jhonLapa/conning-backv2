@@ -1,5 +1,5 @@
 ﻿using Application.Exceptions;
-using Application.Mantenedores.Dtos.Projects;
+using Application.Mantenedores.Dtos.Proyectos;
 using Application.Mantenedores.Services.Interfaces;
 using AutoMapper;
 using Domain;
@@ -9,10 +9,10 @@ namespace Application.Mantenedores.Services
 {
     public class ProjectService : IProjectService
     {
-        private readonly IProjectRepositorio _projectRepositorio;
+        private readonly IProyectoRepositorio _projectRepositorio;
         private readonly IMapper _mapper;
 
-        public ProjectService(IProjectRepositorio ProjectRepositorio, IMapper mapper)
+        public ProjectService(IProyectoRepositorio ProjectRepositorio, IMapper mapper)
         {
             _projectRepositorio = ProjectRepositorio;
             _mapper = mapper;
@@ -20,9 +20,9 @@ namespace Application.Mantenedores.Services
 
         public async Task<OperationResult<ProjectDto>> CreateAsync(ProjectSaveDto saveDto)
         {
-            var project = _mapper.Map<Project>(saveDto);
+            var project = _mapper.Map<Proyecto>(saveDto);
             project.FechaCreacion = DateTime.Now;
-            project.IdUsuarioCreacion = 1;
+            project.Estado = 1;
 
             await _projectRepositorio.SaveAsync(project);
 
@@ -61,7 +61,6 @@ namespace Application.Mantenedores.Services
             if (project == null) throw new NotFoundCoreException("Registro no encontrado con ese id");
 
             project.FechaModificacion = DateTime.Now;
-            project.IdUsuarioModificacion = 1;
 
             _mapper.Map(saveDto, project);
 

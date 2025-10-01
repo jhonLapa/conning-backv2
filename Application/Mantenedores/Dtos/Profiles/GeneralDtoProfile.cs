@@ -5,7 +5,7 @@ using Application.Mantenedores.Dtos.TiposDocumento;
 using Application.Mantenedores.Dtos.EntidadPrevisionals;
 using Application.Mantenedores.Dtos.GrupoConceptos;
 using Application.Mantenedores.Dtos.Pensiones;
-using Application.Mantenedores.Dtos.Projects;
+using Application.Mantenedores.Dtos.Proyectos;
 using Application.Mantenedores.Dtos.Roles;
 using Application.Usuarios.Dto;
 using AutoMapper;
@@ -26,8 +26,8 @@ namespace Application.Mantenedores.Dtos.Profiles
             CreateMap<Banco, BancoSaveDto>().ReverseMap();
 
             //Proyecto
-            CreateMap<Project, ProjectDto>().ReverseMap();
-            CreateMap<Project, ProjectSaveDto>().ReverseMap();
+            CreateMap<Proyecto, ProjectDto>().ReverseMap();
+            CreateMap<Proyecto, ProjectSaveDto>().ReverseMap();
 
 
             //Rol 

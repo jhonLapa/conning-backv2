@@ -1,4 +1,4 @@
-﻿using Application.Mantenedores.Dtos.Projects;
+﻿using Application.Mantenedores.Dtos.Proyectos;
 using Application.Mantenedores.Services.Interfaces;
 using Domain;
 using Microsoft.AspNetCore.Authorization;
