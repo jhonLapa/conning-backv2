@@ -15,6 +15,6 @@
 
         // 🔗 Relaciones
         public Empresa Empresa { get; set; } = null!;
-        public Afectacion Afectacion { get; set; } = null!;
+        public RegimenPrevisional Afectacion { get; set; } = null!;
     }
 }

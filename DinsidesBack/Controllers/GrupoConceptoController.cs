@@ -1,6 +1,4 @@
-﻿using Application.Mantenedores.Dtos.Afectacions;
-using Application.Mantenedores.Dtos.GrupoConceptos;
-using Application.Mantenedores.Services;
+﻿using Application.Mantenedores.Dtos.GrupoConceptos;
 using Application.Mantenedores.Services.Interfaces;
 using Domain;
 using Microsoft.AspNetCore.Authorization;

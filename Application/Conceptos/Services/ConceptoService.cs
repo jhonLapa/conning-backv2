@@ -1,10 +1,8 @@
 ﻿using Application.Conceptos.Dto;
 using Application.Conceptos.Services.Interfaces;
 using Application.Exceptions;
-using Application.Mantenedores.Dtos.Afectacions;
 using AutoMapper;
 using Domain;
-using Infraestructure.Repositories;
 using Infraestructure.Repositories.Interfaces;
 
 namespace Application.Concepto.Services

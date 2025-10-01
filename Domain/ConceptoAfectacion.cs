@@ -13,6 +13,6 @@
 
         // Relaciones
         public Concepto? Concepto { get; set; }
-        public Afectacion? Afectacion { get; set; }
+        public RegimenPrevisional? Afectacion { get; set; }
     }
 }

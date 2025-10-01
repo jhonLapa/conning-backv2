@@ -1,6 +1,6 @@
-﻿using Application.Mantenedores.Dtos.Afectacions;
-using Application.Mantenedores.Dtos.Banks;
-using Application.Mantenedores.Dtos.Categorys;
+﻿using Application.Mantenedores.Dtos.RegimenesPrevisionales;
+using Application.Mantenedores.Dtos.Bancos;
+using Application.Mantenedores.Dtos.Categorias;
 using Application.Mantenedores.Dtos.DocumentTypes;
 using Application.Mantenedores.Dtos.EntidadPrevisionals;
 using Application.Mantenedores.Dtos.GrupoConceptos;
@@ -22,8 +22,8 @@ namespace Application.Mantenedores.Dtos.Profiles
             CreateMap<DocumentType, DocumentTypeSaveDto>().ReverseMap();
 
             // Banco
-            CreateMap<Bank, BankDto>().ReverseMap();
-            CreateMap<Bank, BankSaveDto>().ReverseMap();
+            CreateMap<Banco, BancoDto>().ReverseMap();
+            CreateMap<Banco, BancoSaveDto>().ReverseMap();
 
             //Pension 
             CreateMap<Pension, PensionDto>().ReverseMap();
@@ -40,12 +40,12 @@ namespace Application.Mantenedores.Dtos.Profiles
 
 
             // categoria
-            CreateMap<Category, CategoryDto>().ReverseMap();
-            CreateMap<Category, CategorySaveDto>().ReverseMap();
+            CreateMap<Categoria, CategoriaDto>().ReverseMap();
+            CreateMap<Categoria, CategoriaSaveDto>().ReverseMap();
 
-            // Afectacion
-            CreateMap<Afectacion, AfectacionDto>().ReverseMap();
-            CreateMap<Afectacion, AfectacionSaveDto>().ReverseMap();
+            // RegimenPrevisional
+            CreateMap<RegimenPrevisional, RegimenPrevisionalDto>().ReverseMap();
+            CreateMap<RegimenPrevisional, RegimenPrevisionalSaveDto>().ReverseMap();
 
             // Grupo Concepto
             CreateMap<GrupoConcepto, GrupoConceptoDto>().ReverseMap();

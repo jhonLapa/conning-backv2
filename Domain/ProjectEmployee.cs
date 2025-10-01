@@ -19,7 +19,7 @@
 
         // 🔗 Relaciones
         public Project Project { get; set; } = null!;
-        public Employee Employee { get; set; } = null!;
-        public Category Category { get; set; } = null!;
+        public Trabajador Employee { get; set; } = null!;
+        public Categoria Category { get; set; } = null!;
     }
 }
