@@ -86,7 +86,7 @@ namespace DinsidesBack.Controllers
         }
 
 
-        [HttpGet("Select")]
+        [HttpGet("SelectActivos")]
         [AllowAnonymous]
         public async Task<Results<BadRequest, Ok<IReadOnlyList<RegimenPrevisionalSelectDto>>>> Select()
         {
