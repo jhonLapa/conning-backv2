@@ -9,13 +9,55 @@ namespace Infraestructure.Configurations
         public void Configure(EntityTypeBuilder<Venta> builder)
         {
             builder.ToTable("Ventas");
+
             builder.HasKey(v => v.IdVenta);
 
-            builder.Property(v => v.Serie).HasMaxLength(20);
-            builder.Property(v => v.Numero).HasMaxLength(20);
-            builder.Property(v => v.FormaPago).HasMaxLength(50);
-            builder.Property(v => v.TipoMoneda).HasMaxLength(10);
+            builder.Property(v => v.Serie)
+                   .HasMaxLength(10)
+                   .IsRequired();
 
+            builder.Property(v => v.Numero)
+                   .HasMaxLength(20)
+                   .IsRequired();
+
+            builder.Property(v => v.FechaEmision)
+                   .IsRequired();
+
+            builder.Property(v => v.FormaPago)
+                   .HasMaxLength(50);
+
+            builder.Property(v => v.TipoMoneda)
+                   .HasMaxLength(10)
+                   .IsRequired();
+
+            builder.Property(v => v.Observacion)
+                   .HasColumnType("NVARCHAR(MAX)");
+
+            // Totales con precisión (12,2)
+            builder.Property(v => v.SubTotal).HasPrecision(12, 2);
+            builder.Property(v => v.Anticipos).HasPrecision(12, 2);
+            builder.Property(v => v.Descuentos).HasPrecision(12, 2);
+            builder.Property(v => v.ValorVenta).HasPrecision(12, 2);
+            builder.Property(v => v.Isc).HasPrecision(12, 2);
+            builder.Property(v => v.Igv).HasPrecision(12, 2);
+            builder.Property(v => v.Icbper).HasPrecision(12, 2);
+            builder.Property(v => v.OtrosCargos).HasPrecision(12, 2);
+            builder.Property(v => v.OtrosTributos).HasPrecision(12, 2);
+            builder.Property(v => v.MontoRedondeo).HasPrecision(12, 2);
+            builder.Property(v => v.ImporteTotal).HasPrecision(12, 2);
+
+            // Detracción
+            builder.Property(v => v.DetraccionAplica)
+                   .HasConversion<int>(); // convierte bool <-> tinyint
+            builder.Property(v => v.DetraccionPorcentaje).HasPrecision(5, 2);
+            builder.Property(v => v.DetraccionMonto).HasPrecision(12, 2);
+            builder.Property(v => v.CuentaDetraccion).HasMaxLength(30);
+
+            builder.Property(v => v.FechaCreacion).IsRequired();
+
+            builder.Property(v => v.UsuarioCreacion).HasMaxLength(50);
+
+            // 🔗 Relaciones
             builder.HasOne(v => v.Cliente)
                    .WithMany(c => c.Ventas)
                    .HasForeignKey(v => v.IdCliente);

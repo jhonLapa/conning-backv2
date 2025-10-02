@@ -1,0 +1,13 @@
+﻿using Domain;
+using Infraestructure.Core.Repositories.Interfaces;
+
+namespace Infraestructure.Repositories.Interfaces
+{
+    public interface IVentaRepositorio : ICrudCoreRespository<Venta, int>
+    {
+        Task<PaginadoResponse<Venta>> BusquedaPaginado(PaginationRequest dto);
+        Task<IReadOnlyList<Venta>> SelectActivo();
+        Task<List<Venta>> FindByClienteIdAsync(int clienteId);
+
+    }
+}
