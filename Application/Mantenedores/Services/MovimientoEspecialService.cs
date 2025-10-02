@@ -1,10 +1,8 @@
 ﻿using Application.Exceptions;
-using Application.Mantenedores.Dtos.Afectacions;
 using Application.Mantenedores.Dtos.MovimientosEspeciales;
 using Application.Mantenedores.Services.Interfaces;
 using AutoMapper;
 using Domain;
-using Infraestructure.Repositories;
 using Infraestructure.Repositories.Interfaces;
 
 namespace Application.Mantenedores.Services

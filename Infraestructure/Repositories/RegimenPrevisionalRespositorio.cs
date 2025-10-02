@@ -9,6 +9,7 @@ namespace Infraestructure.Repositories
     public class RegimenPrevisionalRespositorio : CrudCoreRespository<RegimenPrevisional, int>, IRegimenPrevisionalRepositorio
     {
         private readonly ApplicationDbContext _context;
+
         public RegimenPrevisionalRespositorio(ApplicationDbContext context) : base (context)
         {
             _context = context;

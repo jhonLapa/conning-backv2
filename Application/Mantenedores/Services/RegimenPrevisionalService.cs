@@ -44,7 +44,11 @@ namespace Application.Mantenedores.Services
 
         public async Task<OperationResult<RegimenPrevisionalDto>> DisabledAsync(int id)
         {
-            
+
+            var regimenPrevisional = await _regimenPrevisionalRepositorio.FindByIdAsync(id);
+
+            if (regimenPrevisional == null) throw new NotFoundCoreException("Registro no encontrado con ese Id");
+
             regimenPrevisional.Estado = regimenPrevisional.Estado == 1 ? 0 : 1;
  
             await _regimenPrevisionalRepositorio.SaveAsync(regimenPrevisional);
