@@ -1,4 +1,6 @@
 ﻿using Application.Mantenedores.Dtos.Proyectos;
+using Application.Mantenedores.Dtos.TiposComprobantes;
+using Application.Mantenedores.Services;
 using Application.Mantenedores.Services.Interfaces;
 using Domain;
 using Microsoft.AspNetCore.Authorization;
@@ -63,6 +65,20 @@ namespace DinsidesBack.Controllers
             return TypedResults.BadRequest();
         }
 
+        [HttpDelete("{id}")]
+        [AllowAnonymous]
+        public async Task<Results<BadRequest, Ok<OperationResult<ProyectoDto>>>> Delete(int id)
+        {
+            var response = await _proyectoService.DisabledAsync(id);
+
+            if (response != null) return TypedResults.Ok(response);
+
+            return TypedResults.BadRequest();
+
+        }
+
+
+
         [HttpGet("BusquedaPaginado")]
         [AllowAnonymous]
         public async Task<Results<BadRequest, Ok<PaginadoResponse<ProyectoDto>>>> BusquedaPaginado([FromQuery] PaginationRequest dto)
@@ -85,6 +101,7 @@ namespace DinsidesBack.Controllers
 
             return TypedResults.BadRequest();
         }
+
 
     }
 }

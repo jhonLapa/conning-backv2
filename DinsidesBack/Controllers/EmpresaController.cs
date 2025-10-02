@@ -1,5 +1,6 @@
 ﻿using Application.Empresas.Dto;
 using Application.Empresas.Services.Interfaces;
+using Application.Mantenedores.Dtos.TiposComprobantes;
 using Domain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -61,5 +62,18 @@ namespace DinsidesBack.Controllers
 
             return TypedResults.BadRequest();
         }
+
+        [HttpDelete("{id}")]
+        [AllowAnonymous]
+        public async Task<Results<BadRequest, Ok<OperationResult<EmpresaDto>>>> Delete(int id)
+        {
+            var response = await _empresaService.DisabledAsync(id);
+
+            if (response != null) return TypedResults.Ok(response);
+
+            return TypedResults.BadRequest();
+
+        }
+
     }
 }
