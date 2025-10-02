@@ -27,5 +27,7 @@
         public RegimenPrevisional Regimen { get; set; }
         public TipoDocumento TipoDocumento { get; set; } = null!;
         public ICollection<CuentaBancariaTrabajador> CuentasBancarias { get; set; }
+        public ICollection<TrabajadorProyecto> TrabajosProyectos { get; set; }
+
     }
 }

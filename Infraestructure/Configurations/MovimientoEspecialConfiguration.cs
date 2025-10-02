@@ -8,18 +8,30 @@ namespace Infraestructure.Configurations
     {
         public void Configure(EntityTypeBuilder<MovimientoEspecial> builder)
         {
-            builder.ToTable("MovimientoEspeciales");
+            builder.ToTable("MovimientosEspeciales");
+            builder.HasKey(m => m.IdMovimientoEspecial);
 
-            builder.HasKey(e => e.IdMovimientoEspecial);
+            builder.Property(m => m.Descripcion)
+                   .HasMaxLength(250);
 
-            builder.Property(e => e.IdMovimientoEspecial).HasColumnName("Id");
-            builder.Property(e => e.Descripcion).HasColumnName("Descripcion");
-            builder.Property(e => e.Monto).HasColumnName("Monto");
-            builder.Property(e => e.TipoMovimiento).HasColumnName("TipoMovimiento");
-            builder.Property(e => e.Estado).HasColumnName("Estado");
-            builder.Property(e => e.Observacion).HasColumnName("Observacion");
-            builder.Property(e => e.UsuarioCreacion).HasColumnName("UsuarioCreacion");
+            builder.Property(m => m.TipoMovimiento)
+                   .HasMaxLength(100)
+                   .IsRequired();
 
+            builder.Property(m => m.CuentaBancaria)
+                   .HasMaxLength(50);
+
+            builder.Property(m => m.Monto)
+                   .HasColumnType("decimal(18,2)");
+
+            builder.Property(m => m.Observacion)
+                   .HasMaxLength(200);
+
+            builder.Property(m => m.UsuarioCreacion)
+                   .HasMaxLength(100);
+
+            builder.Property(m => m.Estado)
+                   .IsRequired();
         }
     }
 }

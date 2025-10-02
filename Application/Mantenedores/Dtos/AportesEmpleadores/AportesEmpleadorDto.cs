@@ -2,12 +2,10 @@
 {
     public class AportesEmpleadorDto
     {
-        public int IdAportesEmpleador { get; set; }
+        public int IdAporte { get; set; }
         public string Nombre { get; set; } = null!;
-        public float Tasa { get; set; }
-        public float Base { get; set; }
+        public decimal Tasa { get; set; }     // DECIMAL(5,2)
+        public decimal? Base { get; set; }    // DECIMAL(10,2) NULL
         public int Estado { get; set; }
-        public DateTime FechaCreacion { get; set; }
-
     }
 }

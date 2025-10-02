@@ -30,7 +30,6 @@ namespace Application.Mantenedores.Services
         {
             var tipoComprobante = _mapper.Map<TipoComprobante>(saveDto);
             tipoComprobante.FechaCreacion = DateTime.Now;
-            tipoComprobante.IdUsuarioCreacion = 1;
             tipoComprobante.Estado = 1;
 
             await _tipoComprobanteRepositorio.SaveAsync(tipoComprobante);
@@ -50,7 +49,7 @@ namespace Application.Mantenedores.Services
             if (tipoComprobante == null) throw new NotFoundCoreException("Registro no encontrado con ese Id");
 
             tipoComprobante.Estado = tipoComprobante.Estado == 1 ? 0 : 1;
-            tipoComprobante.FechaModificacion = DateTime.Now;
+            tipoComprobante.FechaCreacion = DateTime.Now;
 
             await _tipoComprobanteRepositorio.SaveAsync(tipoComprobante);
 
@@ -71,8 +70,6 @@ namespace Application.Mantenedores.Services
 
             if (tipoComprobante == null) throw new NotFoundCoreException("Registro no encontrado con ese id");
 
-            tipoComprobante.FechaModificacion = DateTime.Now;
-            tipoComprobante.IdUsuarioModificacion = 1;
 
             _mapper.Map(saveDto, tipoComprobante);
 

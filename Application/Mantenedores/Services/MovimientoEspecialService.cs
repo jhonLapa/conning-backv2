@@ -30,7 +30,6 @@ namespace Application.Mantenedores.Services
         {
             var movimientoEspecial = _mapper.Map<MovimientoEspecial>(saveDto);
             movimientoEspecial.FechaCreacion = DateTime.Now;
-            movimientoEspecial.IdUsuarioCreacion = 1;
             movimientoEspecial.Estado = 1;
 
             await _movimientoEspecialRepositorio.SaveAsync(movimientoEspecial);
@@ -50,7 +49,6 @@ namespace Application.Mantenedores.Services
             if (movimientoEspecial == null) throw new NotFoundCoreException("Registro no encontrado con ese Id");
 
             movimientoEspecial.Estado = movimientoEspecial.Estado == 1 ? 0 : 1;
-            movimientoEspecial.FechaModificacion = DateTime.Now;
 
             await _movimientoEspecialRepositorio.SaveAsync(movimientoEspecial);
 
@@ -71,8 +69,6 @@ namespace Application.Mantenedores.Services
 
             if (movimientoEspecial == null) throw new NotFoundCoreException("Registro no encontrado con ese id");
 
-            movimientoEspecial.FechaModificacion = DateTime.Now;
-            movimientoEspecial.IdUsuarioModificacion = 1;
 
             _mapper.Map(saveDto, movimientoEspecial);
 

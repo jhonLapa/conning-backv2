@@ -4,20 +4,26 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infraestructure.Configurations
 {
-    public class AportesEmpleadorConfiguration : IEntityTypeConfiguration<AportesEmpleador>
+    public class AporteEmpleadorConfiguration : IEntityTypeConfiguration<AportesEmpleador>
     {
         public void Configure(EntityTypeBuilder<AportesEmpleador> builder)
         {
-            builder.ToTable("AportesEmpleadores");
+            builder.ToTable("AportesEmpleador");
+            builder.HasKey(a => a.IdAporte);
 
-            builder.HasKey(e => e.IdAportesEmpleador);
+            builder.Property(a => a.Nombre)
+                   .HasMaxLength(100)
+                   .IsRequired();
 
-            builder.Property(e => e.IdAportesEmpleador).HasColumnName("Id");
-            builder.Property(e => e.Nombre).HasColumnName("Nombre");
-            builder.Property(e => e.Tasa).HasColumnName("Tasa");
-            builder.Property(e => e.Base).HasColumnName("Base");
-            builder.Property(e => e.Estado).HasColumnName("Estado");
+            builder.Property(a => a.Tasa)
+                   .HasPrecision(5, 2)        // se ajusta al DECIMAL(5,2)
+                   .IsRequired();
 
+            builder.Property(a => a.Base)
+                   .HasPrecision(10, 2);      // DECIMAL(10,2) NULL
+
+            builder.Property(a => a.Estado)
+                   .IsRequired();
         }
     }
 }

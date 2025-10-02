@@ -1,0 +1,19 @@
+﻿namespace Domain
+{
+    public class PagoVentaCredito
+    {
+        public int IdPagoVentaCredito { get; set; }
+        public int IdVenta { get; set; }
+        public DateTime FechaVencimiento { get; set; }
+        public decimal MontoCuota { get; set; }
+        public DateTime? FechaPago { get; set; }
+        public decimal? MontoPagado { get; set; }
+        public string EstadoPago { get; set; }
+        public string Observacion { get; set; }
+        public DateTime FechaCreacion { get; set; }
+        public string? UsuarioCreacion { get; set; }
+
+        // Relaciones
+        public Venta Venta { get; set; }
+    }
+}

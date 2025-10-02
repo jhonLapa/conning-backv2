@@ -1,8 +1,11 @@
-﻿using Application.Mantenedores.Dtos.Bancos;
+﻿using Application.Mantenedores.Dtos.AportesEmpleadores;
+using Application.Mantenedores.Dtos.Bancos;
 using Application.Mantenedores.Dtos.Categorias;
+using Application.Mantenedores.Dtos.MovimientosEspeciales;
 using Application.Mantenedores.Dtos.Proyectos;
 using Application.Mantenedores.Dtos.RegimenesPrevisionales;
 using Application.Mantenedores.Dtos.Roles;
+using Application.Mantenedores.Dtos.TiposComprobantes;
 using Application.Mantenedores.Dtos.TiposDocumento;
 using AutoMapper;
 using Domain;
@@ -40,7 +43,18 @@ namespace Application.Mantenedores.Dtos.Profiles
             CreateMap<RegimenPrevisional, RegimenPrevisionalSaveDto>().ReverseMap();
 
 
+            // De entidad a DTO
+            CreateMap<AportesEmpleador, AportesEmpleadorDto>();
+            CreateMap<AportesEmpleadorDto, AportesEmpleador>();
 
+            // De entidad a DTO
+            CreateMap<TipoComprobante, TipoComprobanteDto>();
+            CreateMap<TipoComprobanteSaveDto, TipoComprobante>();
+
+
+            // De entidad a DTO
+            CreateMap<MovimientoEspecial, MovimientoEspecialDto>();
+            CreateMap<MovimientoEspecialSaveDto, MovimientoEspecial>();
 
         }
     }

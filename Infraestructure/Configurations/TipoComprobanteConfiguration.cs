@@ -1,23 +1,26 @@
 ﻿using Domain;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore;
 
-namespace Infraestructure.Configurations
+public class TipoComprobanteConfiguration : IEntityTypeConfiguration<TipoComprobante>
 {
-    public class TipoComprobanteConfiguration : IEntityTypeConfiguration<TipoComprobante>
+    public void Configure(EntityTypeBuilder<TipoComprobante> builder)
     {
-        public void Configure(EntityTypeBuilder<TipoComprobante> builder)
-        {
-            builder.ToTable("TiposComprobantes");
+        builder.ToTable("TiposComprobante");
+        builder.HasKey(tc => tc.IdTipoComprobante);
 
-            builder.HasKey(e => e.IdTipoComprobante);
+        builder.Property(tc => tc.Codigo)
+               .HasMaxLength(10)
+               .IsRequired();
 
-            builder.Property(e => e.IdTipoComprobante).HasColumnName("Id");
-            builder.Property(e => e.Codigo).HasColumnName("Codigo");
-            builder.Property(e => e.Nombre).HasColumnName("Nombre");
-            builder.Property(e => e.UsuarioCreacion).HasColumnName("UsuarioCreacion");
-            builder.Property(e => e.Estado).HasColumnName("Estado");
+        builder.Property(tc => tc.Nombre)
+               .HasMaxLength(50)    // ⚠️ ahora coincide con SQL
+               .IsRequired();
 
-        }
+        builder.Property(tc => tc.Estado)
+               .HasDefaultValue(1);
+
+        builder.Property(tc => tc.UsuarioCreacion)
+               .HasMaxLength(50);
     }
 }
