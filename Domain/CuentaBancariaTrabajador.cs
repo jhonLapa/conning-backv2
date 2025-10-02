@@ -13,9 +13,9 @@
         public DateTime? FechaFin { get; set; }
         public int Estado { get; set; }
         public DateTime FechaCreacion { get; set; }
-        public string UsuarioCreacion { get; set; }
+        public string? UsuarioCreacion { get; set; }
         public DateTime? FechaModificacion { get; set; }
-        public string UsuarioModificacion { get; set; }
+        public string? UsuarioModificacion { get; set; }
 
         // Relaciones
         public Trabajador Trabajador { get; set; }
