@@ -1,4 +1,5 @@
-﻿using Application.Mantenedores.Dtos.RegimenesPrevisionales;
+﻿
+using Application.Mantenedores.Dtos.RegimenesPrevisionales;
 using Application.Mantenedores.Services.Interfaces;
 using Domain;
 using Microsoft.AspNetCore.Authorization;
@@ -61,7 +62,6 @@ namespace DinsidesBack.Controllers
 
             return TypedResults.BadRequest();
         }
-
         [HttpGet("BusquedaPaginado")]
         [AllowAnonymous]
         public async Task<Results<BadRequest, Ok<PaginadoResponse<RegimenPrevisionalDto>>>> BusquedaPaginado([FromQuery] PaginationRequest dto)
@@ -72,7 +72,7 @@ namespace DinsidesBack.Controllers
 
             return TypedResults.BadRequest();
         }
-
+        
         [HttpDelete("{id}")]
         [AllowAnonymous]
         public async Task<Results<BadRequest, Ok<OperationResult<RegimenPrevisionalDto>>>> Delete(int id)

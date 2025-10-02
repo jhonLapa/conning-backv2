@@ -10,18 +10,38 @@ namespace Infraestructure.Configurations
         {
             builder.ToTable("RegimenesPrevisionales");
 
-            builder.HasKey(e => e.IdRegimenPrevisional);
+            builder.HasKey(r => r.IdRegimen);
 
-            builder.Property(e => e.IdRegimenPrevisional).HasColumnName("Id");
-            builder.Property(e => e.Nombre).HasColumnName("Nombre");
-            builder.Property(e => e.Tipo).HasColumnName("Tipo");
-            builder.Property(e => e.Comision).HasColumnName("Comision");
-            builder.Property(e => e.Prima).HasColumnName("Prima");
-            builder.Property(e => e.Aporte).HasColumnName("Aporte");
-            builder.Property(e => e.Total).HasColumnName("Total");
-            builder.Property(e => e.Tope).HasColumnName("Tope");
-            builder.Property(e => e.Estado).HasColumnName("Estado");
+            builder.Property(r => r.Nombre)
+                   .HasMaxLength(100)
+                   .IsRequired(false);
 
+            builder.Property(r => r.Tipo)
+                   .HasMaxLength(50)
+                   .IsRequired(false);
+
+            builder.Property(r => r.Comision)
+                   .HasColumnType("decimal(10,2)")
+                   .IsRequired(false);
+
+            builder.Property(r => r.Prima)
+                   .HasColumnType("decimal(10,2)")
+                   .IsRequired(false);
+
+            builder.Property(r => r.Aporte)
+                   .HasColumnType("decimal(10,2)")
+                   .IsRequired(); // siempre tiene valor
+
+            builder.Property(r => r.Total)
+                   .HasColumnType("decimal(10,2)")
+                   .IsRequired(); // siempre tiene valor
+
+            builder.Property(r => r.Tope)
+                   .HasColumnType("decimal(10,2)")
+                   .IsRequired(false);
+
+            builder.Property(r => r.Estado)
+                   .IsRequired(); // NOT NULL
         }
     }
 }

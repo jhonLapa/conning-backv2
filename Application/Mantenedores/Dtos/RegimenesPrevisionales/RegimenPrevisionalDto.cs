@@ -1,6 +1,6 @@
-﻿namespace Domain
+﻿namespace Application.Mantenedores.Dtos.RegimenesPrevisionales
 {
-    public class RegimenPrevisional
+    public class RegimenPrevisionalDto
     {
         public int IdRegimen { get; set; }
 
@@ -13,10 +13,6 @@
         public decimal Aporte { get; set; }   // siempre tiene valor (10/13 en tus datos)
         public decimal Total { get; set; }    // siempre tiene valor (13, 12.84, etc.)
         public decimal? Tope { get; set; }
-
         public int Estado { get; set; }
-
-        // Relaciones
-        public ICollection<Trabajador> Trabajadores { get; set; } = new List<Trabajador>();
     }
 }

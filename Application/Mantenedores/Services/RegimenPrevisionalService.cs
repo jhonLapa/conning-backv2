@@ -1,10 +1,8 @@
 ﻿using Application.Exceptions;
-using Application.Mantenedores.Dtos.Afectacions;
 using Application.Mantenedores.Dtos.RegimenesPrevisionales;
 using Application.Mantenedores.Services.Interfaces;
 using AutoMapper;
 using Domain;
-using Infraestructure.Repositories;
 using Infraestructure.Repositories.Interfaces;
 
 namespace Application.Mantenedores.Services
@@ -14,9 +12,9 @@ namespace Application.Mantenedores.Services
         private readonly IRegimenPrevisionalRepositorio _regimenPrevisionalRepositorio;
         private readonly IMapper _mapper;
 
-        public RegimenPrevisionalService(IRegimenPrevisionalRepositorio RegimenPrevisionalRepositorio, IMapper mapper)
+        public RegimenPrevisionalService(IRegimenPrevisionalRepositorio AfectacionRepositorio, IMapper mapper)
         {
-            _regimenPrevisionalRepositorio = RegimenPrevisionalRepositorio;
+            _regimenPrevisionalRepositorio = AfectacionRepositorio;
             _mapper = mapper;
         }
 
@@ -28,12 +26,11 @@ namespace Application.Mantenedores.Services
 
             return new PaginadoResponse<RegimenPrevisionalDto>(data, response.Meta);
         }
+
         public async Task<OperationResult<RegimenPrevisionalDto>> CreateAsync(RegimenPrevisionalSaveDto saveDto)
         {
             var regimenPrevisional = _mapper.Map<RegimenPrevisional>(saveDto);
-            regimenPrevisional.FechaCreacion = DateTime.Now;
-            regimenPrevisional.IdUsuarioCreacion = 1;
-            regimenPrevisional.Estado = 1;
+             regimenPrevisional.Estado = 1;
 
             await _regimenPrevisionalRepositorio.SaveAsync(regimenPrevisional);
 
@@ -47,13 +44,9 @@ namespace Application.Mantenedores.Services
 
         public async Task<OperationResult<RegimenPrevisionalDto>> DisabledAsync(int id)
         {
-            var regimenPrevisional = await _regimenPrevisionalRepositorio.FindByIdAsync(id);
-
-            if (regimenPrevisional == null) throw new NotFoundCoreException("Registro no encontrado con ese Id");
-
+            
             regimenPrevisional.Estado = regimenPrevisional.Estado == 1 ? 0 : 1;
-            regimenPrevisional.FechaModificacion = DateTime.Now;
-
+ 
             await _regimenPrevisionalRepositorio.SaveAsync(regimenPrevisional);
 
             return new OperationResult<RegimenPrevisionalDto>()
@@ -73,8 +66,6 @@ namespace Application.Mantenedores.Services
 
             if (regimenPrevisional == null) throw new NotFoundCoreException("Registro no encontrado con ese id");
 
-            regimenPrevisional.FechaModificacion = DateTime.Now;
-            regimenPrevisional.IdUsuarioModificacion = 1;
 
             _mapper.Map(saveDto, regimenPrevisional);
 

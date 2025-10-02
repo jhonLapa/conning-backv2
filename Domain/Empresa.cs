@@ -24,7 +24,5 @@
         public DateTime? FechaModificacion { get; set; }
         public int? IdUsuarioModificacion { get; set; }
 
-        // 🔗 Relaciones
-        public ICollection<ConfigAfectacion> ConfigAfectaciones { get; set; } = new HashSet<ConfigAfectacion>();
     }
 }
