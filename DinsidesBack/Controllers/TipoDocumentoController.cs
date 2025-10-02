@@ -1,9 +1,8 @@
 ﻿using Application.Mantenedores.Dtos.TiposDocumento;
+using Application.Mantenedores.Services;
 using Application.Mantenedores.Services.Interfaces;
-using Application.Usuarios.Dto;
 using Domain;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
@@ -65,5 +64,28 @@ namespace DinsidesBack.Controllers
             return TypedResults.BadRequest();
         }
 
+
+        [HttpGet("BusquedaPaginado")]
+        [AllowAnonymous]
+        public async Task<Results<BadRequest, Ok<PaginadoResponse<TipoDocumentoDto>>>> BusquedaPaginado([FromQuery] PaginationRequest dto)
+        {
+            var response = await _documentoServices.BusquedaPaginado(dto);
+
+            if (response != null) return TypedResults.Ok(response);
+
+            return TypedResults.BadRequest();
+        }
+
+        [HttpGet("Select")]
+        [AllowAnonymous]
+        public async Task<Results<BadRequest, Ok<IReadOnlyList<TipoDocumentoSelectDto>>>> Select()
+        {
+
+            var response = await _documentoServices.SelectActivo();
+
+            if (response != null) return TypedResults.Ok(response);
+
+            return TypedResults.BadRequest();
+        }
     }
 }

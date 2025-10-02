@@ -7,5 +7,7 @@ namespace Application.Mantenedores.Services.Interfaces
     public interface IRegimenPrevisionalService : ICrudCoreService<RegimenPrevisionalDto, RegimenPrevisionalSaveDto, int>
     {
         Task<PaginadoResponse<RegimenPrevisionalDto>> BusquedaPaginado(PaginationRequest dto);
+        Task<IReadOnlyList<RegimenPrevisionalSelectDto>> SelectActivo();
+
     }
 }

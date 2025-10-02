@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Domain;
+using Infraestructure.Core.Repositories.Interfaces;
 
 namespace Infraestructure.Repositories.Interfaces
 {
-    internal interface IClienteRepositorio
+    public interface IClienteRepositorio : ICrudCoreRespository<Cliente, int>
     {
+        Task<PaginadoResponse<Cliente>> BusquedaPaginado(PaginationRequest dto);
+        Task<IReadOnlyList<Cliente>> SelectActivo();
+
     }
 }

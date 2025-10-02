@@ -1,8 +1,10 @@
 ﻿using Application.Exceptions;
 using Application.Mantenedores.Dtos.TiposComprobantes;
+using Application.Mantenedores.Dtos.TiposDocumento;
 using Application.Mantenedores.Services.Interfaces;
 using AutoMapper;
 using Domain;
+using Infraestructure.Repositories;
 using Infraestructure.Repositories.Interfaces;
 
 namespace Application.Mantenedores.Services
@@ -98,6 +100,13 @@ namespace Application.Mantenedores.Services
             if (tipoComprobante == null) throw new NotFoundCoreException("Registro no encontrado con ese id");
 
             return _mapper.Map<TipoComprobanteDto>(tipoComprobante);
+        }
+
+        public async Task<IReadOnlyList<TipoComprobanteSelectDto>> SelectActivo()
+        {
+            var response = await _tipoComprobanteRepositorio.FindAllAsync();
+
+            return _mapper.Map<IReadOnlyList<TipoComprobanteSelectDto>>(response);
         }
     }
 }

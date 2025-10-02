@@ -73,7 +73,15 @@ namespace Infraestructure.Repositories
 
             return response;
         }
-    
+
+        public async Task<IReadOnlyList<RegimenPrevisional>> SelectActivo()
+        {
+            return await _context.Set<RegimenPrevisional>()
+                                 .AsNoTracking()
+                                 .Where(a => a.Estado == 1)
+                                 .ToListAsync();
+        }
+
     }
 }
 

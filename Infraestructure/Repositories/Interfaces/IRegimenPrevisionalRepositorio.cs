@@ -6,5 +6,7 @@ namespace Infraestructure.Repositories.Interfaces
     public interface IRegimenPrevisionalRepositorio : ICrudCoreRespository<RegimenPrevisional, int>
     {
         Task<PaginadoResponse<RegimenPrevisional>> BusquedaPaginado(PaginationRequest dto);
+        Task<IReadOnlyList<RegimenPrevisional>> SelectActivo();
+
     }
 }

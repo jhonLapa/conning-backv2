@@ -4,6 +4,7 @@ using Application.Mantenedores.Dtos.Categorias;
 using Application.Mantenedores.Services.Interfaces;
 using AutoMapper;
 using Domain;
+using Infraestructure.Repositories;
 using Infraestructure.Repositories.Interfaces;
 
 namespace Application.Mantenedores.Services
@@ -18,6 +19,15 @@ namespace Application.Mantenedores.Services
         {
             _categoryRepositorio = CategoryRepositorio;
             _mapper = mapper;
+        }
+
+        public async Task<PaginadoResponse<CategoriaDto>> BusquedaPaginado(PaginationRequest dto)
+        {
+            var response = await _categoryRepositorio.BusquedaPaginado(dto);
+
+            var data = _mapper.Map<ICollection<CategoriaDto>>(response.Data);
+
+            return new PaginadoResponse<CategoriaDto>(data, response.Meta);
         }
 
         public async Task<OperationResult<CategoriaDto>> CreateAsync(CategoriaSaveDto saveDto)
@@ -91,6 +101,13 @@ namespace Application.Mantenedores.Services
             if (response == null) throw new NotFoundCoreException("No Existe Registro Con ese Id");
 
             return _mapper.Map<CategoriaDto>(response);
+        }
+
+        public async Task<IReadOnlyList<CategoriaSelectDto>> SelectActivo()
+        {
+            var response = await _categoryRepositorio.FindAllAsync();
+
+            return _mapper.Map<IReadOnlyList<CategoriaSelectDto>>(response);
         }
     }
 }

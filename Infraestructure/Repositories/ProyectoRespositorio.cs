@@ -10,7 +10,10 @@ namespace Infraestructure.Repositories
     {
         public async Task<PaginadoResponse<Proyecto>> BusquedaPaginado(PaginationRequest dto)
         {
-            var contex = _context.Set<Proyecto>().AsQueryable();
+
+            var contex = _context.Set<Proyecto>()
+                 .Include(c => c.Cliente)
+                 .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(dto.Sort))
             {
@@ -67,6 +70,32 @@ namespace Infraestructure.Repositories
             PaginadoResponse<Proyecto> response = new(data, meta);
 
             return response;
+        }
+
+        public async Task<IReadOnlyList<Proyecto>> SelectActivo()
+        {
+            return await _context.Set<Proyecto>()
+                                 .AsNoTracking()
+                                 .Where(a => a.Estado == 1)
+                                 .ToListAsync();
+        }
+
+        public async override Task<Proyecto?> FindByIdAsync(int id)
+        {
+            var response = await _context.Set<Proyecto>()
+                .Include(x => x.Cliente)
+                .FirstOrDefaultAsync(x => x.IdCliente == id);
+
+            return response;
+        }
+
+
+        public async override Task<IReadOnlyList<Proyecto>> FindAllAsync()
+        {
+            return await _context.Set<Proyecto>()
+                                 .Include(c => c.Cliente)
+                                 .AsNoTracking()
+                                 .ToListAsync();
         }
 
     }

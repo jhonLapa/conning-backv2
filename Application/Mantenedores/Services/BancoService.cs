@@ -3,6 +3,7 @@ using Application.Mantenedores.Dtos.Bancos;
 using Application.Mantenedores.Services.Interfaces;
 using AutoMapper;
 using Domain;
+using Infraestructure.Repositories;
 using Infraestructure.Repositories.Interfaces;
 
 namespace Application.Mantenedores.Services
@@ -99,6 +100,13 @@ namespace Application.Mantenedores.Services
             if (bank == null) throw new NotFoundCoreException("Registro no encontrado con ese id");
 
             return _mapper.Map<BancoDto>(bank);
+        }
+
+        public async Task<IReadOnlyList<BancoSelectDto>> SelectActivo()
+        {
+            var response = await _bankRepositorio.FindAllAsync();
+
+            return _mapper.Map<IReadOnlyList<BancoSelectDto>>(response);
         }
     }
 }

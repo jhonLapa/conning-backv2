@@ -70,5 +70,13 @@ namespace Infraestructure.Repositories
             return response;
         }
 
+        public async Task<IReadOnlyList<AportesEmpleador>> SelectActivo()
+        {
+            return await _context.Set<AportesEmpleador>()
+                                 .AsNoTracking()
+                                 .Where(a => a.Estado == 1)
+                                 .ToListAsync();
+        }
+
     }
 }

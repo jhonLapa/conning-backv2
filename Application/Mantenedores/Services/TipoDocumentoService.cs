@@ -3,6 +3,7 @@ using Application.Mantenedores.Dtos.TiposDocumento;
 using Application.Mantenedores.Services.Interfaces;
 using AutoMapper;
 using Domain;
+using Infraestructure.Repositories;
 using Infraestructure.Repositories.Interfaces;
 
 namespace Application.Mantenedores.Services
@@ -16,6 +17,15 @@ namespace Application.Mantenedores.Services
         {
             _documentoRepositorio = documentoRepositorio;
             _mapper = mapper;
+        }
+
+        public async Task<PaginadoResponse<TipoDocumentoDto>> BusquedaPaginado(PaginationRequest dto)
+        {
+            var response = await _documentoRepositorio.BusquedaPaginado(dto);
+
+            var data = _mapper.Map<ICollection<TipoDocumentoDto>>(response.Data);
+
+            return new PaginadoResponse<TipoDocumentoDto>(data, response.Meta);
         }
 
         public async Task<OperationResult<TipoDocumentoDto>> CreateAsync(TipoDocumentoSaveDto saveDto)
@@ -84,6 +94,13 @@ namespace Application.Mantenedores.Services
             var response = await _documentoRepositorio.FindByIdAsync(id);
 
             return _mapper.Map<TipoDocumentoDto>(response);
+        }
+
+        public async Task<IReadOnlyList<TipoDocumentoSelectDto>> SelectActivo()
+        {
+            var response = await _documentoRepositorio.FindAllAsync();
+
+            return _mapper.Map<IReadOnlyList<TipoDocumentoSelectDto>>(response);
         }
     }
 }

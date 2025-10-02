@@ -3,6 +3,7 @@ using Application.Mantenedores.Dtos.Proyectos;
 using Application.Mantenedores.Services.Interfaces;
 using AutoMapper;
 using Domain;
+using Infraestructure.Repositories;
 using Infraestructure.Repositories.Interfaces;
 
 namespace Application.Mantenedores.Services
@@ -17,6 +18,16 @@ namespace Application.Mantenedores.Services
             _projectRepositorio = ProjectRepositorio;
             _mapper = mapper;
         }
+
+        public async Task<PaginadoResponse<ProyectoDto>> BusquedaPaginado(PaginationRequest dto)
+        {
+            var response = await _projectRepositorio.BusquedaPaginado(dto);
+
+            var data = _mapper.Map<ICollection<ProyectoDto>>(response.Data);
+
+            return new PaginadoResponse<ProyectoDto>(data, response.Meta);
+        }
+
 
         public async Task<OperationResult<ProyectoDto>> CreateAsync(ProyectoSaveDto saveDto)
         {
@@ -89,6 +100,13 @@ namespace Application.Mantenedores.Services
             if (project == null) throw new NotFoundCoreException("Registro no encontrado con ese id");
 
             return _mapper.Map<ProyectoDto>(project);
+        }
+
+        public async Task<IReadOnlyList<ProyectoSelectDto>> SelectActivo()
+        {
+            var response = await _projectRepositorio.FindAllAsync();
+
+            return _mapper.Map<IReadOnlyList<ProyectoSelectDto>>(response);
         }
     }
 }

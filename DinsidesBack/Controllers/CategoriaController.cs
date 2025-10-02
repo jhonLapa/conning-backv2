@@ -1,5 +1,6 @@
 ﻿
 using Application.Mantenedores.Dtos.Categorias;
+using Application.Mantenedores.Services;
 using Application.Mantenedores.Services.Interfaces;
 using Domain;
 using Microsoft.AspNetCore.Authorization;
@@ -12,15 +13,15 @@ namespace DinsidesBack.Controllers
     [ApiController]
     public class CategoriaController : ControllerBase
     {
-        private readonly ICategoriaService _banckService;
-        public CategoriaController(ICategoriaService banckService) => _banckService = banckService;
+        private readonly ICategoriaService _categoriaService;
+        public CategoriaController(ICategoriaService banckService) => _categoriaService = banckService;
 
         [HttpGet]
         [AllowAnonymous]
         public async Task<Results<BadRequest, Ok<IReadOnlyList<CategoriaDto>>>> Get()
         {
 
-            var response = await _banckService.FindAllAsync();
+            var response = await _categoriaService.FindAllAsync();
 
             if (response != null) return TypedResults.Ok(response);
 
@@ -31,7 +32,7 @@ namespace DinsidesBack.Controllers
         [AllowAnonymous]
         public async Task<Results<BadRequest, Ok<CategoriaDto>>> Get(int id)
         {
-            var response = await _banckService.FindByIdAsync(id);
+            var response = await _categoriaService.FindByIdAsync(id);
 
             if (response != null) return TypedResults.Ok(response);
 
@@ -44,7 +45,7 @@ namespace DinsidesBack.Controllers
         public async Task<Results<BadRequest, Ok<OperationResult<CategoriaDto>>>> Post([FromBody] CategoriaSaveDto request)
         {
 
-            var response = await _banckService.CreateAsync(request);
+            var response = await _categoriaService.CreateAsync(request);
 
             if (response != null) return TypedResults.Ok(response);
 
@@ -56,7 +57,31 @@ namespace DinsidesBack.Controllers
         public async Task<Results<BadRequest, Ok<OperationResult<CategoriaDto>>>> Put(int id, [FromBody] CategoriaSaveDto request)
         {
 
-            var response = await _banckService.EditAsync(id, request);
+            var response = await _categoriaService.EditAsync(id, request);
+
+            if (response != null) return TypedResults.Ok(response);
+
+            return TypedResults.BadRequest();
+        }
+
+        [HttpGet("BusquedaPaginado")]
+        [AllowAnonymous]
+        public async Task<Results<BadRequest, Ok<PaginadoResponse<CategoriaDto>>>> BusquedaPaginado([FromQuery] PaginationRequest dto)
+        {
+            var response = await _categoriaService.BusquedaPaginado(dto);
+
+            if (response != null) return TypedResults.Ok(response);
+
+            return TypedResults.BadRequest();
+        }
+
+
+        [HttpGet("Select")]
+        [AllowAnonymous]
+        public async Task<Results<BadRequest, Ok<IReadOnlyList<CategoriaSelectDto>>>> SelectActivo()
+        {
+
+            var response = await _categoriaService.SelectActivo();
 
             if (response != null) return TypedResults.Ok(response);
 

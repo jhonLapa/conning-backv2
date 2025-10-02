@@ -7,5 +7,7 @@ namespace Application.Mantenedores.Services.Interfaces
     public interface IMovimientoEspecialService : ICrudCoreService<MovimientoEspecialDto, MovimientoEspecialSaveDto, int>
     {
         Task<PaginadoResponse<MovimientoEspecialDto>> BusquedaPaginado(PaginationRequest dto);
+        Task<IReadOnlyList<MovimientoEspecialSelectDto>> SelectActivo();
+
     }
 }

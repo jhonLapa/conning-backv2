@@ -6,5 +6,6 @@ namespace Infraestructure.Repositories.Interfaces
     public interface IAportesEmpleadorRepositorio : ICrudCoreRespository<AportesEmpleador, int>
     {
         Task<PaginadoResponse<AportesEmpleador>> BusquedaPaginado(PaginationRequest dto);
+        Task<IReadOnlyList<AportesEmpleador>> SelectActivo();
     }
 }

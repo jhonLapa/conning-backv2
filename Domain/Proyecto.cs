@@ -1,4 +1,6 @@
-﻿namespace Domain
+﻿using System.Text.Json.Serialization;
+
+namespace Domain
 {
     public class Proyecto
     {
@@ -16,6 +18,7 @@
         public string? UsuarioModificacion { get; set; }
 
         // 🔗 Relaciones
+        [JsonIgnore]   // evita el ciclo
         public Cliente Cliente { get; set; } = null!;
         public ICollection<TrabajadorProyecto> TrabajadoresProyectos { get; set; } = new List<TrabajadorProyecto>();
     }

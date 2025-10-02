@@ -99,5 +99,12 @@ namespace Application.Mantenedores.Services
 
             return _mapper.Map<RegimenPrevisionalDto>(regimenPrevisional);
         }
+
+        public async Task<IReadOnlyList<RegimenPrevisionalSelectDto>> SelectActivo()
+        {
+            var response = await _regimenPrevisionalRepositorio.FindAllAsync();
+
+            return _mapper.Map<IReadOnlyList<RegimenPrevisionalSelectDto>>(response);
+        }
     }
 }

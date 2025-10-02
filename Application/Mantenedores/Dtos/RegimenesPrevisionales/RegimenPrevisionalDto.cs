@@ -3,7 +3,6 @@
     public class RegimenPrevisionalDto
     {
         public int IdRegimen { get; set; }
-
         public string? Nombre { get; set; }
         public string? Tipo { get; set; }
 

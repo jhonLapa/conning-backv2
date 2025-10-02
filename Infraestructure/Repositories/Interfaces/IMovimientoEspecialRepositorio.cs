@@ -6,5 +6,7 @@ namespace Infraestructure.Repositories.Interfaces
     public interface IMovimientoEspecialRepositorio : ICrudCoreRespository<MovimientoEspecial, int>
     {
         Task<PaginadoResponse<MovimientoEspecial>> BusquedaPaginado(PaginationRequest dto);
+        Task<IReadOnlyList<MovimientoEspecial>> SelectActivo();
+
     }
 }

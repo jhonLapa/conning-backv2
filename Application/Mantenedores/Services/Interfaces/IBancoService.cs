@@ -7,5 +7,6 @@ namespace Application.Mantenedores.Services.Interfaces
     public interface IBancoService : ICrudCoreService<BancoDto, BancoSaveDto , int>
     {
         Task<PaginadoResponse<BancoDto>> BusquedaPaginado(PaginationRequest dto);
+        Task<IReadOnlyList<BancoSelectDto>> SelectActivo();
     }
 }

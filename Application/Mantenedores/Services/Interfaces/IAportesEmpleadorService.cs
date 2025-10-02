@@ -7,5 +7,7 @@ namespace Application.Mantenedores.Services.Interfaces
     public interface IAportesEmpleadorService : ICrudCoreService<AportesEmpleadorDto, AportesEmpleadorSaveDto, int>
     {
         Task<PaginadoResponse<AportesEmpleadorDto>> BusquedaPaginado(PaginationRequest dto);
+        Task<IReadOnlyList<AportesEmpleadorSelectDto>> SelectActivo();
+
     }
 }

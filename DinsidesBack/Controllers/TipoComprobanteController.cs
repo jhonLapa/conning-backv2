@@ -1,4 +1,5 @@
 ﻿using Application.Mantenedores.Dtos.TiposComprobantes;
+using Application.Mantenedores.Services;
 using Application.Mantenedores.Services.Interfaces;
 using Domain;
 using Microsoft.AspNetCore.Authorization;
@@ -84,5 +85,18 @@ namespace DinsidesBack.Controllers
             return TypedResults.BadRequest();
 
         }
+
+        [HttpGet("Select")]
+        [AllowAnonymous]
+        public async Task<Results<BadRequest, Ok<IReadOnlyList<TipoComprobanteSelectDto>>>> SelectActivo()
+        {
+
+            var response = await _tipoComprobanteService.SelectActivo();
+
+            if (response != null) return TypedResults.Ok(response);
+
+            return TypedResults.BadRequest();
+        }
+
     }
 }

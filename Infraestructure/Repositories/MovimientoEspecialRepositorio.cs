@@ -74,6 +74,12 @@ namespace Infraestructure.Repositories
 
             return response;
         }
-
+        public async Task<IReadOnlyList<MovimientoEspecial>> SelectActivo()
+        {
+            return await _context.Set<MovimientoEspecial>()
+                                 .AsNoTracking()
+                                 .Where(a => a.Estado == 1)
+                                 .ToListAsync();
+        }
     }
 }

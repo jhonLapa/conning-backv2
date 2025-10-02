@@ -68,5 +68,13 @@ namespace Infraestructure.Repositories
             return response;
         }
 
+        public async Task<IReadOnlyList<TipoDocumento>> SelectActivo()
+        {
+            return await _context.Set<TipoDocumento>()
+                                 .AsNoTracking()
+                                 .Where(a => a.Estado == 1)
+                                 .ToListAsync();
+        }
+
     }
 }

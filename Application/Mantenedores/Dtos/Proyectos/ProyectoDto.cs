@@ -1,4 +1,6 @@
-﻿namespace Application.Mantenedores.Dtos.Proyectos
+﻿using Domain;
+
+namespace Application.Mantenedores.Dtos.Proyectos
 {
     public class ProyectoDto
     {
@@ -14,6 +16,7 @@
         public string? UsuarioCreacion { get; set; }
         public DateTime? FechaModificacion { get; set; }
         public string? UsuarioModificacion { get; set; }
+        public Cliente Cliente { get; set; } = null!;
 
     }
 }

@@ -1,6 +1,8 @@
-﻿namespace Domain
+﻿using Domain;
+
+namespace Application.Mantenedores.Dtos.Clientes
 {
-    public class Cliente
+    public class ClienteDto
     {
         public int IdCliente { get; set; }
         public string NombreCompleto { get; set; }
@@ -16,9 +18,5 @@
         public string? UsuarioModificacion { get; set; }
 
         public TipoDocumento TipoDocumento { get; set; } = null!;
-        public ICollection<Venta> Ventas { get; set; } = new List<Venta>();
-        public ICollection<Proyecto> Proyectos { get; set; } = new List<Proyecto>();
-
-
     }
 }

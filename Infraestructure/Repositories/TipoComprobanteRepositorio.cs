@@ -71,6 +71,14 @@ namespace Infraestructure.Repositories
 
             return response;
         }
+        public async Task<IReadOnlyList<TipoComprobante>> SelectActivo()
+        {
+            return await _context.Set<TipoComprobante>()
+                                 .AsNoTracking()
+                                 .Where(a => a.Estado == 1)
+                                 .ToListAsync();
+        }
+
 
     }
 }

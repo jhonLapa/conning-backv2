@@ -7,6 +7,7 @@ namespace Infraestructure.Repositories.Interfaces
     public interface ICategoriaRepositorio : ICrudCoreRespository<Categoria, int>
     {
         Task<PaginadoResponse<Categoria>> BusquedaPaginado(PaginationRequest dto);
+        Task<IReadOnlyList<Categoria>> SelectActivo();
 
     }
 }

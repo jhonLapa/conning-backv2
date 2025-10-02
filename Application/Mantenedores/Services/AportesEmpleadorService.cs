@@ -96,5 +96,12 @@ namespace Application.Mantenedores.Services
 
             return _mapper.Map<AportesEmpleadorDto>(aportesEmpleador);
         }
+
+        public async Task<IReadOnlyList<AportesEmpleadorSelectDto>> SelectActivo()
+        {
+            var response = await _aportesEmpleadorRepositorio.SelectActivo();
+
+            return _mapper.Map<IReadOnlyList<AportesEmpleadorSelectDto>>(response);
+        }
     }
 }

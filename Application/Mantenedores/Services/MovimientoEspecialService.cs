@@ -98,5 +98,12 @@ namespace Application.Mantenedores.Services
 
             return _mapper.Map<MovimientoEspecialDto>(movimientoEspecial);
         }
+
+        public async Task<IReadOnlyList<MovimientoEspecialSelectDto>> SelectActivo()
+        {
+            var response = await _movimientoEspecialRepositorio.FindAllAsync();
+
+            return _mapper.Map<IReadOnlyList<MovimientoEspecialSelectDto>>(response);
+        }
     }
 }

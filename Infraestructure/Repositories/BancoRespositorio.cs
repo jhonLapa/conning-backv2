@@ -71,5 +71,12 @@ namespace Infraestructure.Repositories
             return response;
         }
 
+        public async Task<IReadOnlyList<Banco>> SelectActivo()
+        {
+            return await _context.Set<Banco>()
+                                 .AsNoTracking()
+                                 .Where(a => a.Estado == 1)
+                                 .ToListAsync();
+        }
     }
 }

@@ -84,5 +84,19 @@ namespace DinsidesBack.Controllers
             return TypedResults.BadRequest();
 
         }
+
+        [HttpGet("Select")]
+        [AllowAnonymous]
+        public async Task<Results<BadRequest, Ok<IReadOnlyList<AportesEmpleadorSelectDto>>>> SelectActivo()
+        {
+
+            var response = await _aportesEmpleadorService.SelectActivo();
+
+            if (response != null) return TypedResults.Ok(response);
+
+            return TypedResults.BadRequest();
+        }
+
+
     }
 }

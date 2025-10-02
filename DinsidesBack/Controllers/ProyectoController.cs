@@ -63,5 +63,28 @@ namespace DinsidesBack.Controllers
             return TypedResults.BadRequest();
         }
 
+        [HttpGet("BusquedaPaginado")]
+        [AllowAnonymous]
+        public async Task<Results<BadRequest, Ok<PaginadoResponse<ProyectoDto>>>> BusquedaPaginado([FromQuery] PaginationRequest dto)
+        {
+            var response = await _proyectoService.BusquedaPaginado(dto);
+
+            if (response != null) return TypedResults.Ok(response);
+
+            return TypedResults.BadRequest();
+        }
+
+        [HttpGet("Select")]
+        [AllowAnonymous]
+        public async Task<Results<BadRequest, Ok<IReadOnlyList<ProyectoSelectDto>>>> SelectActivo()
+        {
+
+            var response = await _proyectoService.SelectActivo();
+
+            if (response != null) return TypedResults.Ok(response);
+
+            return TypedResults.BadRequest();
+        }
+
     }
 }

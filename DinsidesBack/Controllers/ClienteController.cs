@@ -1,5 +1,4 @@
-﻿using Application.Mantenedores.Dtos.Bancos;
-using Application.Mantenedores.Services;
+﻿using Application.Mantenedores.Dtos.Clientes;
 using Application.Mantenedores.Services.Interfaces;
 using Domain;
 using Microsoft.AspNetCore.Authorization;
@@ -10,17 +9,17 @@ namespace DinsidesBack.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class BancoController : ControllerBase
+    public class ClienteController : ControllerBase
     {
-        private readonly IBancoService _bankService;
-        public BancoController(IBancoService bankService) => _bankService = bankService;
+        private readonly IClienteService _clienteService;
+        public ClienteController(IClienteService clienteService) => _clienteService = clienteService;
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<Results<BadRequest, Ok<IReadOnlyList<BancoDto>>>> Get()
+        public async Task<Results<BadRequest, Ok<IReadOnlyList<ClienteDto>>>> Get()
         {
 
-            var response = await _bankService.FindAllAsync();
+            var response = await _clienteService.FindAllAsync();
 
             if (response != null) return TypedResults.Ok(response);
 
@@ -29,9 +28,9 @@ namespace DinsidesBack.Controllers
 
         [HttpGet("{id}")]
         [AllowAnonymous]
-        public async Task<Results<BadRequest, Ok<BancoDto>>> Get(int id)
+        public async Task<Results<BadRequest, Ok<ClienteDto>>> Get(int id)
         {
-            var response = await _bankService.FindByIdAsync(id);
+            var response = await _clienteService.FindByIdAsync(id);
 
             if (response != null) return TypedResults.Ok(response);
 
@@ -41,10 +40,10 @@ namespace DinsidesBack.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<Results<BadRequest, Ok<OperationResult<BancoDto>>>> Post([FromBody] BancoSaveDto request)
+        public async Task<Results<BadRequest, Ok<OperationResult<ClienteDto>>>> Post([FromBody] ClienteSaveDto request)
         {
 
-            var response = await _bankService.CreateAsync(request);
+            var response = await _clienteService.CreateAsync(request);
 
             if (response != null) return TypedResults.Ok(response);
 
@@ -53,21 +52,20 @@ namespace DinsidesBack.Controllers
 
         [HttpPut("{id}")]
         [AllowAnonymous]
-        public async Task<Results<BadRequest, Ok<OperationResult<BancoDto>>>> Put(int id, [FromBody] BancoSaveDto request)
+        public async Task<Results<BadRequest, Ok<OperationResult<ClienteDto>>>> Put(int id, [FromBody] ClienteSaveDto request)
         {
 
-            var response = await _bankService.EditAsync(id, request);
+            var response = await _clienteService.EditAsync(id, request);
 
             if (response != null) return TypedResults.Ok(response);
 
             return TypedResults.BadRequest();
         }
-
         [HttpGet("BusquedaPaginado")]
         [AllowAnonymous]
-        public async Task<Results<BadRequest, Ok<PaginadoResponse<BancoDto>>>> BusquedaPaginado([FromQuery] PaginationRequest dto)
+        public async Task<Results<BadRequest, Ok<PaginadoResponse<ClienteDto>>>> BusquedaPaginado([FromQuery] PaginationRequest dto)
         {
-            var response = await _bankService.BusquedaPaginado(dto);
+            var response = await _clienteService.BusquedaPaginado(dto);
 
             if (response != null) return TypedResults.Ok(response);
 
@@ -76,26 +74,28 @@ namespace DinsidesBack.Controllers
 
         [HttpDelete("{id}")]
         [AllowAnonymous]
-        public async Task<Results<BadRequest, Ok<OperationResult<BancoDto>>>> Delete(int id)
+        public async Task<Results<BadRequest, Ok<OperationResult<ClienteDto>>>> Delete(int id)
         {
-            var response = await _bankService.DisabledAsync(id);
+            var response = await _clienteService.DisabledAsync(id);
 
             if (response != null) return TypedResults.Ok(response);
 
             return TypedResults.BadRequest();
 
         }
+
 
         [HttpGet("Select")]
         [AllowAnonymous]
-        public async Task<Results<BadRequest, Ok<IReadOnlyList<BancoSelectDto>>>> SelectActivo()
+        public async Task<Results<BadRequest, Ok<IReadOnlyList<ClienteSelectDto>>>> SelectActivo()
         {
 
-            var response = await _bankService.SelectActivo();
+            var response = await _clienteService.SelectActivo();
 
             if (response != null) return TypedResults.Ok(response);
 
             return TypedResults.BadRequest();
         }
+
     }
 }
