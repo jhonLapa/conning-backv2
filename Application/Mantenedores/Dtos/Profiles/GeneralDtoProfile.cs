@@ -67,8 +67,6 @@ namespace Application.Mantenedores.Dtos.Profiles
             CreateMap<Cliente, ClienteDto>().ReverseMap();
             CreateMap<Cliente, ClienteSaveDto>().ReverseMap();
             CreateMap<Cliente, ClienteSelectDto>().ReverseMap();
-
-
         }
     }
 }
