@@ -1,4 +1,4 @@
-﻿using Domain;
+﻿using Application.Mantenedores.Dtos.TiposDocumento;
 
 namespace Application.Mantenedores.Dtos.Clientes
 {
@@ -17,6 +17,6 @@ namespace Application.Mantenedores.Dtos.Clientes
         public string? UsuarioCreacion { get; set; }
         public string? UsuarioModificacion { get; set; }
 
-        public TipoDocumento TipoDocumento { get; set; } = null!;
+        public TipoDocumentoDto TipoDocumento { get; set; } = null!;
     }
 }

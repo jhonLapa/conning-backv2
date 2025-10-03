@@ -1,4 +1,6 @@
-﻿namespace Application.PagoVentaCreditos.Dto
+﻿using Application.Ventas.Dto;
+
+namespace Application.PagoVentaCreditos.Dto
 {
     public class PagoVentaCreditoDto
     {
@@ -13,7 +15,5 @@
         public DateTime FechaCreacion { get; set; }
         public string? UsuarioCreacion { get; set; }
 
-        // Relaciones
-        public Domain.Venta Venta { get; set; }
     }
 }

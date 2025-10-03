@@ -1,5 +1,4 @@
-﻿
-using Application.Ventas.Dto;
+﻿using Application.Ventas.Dto;
 using AutoMapper;
 
 namespace Application.Ventas.Dtos.Profiles
@@ -12,7 +11,13 @@ namespace Application.Ventas.Dtos.Profiles
             CreateMap<Domain.Venta, VentaDto>().ReverseMap();
             CreateMap<Domain.Venta, VentaSaveDto>().ReverseMap();
             CreateMap<Domain.Venta, VentaSelectDto>().ReverseMap();
+            CreateMap<Domain.Venta, VentaCompletoSaveDto>().ReverseMap();
 
+            // DetalleVenta <-> DetallesVentaSaveDto
+            CreateMap<Domain.DetalleVenta, DetallesVentaSaveDto>().ReverseMap();
+
+            // PagoVentaCredito <-> PagosVentaCreditoSaveDto
+            CreateMap<Domain.PagoVentaCredito, PagosVentaCreditoSaveDto>().ReverseMap();
         }
     }
 }

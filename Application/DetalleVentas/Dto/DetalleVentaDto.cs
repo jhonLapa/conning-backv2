@@ -1,4 +1,6 @@
-﻿namespace Application.DetalleVentas.Dto
+﻿using Application.Ventas.Dto;
+
+namespace Application.DetalleVentas.Dto
 {
     public class DetalleVentaDto
     {
@@ -11,7 +13,6 @@
         public decimal? Icbper { get; set; }
         public decimal? ValorTotal { get; set; }
 
-        // Relaciones
-        public Domain.Venta Venta { get; set; }
+
     }
 }

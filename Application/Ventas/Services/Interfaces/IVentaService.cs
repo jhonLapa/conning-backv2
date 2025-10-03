@@ -10,6 +10,6 @@ namespace Application.Ventas.Services.Interfaces
         Task<PaginadoResponse<VentaDto>> BusquedaPaginado(PaginationRequest dto);
         Task<OperationResult<List<VentaDto>>> FindByClienteIdAsync(int clienteId);
 
-
+        Task<OperationResult<VentaDto>> CreateWithDetailsAsync(VentaCompletoSaveDto saveDto);
     }
 }

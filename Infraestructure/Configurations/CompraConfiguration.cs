@@ -11,11 +11,39 @@ namespace Infraestructure.Configurations
             builder.ToTable("Compras");
             builder.HasKey(v => v.IdCompra);
 
-            builder.Property(v => v.Serie).HasMaxLength(20);
-            builder.Property(v => v.Numero).HasMaxLength(20);
-            builder.Property(v => v.FormaPago).HasMaxLength(50);
-            builder.Property(v => v.TipoMoneda).HasMaxLength(10);
+            builder.Property(v => v.Serie)
+                   .HasMaxLength(20)
+                   .IsRequired();
 
+            builder.Property(v => v.Numero)
+                   .HasMaxLength(20)
+                   .IsRequired();
+
+            builder.Property(v => v.FormaPago)
+                   .HasMaxLength(50);
+
+            builder.Property(v => v.TipoMoneda)
+                   .HasMaxLength(10)
+                   .IsRequired();
+
+            builder.Property(v => v.Observacion)
+                   .HasColumnType("TEXT");
+
+            // 👉 Fechas
+            builder.Property(v => v.FechaEmision)
+                   .HasColumnType("date")      // tu tabla está como DATE
+                   .IsRequired();
+
+            builder.Property(v => v.FechaCreacion)
+                   .HasColumnType("datetime")  // tu tabla está como DATETIME
+                   .IsRequired();
+
+            // 👉 Decimales
+            builder.Property(v => v.ImporteTotal)
+                   .HasPrecision(12, 2)        // coincide con la tabla
+                   .IsRequired();
+
+            // Relaciones
             builder.HasOne(v => v.Proveedor)
                    .WithMany(c => c.Compras)
                    .HasForeignKey(v => v.IdProveedor);

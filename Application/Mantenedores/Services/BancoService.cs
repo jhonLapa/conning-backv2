@@ -104,7 +104,7 @@ namespace Application.Mantenedores.Services
 
         public async Task<IReadOnlyList<BancoSelectDto>> SelectActivo()
         {
-            var response = await _bankRepositorio.FindAllAsync();
+            var response = await _bankRepositorio.SelectActivo();
 
             return _mapper.Map<IReadOnlyList<BancoSelectDto>>(response);
         }

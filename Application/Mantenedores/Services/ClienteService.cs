@@ -102,7 +102,7 @@ namespace Application.Mantenedores.Services
 
         public async Task<IReadOnlyList<ClienteSelectDto>> SelectActivo()
         {
-            var response = await _clienteRepositorio.FindAllAsync();
+            var response = await _clienteRepositorio.SelectActivo();
 
             return _mapper.Map<IReadOnlyList<ClienteSelectDto>>(response);
         }

@@ -123,6 +123,16 @@ namespace DinsidesBack.Controllers
 
         }
 
+        [HttpPost("RegistrarCompleto")]
+        [AllowAnonymous]
+        public async Task<Results<BadRequest, Ok<OperationResult<VentaDto>>>> PostCompleto([FromBody] VentaCompletoSaveDto request)
+        {
+            var response = await _ventaService.CreateWithDetailsAsync(request);
+
+            if (response != null) return TypedResults.Ok(response);
+
+            return TypedResults.BadRequest();
+        }
 
     }
 }

@@ -7,7 +7,7 @@
         public int IdTipoComprobante { get; set; }
         public string Serie { get; set; } = null!;
         public string Numero { get; set; } = null!;
-        public DateTime FechaEmision { get; set; }
+        public DateTime? FechaEmision { get; set; }
         public int IdCliente { get; set; }
         public string? FormaPago { get; set; }
         public string TipoMoneda { get; set; } = null!;

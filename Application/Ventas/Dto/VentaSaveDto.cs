@@ -5,7 +5,7 @@
         public int IdTipoComprobante { get; set; }
         public string Serie { get; set; } = null!;
         public string Numero { get; set; } = null!;
-        public DateTime FechaEmision { get; set; }
+        public DateTime? FechaEmision { get; set; }
         public int IdCliente { get; set; }
         public string? FormaPago { get; set; }
         public string TipoMoneda { get; set; } = null!;
@@ -25,7 +25,8 @@
         public decimal ImporteTotal { get; set; }
 
         // Detracción
-        public bool DetraccionAplica { get; set; }
+        public byte DetraccionAplica { get; set; }
+
         public decimal DetraccionPorcentaje { get; set; }
         public decimal DetraccionMonto { get; set; }
         public string? CuentaDetraccion { get; set; }
