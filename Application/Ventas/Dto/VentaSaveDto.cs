@@ -1,9 +1,7 @@
-﻿namespace Domain
+﻿namespace Application.Ventas.Dto
 {
-
-    public class Venta
+    public class VentaSaveDto
     {
-         public int IdVenta { get; set; }
         public int IdTipoComprobante { get; set; }
         public string Serie { get; set; } = null!;
         public string Numero { get; set; } = null!;
@@ -32,14 +30,5 @@
         public decimal DetraccionMonto { get; set; }
         public string? CuentaDetraccion { get; set; }
 
-        public int Estado { get; set; }
-        public DateTime FechaCreacion { get; set; }
-        public string? UsuarioCreacion { get; set; }
-
-        // 🔗 Relaciones
-        public Cliente Cliente { get; set; } = null!;
-        public TipoComprobante TipoComprobante { get; set; } = null!;
-        public ICollection<DetalleVenta> Detalles { get; set; }
-        public ICollection<PagoVentaCredito> PagosCredito { get; set; }
     }
 }

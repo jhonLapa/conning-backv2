@@ -1,4 +1,5 @@
-﻿using Application.Mantenedores.Dtos.TiposDocumento;
+﻿using Application.Mantenedores.Dtos.TiposComprobantes;
+using Application.Mantenedores.Dtos.TiposDocumento;
 using Application.Mantenedores.Services;
 using Application.Mantenedores.Services.Interfaces;
 using Domain;
@@ -74,6 +75,19 @@ namespace DinsidesBack.Controllers
             if (response != null) return TypedResults.Ok(response);
 
             return TypedResults.BadRequest();
+        }
+
+
+        [HttpDelete("{id}")]
+        [AllowAnonymous]
+        public async Task<Results<BadRequest, Ok<OperationResult<TipoDocumentoDto>>>> Delete(int id)
+        {
+            var response = await _documentoServices.DisabledAsync(id);
+
+            if (response != null) return TypedResults.Ok(response);
+
+            return TypedResults.BadRequest();
+
         }
 
         [HttpGet("SelectActivos")]

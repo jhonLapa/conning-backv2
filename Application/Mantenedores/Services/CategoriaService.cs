@@ -4,7 +4,6 @@ using Application.Mantenedores.Dtos.Categorias;
 using Application.Mantenedores.Services.Interfaces;
 using AutoMapper;
 using Domain;
-using Infraestructure.Repositories;
 using Infraestructure.Repositories.Interfaces;
 
 namespace Application.Mantenedores.Services

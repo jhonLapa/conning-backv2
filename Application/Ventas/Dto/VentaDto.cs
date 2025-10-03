@@ -1,9 +1,10 @@
-﻿namespace Domain
-{
+﻿using Domain;
 
-    public class Venta
+namespace Application.Ventas.Dto
+{
+    public class VentaDto
     {
-         public int IdVenta { get; set; }
+        public int IdVenta { get; set; }
         public int IdTipoComprobante { get; set; }
         public string Serie { get; set; } = null!;
         public string Numero { get; set; } = null!;
@@ -39,7 +40,5 @@
         // 🔗 Relaciones
         public Cliente Cliente { get; set; } = null!;
         public TipoComprobante TipoComprobante { get; set; } = null!;
-        public ICollection<DetalleVenta> Detalles { get; set; }
-        public ICollection<PagoVentaCredito> PagosCredito { get; set; }
     }
 }

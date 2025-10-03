@@ -1,5 +1,6 @@
 ﻿
 using Application.Mantenedores.Dtos.Categorias;
+using Application.Mantenedores.Dtos.TiposComprobantes;
 using Application.Mantenedores.Services;
 using Application.Mantenedores.Services.Interfaces;
 using Domain;
@@ -64,6 +65,19 @@ namespace DinsidesBack.Controllers
             return TypedResults.BadRequest();
         }
 
+
+        [HttpDelete("{id}")]
+        [AllowAnonymous]
+        public async Task<Results<BadRequest, Ok<OperationResult<CategoriaDto>>>> Delete(int id)
+        {
+            var response = await _categoriaService.DisabledAsync(id);
+
+            if (response != null) return TypedResults.Ok(response);
+
+            return TypedResults.BadRequest();
+
+        }
+
         [HttpGet("BusquedaPaginado")]
         [AllowAnonymous]
         public async Task<Results<BadRequest, Ok<PaginadoResponse<CategoriaDto>>>> BusquedaPaginado([FromQuery] PaginationRequest dto)
@@ -87,5 +101,10 @@ namespace DinsidesBack.Controllers
 
             return TypedResults.BadRequest();
         }
+
+
+
+
+
     }
 }
