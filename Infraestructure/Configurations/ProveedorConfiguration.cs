@@ -12,9 +12,23 @@ namespace Infraestructure.Configurations
 
             builder.HasKey(p => p.IdProveedor);
 
-            builder.Property(p => p.NombreCompleto).HasMaxLength(150).IsRequired();
-            builder.Property(p => p.NumeroDocumento).HasMaxLength(20);
+            builder.Property(p => p.NombreCompleto)
+                .HasMaxLength(150)
+                .IsRequired();
 
+            builder.Property(p => p.NumeroDocumento)
+                .HasMaxLength(20);
+
+            builder.Property(c => c.Direccion)
+                   .HasMaxLength(200);
+
+            builder.Property(c => c.Telefono)
+                   .HasMaxLength(20);
+
+            builder.Property(c => c.Email)
+                   .HasMaxLength(100);
+
+            // 🔗 Relación con TipoDocumento
             builder.HasOne(p => p.TipoDocumento)
                    .WithMany(t => t.Proveedores)
                    .HasForeignKey(p => p.TipoDocumentoId);

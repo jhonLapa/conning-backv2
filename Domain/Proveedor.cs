@@ -17,5 +17,7 @@
 
         // 🔗 Relaciones
         public TipoDocumento TipoDocumento { get; set; } = null!;
+
+        public ICollection<Compra> Compras { get; set; } = new List<Compra>();
     }
 }

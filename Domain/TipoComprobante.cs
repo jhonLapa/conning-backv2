@@ -11,5 +11,6 @@
 
         // Relaciones
         public ICollection<Venta> Ventas { get; set; }
+        public ICollection<Compra> Compras { get; set; }
     }
 }
