@@ -88,7 +88,7 @@ namespace Infraestructure.Repositories
             var response = await _context.Set<Compra>()
                 .Include(x => x.TipoComprobante)
                 .Include(x => x.Proveedor)
-                .FirstOrDefaultAsync(x => x.IdCompra == id);
+                .FirstOrDefaultAsync(x => x.IdProveedor == id);
 
             return response;
         }
@@ -97,9 +97,18 @@ namespace Infraestructure.Repositories
         public async override Task<IReadOnlyList<Compra>> FindAllAsync()
         {
             return await _context.Set<Compra>()
-                                 .Include(c => c.TipoComprobante)
                                  .Include(c => c.Proveedor)
+                                 .Include(c => c.TipoComprobante)                              
                                  .AsNoTracking()
+                                 .ToListAsync();
+        }
+
+        public async Task<List<Compra>> FindByProveedorIdAsync(int proveedorId)
+        {
+            return await _context.Set<Compra>()
+                                 .Where(v => v.IdProveedor == proveedorId)
+                                 .Include(v => v.Proveedor)
+                                 .Include(v => v.TipoComprobante)
                                  .ToListAsync();
         }
 

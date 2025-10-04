@@ -12,12 +12,28 @@
         public string FormaPago { get; set; }
         public string TipoMoneda { get; set; }
         public string Observacion { get; set; }
+
+        // Totales
+        public decimal SubTotal { get; set; }
+        public decimal Anticipos { get; set; }
+        public decimal Descuentos { get; set; }
+        public decimal ValorCompra { get; set; }
+        public decimal Isc { get; set; }
+        public decimal Igv { get; set; }
+        public decimal Icbper { get; set; }
+        public decimal OtrosCargos { get; set; }
+        public decimal OtrosTributos { get; set; }
+        public decimal MontoRedondeo { get; set; }
         public decimal ImporteTotal { get; set; }
+
+
         public int Estado { get; set; }
         public DateTime FechaCreacion { get; set; }
+ 
         // Relaciones
         public Proveedor Proveedor { get; set; }
         public TipoComprobante TipoComprobante { get; set; }
         public ICollection<DetalleCompra> Detalles { get; set; }
+        public ICollection<PagoCompraCredito> PagosCredito { get; set; }
     }
 }

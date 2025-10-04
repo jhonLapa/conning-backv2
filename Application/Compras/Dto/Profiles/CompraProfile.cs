@@ -11,6 +11,7 @@ namespace Application.Compras.Dtos.Profiles
             // Compra
             CreateMap<Compra, CompraDto>().ReverseMap();
             CreateMap<Compra, CompraSaveDto>().ReverseMap();
+            CreateMap<Compra, CompraSelectDto>().ReverseMap();
         }
     }
 }

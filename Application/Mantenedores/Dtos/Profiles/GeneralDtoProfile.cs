@@ -3,6 +3,7 @@ using Application.Mantenedores.Dtos.Bancos;
 using Application.Mantenedores.Dtos.Categorias;
 using Application.Mantenedores.Dtos.Clientes;
 using Application.Mantenedores.Dtos.MovimientosEspeciales;
+using Application.Mantenedores.Dtos.Proveedores;
 using Application.Mantenedores.Dtos.Proyectos;
 using Application.Mantenedores.Dtos.RegimenesPrevisionales;
 using Application.Mantenedores.Dtos.Roles;
@@ -58,7 +59,7 @@ namespace Application.Mantenedores.Dtos.Profiles
             CreateMap<TipoComprobante, TipoComprobanteSaveDto>().ReverseMap();
             CreateMap<TipoComprobante, TipoComprobanteSelectDto>().ReverseMap();
 
-            // De entidad a DTO
+          // De entidad a DTO
             CreateMap<MovimientoEspecial, MovimientoEspecialDto>().ReverseMap();
             CreateMap<MovimientoEspecial, MovimientoEspecialSaveDto>().ReverseMap();
             CreateMap<MovimientoEspecial, MovimientoEspecialSelectDto>().ReverseMap();
@@ -67,6 +68,11 @@ namespace Application.Mantenedores.Dtos.Profiles
             CreateMap<Cliente, ClienteDto>().ReverseMap();
             CreateMap<Cliente, ClienteSaveDto>().ReverseMap();
             CreateMap<Cliente, ClienteSelectDto>().ReverseMap();
+
+            // Grupo Proveedor
+            CreateMap<Proveedor, ProveedorDto>().ReverseMap();
+            CreateMap<Proveedor, ProveedorSaveDto>().ReverseMap();
+            CreateMap<Proveedor, ProveedorSelectDto>().ReverseMap();
 
 
         }

@@ -1,13 +1,17 @@
 ﻿using Application.Compras.Dto;
+using Application.Compras.Dto;
+using Application.Compras.Dto;
 using Application.Compras.Services.Interfaces;
 using Application.Exceptions;
+using Application.Compras.Dto;
 using AutoMapper;
 using Domain;
+using Infraestructure.Repositories;
 using Infraestructure.Repositories.Interfaces;
 
 namespace Application.Compras.Service
 {
-    public class CompraService : ICompraService
+    public class CompraService : ICompraServices
     {
         private readonly ICompraRepositorio _compraRepositorio;
         private readonly IMapper _mapper;
@@ -30,8 +34,6 @@ namespace Application.Compras.Service
         public async Task<OperationResult<CompraDto>> CreateAsync(CompraSaveDto saveDto)
         {
             var compra = _mapper.Map<Compra>(saveDto);
-            compra.FechaCreacion = DateTime.Now;
-            compra.Estado = 1;
 
             await _compraRepositorio.SaveAsync(compra);
 
@@ -39,27 +41,19 @@ namespace Application.Compras.Service
             {
                 Data = _mapper.Map<CompraDto>(compra),
                 Message = "Creado con Exito",
-                Success = true
             };
         }
 
         public async Task<OperationResult<CompraDto>> DisabledAsync(int id)
         {
-            var compra = await _compraRepositorio.FindByIdAsync(id) ?? throw new NotFoundCoreException("Registro no encontrado con ese Id");
-
-            compra.Estado = compra.Estado == 1 ? 0 : 1;
-
-            await _compraRepositorio.SaveAsync(compra);
+            var compra = await _compraRepositorio.FindByIdAsync(id);
+            if (compra == null) throw new NotFoundCoreException("Registro no encontrado con el id");
 
             return new OperationResult<CompraDto>()
             {
                 Data = _mapper.Map<CompraDto>(compra),
-                Message = compra.Estado == 1
-                ? "Activado con éxito"
-                            : "Desactivado con éxito",
-                Success = true
+                Message = "Se ha Desactivado",
             };
-
         }
 
         public async Task<OperationResult<CompraDto>> EditAsync(int id, CompraSaveDto saveDto)
@@ -76,7 +70,6 @@ namespace Application.Compras.Service
             {
                 Data = _mapper.Map<CompraDto>(compra),
                 Message = "actualizado con exito",
-                Success = true
             };
 
         }
@@ -96,6 +89,34 @@ namespace Application.Compras.Service
 
             return _mapper.Map<CompraDto>(compra);
         }
+
+        public async Task<IReadOnlyList<CompraSelectDto>> SelectActivo()
+        {
+            var response = await _compraRepositorio.SelectActivo();
+
+            return _mapper.Map<IReadOnlyList<CompraSelectDto>>(response);
+        }
+
+        public async Task<OperationResult<List<CompraDto>>> FindByProveedorIdAsync(int proveedorId)
+        {
+            var compras = await _compraRepositorio.FindByProveedorIdAsync(proveedorId);
+
+            if (compras == null || !compras.Any())
+            {
+                return new OperationResult<List<CompraDto>>
+                {
+                    Data = new List<CompraDto>(),
+                    Message = $"No existen compras registradas para el proveedor con Id {proveedorId}"
+                };
+            }
+
+            return new OperationResult<List<CompraDto>>
+            {
+                Data = _mapper.Map<List<CompraDto>>(compras),
+                Message = "Compras encontradas"
+            };
+        }
+
     }
 }
 
