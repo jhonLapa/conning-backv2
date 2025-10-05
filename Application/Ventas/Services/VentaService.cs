@@ -138,10 +138,9 @@ namespace Application.Venta.Services
 
             // Mapeamos la venta
 
-
             var venta = _mapper.Map<Domain.Venta>(saveDto);
 
-            venta.FechaEmision = saveDto.FechaEmision;
+            venta.FechaEmision = saveDto.FechaEmision ?? DateTime.Now;
             venta.FechaCreacion = DateTime.Now;
             // Guardamos la venta principal
             await _ventaRepositorio.SaveAsync(venta);
@@ -171,7 +170,7 @@ namespace Application.Venta.Services
                     var pagoCredito = new Domain.PagoVentaCredito
                     {
                         IdVenta = venta.IdVenta,
-                        FechaVencimiento = pago.FechaVencimiento,
+                        FechaVencimiento = pago.FechaVencimiento ?? DateTime.Now,
                         MontoCuota = pago.MontoCuota,
                         EstadoPago = "PENDIENTE", // PENDIENTE,
                         FechaCreacion = DateTime.Now
