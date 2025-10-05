@@ -123,5 +123,7 @@ namespace Infraestructure.Repositories
                 .Where(v => v.IdCliente == clienteId)
                 .ToListAsync();
         }
+
+
     }
 }

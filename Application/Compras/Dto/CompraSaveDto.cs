@@ -26,5 +26,8 @@ namespace Application.Compras.Dto
         public decimal OtrosTributos { get; set; }
         public decimal MontoRedondeo { get; set; }
         public decimal ImproteTotal { get; set; }
+        public string? UsuarioCreacion { get; set; }
+
+        public string? UsuarioEdicion { get; set; }
     }
 }

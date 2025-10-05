@@ -16,7 +16,8 @@
         public decimal ValorCompra { get; set; }
         public decimal Igv { get; set; }
         public decimal ImporteTotal { get; set; }
-
+        public string? UsuarioCreacion { get; set; }
+        public string? UsuarioEdicion { get; set; }
         // Relacionados
         public List<DetallesCompraSaveDto> Detalles { get; set; } = new();
         public List<PagosCompraCreditoSaveDto>? PagosCredito { get; set; } // solo si es crédito

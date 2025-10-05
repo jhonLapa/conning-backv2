@@ -7,6 +7,8 @@ namespace Infraestructure.Repositories.Interfaces
     {
         Task<PaginadoResponse<PagoVentaCredito>> BusquedaPaginado(PaginationRequest dto);
         Task<List<PagoVentaCredito>> ObtenerPorVentaAsync(int idVenta);
+        Task DeleteByVentaIdAsync(int idVenta);
+
 
     }
 }

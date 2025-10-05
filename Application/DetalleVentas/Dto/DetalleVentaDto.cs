@@ -12,7 +12,7 @@ namespace Application.DetalleVentas.Dto
         public decimal? ValorUnitario { get; set; }
         public decimal? Icbper { get; set; }
         public decimal? ValorTotal { get; set; }
-
+        public DateTime FechaCreacion { get; set; }
 
     }
 }

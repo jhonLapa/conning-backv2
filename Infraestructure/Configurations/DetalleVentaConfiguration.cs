@@ -21,6 +21,12 @@ public class DetalleVentaConfiguration : IEntityTypeConfiguration<DetalleVenta>
         builder.Property(dv => dv.Icbper)
                .HasPrecision(18, 2);
 
+        builder.Property(v => v.FechaCreacion)
+        .HasColumnType("datetime2")  // tu tabla está como DATETIME
+        .IsRequired();
+
+
+
         builder.Property(dv => dv.ValorTotal)
                .HasPrecision(18, 2);
 

@@ -20,9 +20,7 @@ namespace Infraestructure.Configurations
                    .HasMaxLength(20)
                    .IsRequired();
 
-            builder.Property(v => v.FechaEmision)
-                 .HasColumnType("datetime2"); // recomendado
-
+ 
             builder.Property(v => v.FormaPago)
                    .HasMaxLength(50);
 
@@ -32,6 +30,24 @@ namespace Infraestructure.Configurations
 
             builder.Property(v => v.Observacion)
                    .HasColumnType("NVARCHAR(MAX)");
+
+            builder.Property(v => v.FechaEmision)
+                   .HasColumnType("datetime2");
+
+            builder.Property(v => v.FechaCreacion)
+                   .HasColumnType("datetime2")
+                   .IsRequired();
+
+            builder.Property(v => v.FechaModificacion)
+                   .HasColumnType("datetime2");
+
+
+            // Usuarios
+            builder.Property(v => v.UsuarioCreacion)
+                   .HasMaxLength(50);
+
+            builder.Property(v => v.UsuarioEdicion)
+                   .HasMaxLength(50);
 
             // Totales con precisión (12,2)
             builder.Property(v => v.SubTotal).HasPrecision(12, 2);

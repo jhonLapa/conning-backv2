@@ -35,8 +35,18 @@ namespace Infraestructure.Configurations
                    .IsRequired();
 
             builder.Property(v => v.FechaCreacion)
-                   .HasColumnType("datetime")  // tu tabla está como DATETIME
+                   .HasColumnType("datetime2")
                    .IsRequired();
+
+            builder.Property(v => v.FechaModificacion)
+                   .HasColumnType("datetime2");
+
+
+            builder.Property(v => v.UsuarioCreacion)
+                  .HasMaxLength(50);
+
+            builder.Property(v => v.UsuarioEdicion)
+                   .HasMaxLength(50);
 
             // 👉 Decimales
             builder.Property(v => v.ImporteTotal)

@@ -12,6 +12,7 @@ namespace Domain
         public decimal? ValorUnitario { get; set; }
         public decimal? Icbper { get; set; }
         public decimal? ValorTotal { get; set; }
+        public DateTime FechaCreacion { get; set; }
 
         // Relaciones
         [JsonIgnore] // 👈 rompe el loop
