@@ -5,7 +5,7 @@ using AutoMapper;
 using Domain;
 using Infraestructure.Repositories.Interfaces;
 
-namespace Application.PagoCompraCredito.Services
+namespace Application.PagoCompraCreditos.Services
 {
     public class PagoCompraCreditoService : IPagoCompraCreditoServices
     {
@@ -30,7 +30,7 @@ namespace Application.PagoCompraCredito.Services
 
         public async Task<OperationResult<PagoCompraCreditoDto>> CreateAsync(PagoCompraCreditoSaveDto saveDto)
         {
-            var pagoCompraCredito = _mapper.Map<Domain.PagoCompraCredito>(saveDto);
+            var pagoCompraCredito = _mapper.Map<PagoCompraCredito>(saveDto);
 
 
             await _pagoCompraCreditoRepositorio.SaveAsync(pagoCompraCredito);

@@ -31,7 +31,7 @@
         public DateTime FechaCreacion { get; set; }
         public string? UsuarioCreacion { get; set; }
         public DateTime? FechaModificacion { get; set; }
-        public string? UsuarioEdicion { get; set; }
+        public string? UsuarioModificacion { get; set; }
         // Relaciones
         public Proveedor Proveedor { get; set; } = null!;
         public TipoComprobante TipoComprobante { get; set; } = null!;

@@ -127,60 +127,129 @@ namespace Application.Compras.Services
 
         public async Task<OperationResult<CompraDto>> CreateWithDetailsAsync(CompraCompletoSaveDto saveDto)
         {
-            var existeProveedor = await _proveedorRepositorio.FindByIdAsync(saveDto.IdProveedor);
+            // ---------------------------------------------------------
+            // 🔍 Validar proveedor
+            // ---------------------------------------------------------
+            var proveedor = await _proveedorRepositorio.FindByIdAsync(saveDto.IdProveedor);
+            if (proveedor == null)
+                throw new NotFoundCoreException("Proveedor no encontrado con el id especificado.");
 
-            if (existeProveedor == null) throw new NotFoundCoreException("Registro no encontrado con el id");
+            // ---------------------------------------------------------
+            // 🚫 Validar que no exista otro comprobante con misma serie y número
+            // ---------------------------------------------------------
+            var comprobanteExistente = await _compraRepositorio.FindByNumeroComprobanteAsync(
+                saveDto.Serie,
+                saveDto.Numero,
+                saveDto.IdTipoComprobante,
+                saveDto.IdCompra == 0 ? null : saveDto.IdCompra);
 
-            // Mapeamos la compra
 
-
-            var compra = _mapper.Map<Compra>(saveDto);
-
-            compra.FechaEmision = saveDto.FechaEmision;
-            compra.FechaCreacion = DateTime.Now;
-            // Guardamos la compra principal
-            await _compraRepositorio.SaveAsync(compra);
-
-            // Guardamos los detalles
-            foreach (var det in saveDto.Detalles)
+            if (comprobanteExistente != null)
             {
-                var detalle = new DetalleCompra
-                {
-                    IdCompra = compra.IdCompra,
-                    Cantidad = det.Cantidad,
-                    UnidadMedida = det.UnidadMedida,
-                    Descripcion = det.Descripcion,
-                    ValorUnitario = det.ValorUnitario,
-                    ValorTotal = det.ValorTotal,
-
-                };
-
-                await _detalleCompraRepositorio.SaveAsync(detalle);
+                throw new NotFoundCoreException(
+                    $"Ya existe una compra registrada con el comprobante {saveDto.Serie}-{saveDto.Numero}."
+                );
             }
 
-            // Si la forma de pago es crédito
-            if (saveDto.FormaPago.ToLower() == "credito" && saveDto.PagosCredito != null)
+            Compra compra;
+
+            // ---------------------------------------------------------
+            // 🟢 Si IdCompra == 0 → Crear nueva
+            // ---------------------------------------------------------
+            if (saveDto.IdCompra == 0)
+            {
+                compra = _mapper.Map<Compra>(saveDto);
+                compra.FechaEmision = saveDto.FechaEmision ?? DateTime.Now;
+                compra.FechaCreacion = DateTime.Now;
+                compra.UsuarioCreacion = saveDto.UsuarioCreacion;
+
+                await _compraRepositorio.SaveAsync(compra);
+            }
+            // ---------------------------------------------------------
+            // 🟠 Si IdCompra existe → Editar
+            // ---------------------------------------------------------
+            else
+            {
+                compra = await _compraRepositorio.FindByIdAsync(saveDto.IdCompra);
+                if (compra == null)
+                    throw new NotFoundCoreException($"Compra con id {saveDto.IdCompra} no encontrada.");
+
+                compra.IdTipoComprobante = saveDto.IdTipoComprobante;
+                compra.Serie = saveDto.Serie;
+                compra.Numero = saveDto.Numero;
+                compra.FechaEmision = saveDto.FechaEmision ?? compra.FechaEmision;
+                compra.IdProveedor = saveDto.IdProveedor;
+                compra.FormaPago = saveDto.FormaPago;
+                compra.TipoMoneda = saveDto.TipoMoneda;
+                compra.Observacion = saveDto.Observacion;
+                compra.SubTotal = saveDto.SubTotal;
+                compra.Descuentos = saveDto.Descuentos;
+                compra.ValorCompra = saveDto.ValorCompra;
+                compra.Igv = saveDto.Igv;
+                compra.ImporteTotal = saveDto.ImporteTotal;
+                compra.FechaModificacion = DateTime.Now;
+                compra.UsuarioModificacion = saveDto.UsuarioModificacion;
+
+                await _compraRepositorio.SaveAsync(compra);
+
+                // 🔥 Limpiar detalles y pagos anteriores (solo si hay)
+                await _detalleCompraRepositorio.DeleteByCompraIdAsync(compra.IdCompra);
+                await _pagoCompraCreditoRepositorio.DeleteByCompraIdAsync(compra.IdCompra);
+            }
+
+            // ---------------------------------------------------------
+            // 🧾 Guardar detalles
+            // ---------------------------------------------------------
+            if (saveDto.Detalles != null && saveDto.Detalles.Any())
+            {
+                foreach (var det in saveDto.Detalles)
+                {
+                    var detalle = new DetalleCompra
+                    {
+                        IdCompra = compra.IdCompra,
+                        Cantidad = det.Cantidad,
+                        UnidadMedida = det.UnidadMedida,
+                        Descripcion = det.Descripcion,
+                        ValorUnitario = det.ValorUnitario,
+                        ValorTotal = det.ValorTotal,
+                        FechaCreacion = DateTime.Now
+                    };
+
+                    await _detalleCompraRepositorio.SaveAsync(detalle);
+                }
+            }
+
+            // ---------------------------------------------------------
+            // 💳 Guardar pagos crédito (solo si aplica)
+            // ---------------------------------------------------------
+            if (saveDto.FormaPago.Equals("credito", StringComparison.OrdinalIgnoreCase) &&
+                saveDto.PagosCredito != null && saveDto.PagosCredito.Any())
             {
                 foreach (var pago in saveDto.PagosCredito)
                 {
-                    var pagoCredito = new Domain.PagoCompraCredito
+                    var pagoCredito = new PagoCompraCredito
                     {
                         IdCompra = compra.IdCompra,
-                        FechaVencimiento = pago.FechaVencimiento,
+                        FechaVencimiento = pago.FechaVencimiento ?? DateTime.Now,
                         MontoCuota = pago.MontoCuota,
-                        EstadoPago = "PENDIENTE", // PENDIENTE,
+                        EstadoPago = "PENDIENTE",
                         FechaCreacion = DateTime.Now
-
                     };
 
                     await _pagoCompraCreditoRepositorio.SaveAsync(pagoCredito);
                 }
             }
 
+            // ---------------------------------------------------------
+            // 🟩 Retornar resultado
+            // ---------------------------------------------------------
             return new OperationResult<CompraDto>
             {
                 Data = _mapper.Map<CompraDto>(compra),
-                Message = "Compra registrada correctamente"
+                Success = true,
+                Message = saveDto.IdCompra == 0
+                    ? "Compra registrada correctamente."
+                    : "Compra actualizada correctamente."
             };
         }
 

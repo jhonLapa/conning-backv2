@@ -42,7 +42,7 @@ namespace Application.Ventas.Dto
         public string? UsuarioCreacion { get; set; }
 
         public DateTime? FechaModificacion { get; set; }
-        public string? UsuarioEdicion { get; set; }
+        public string? UsuarioModificacion { get; set; }
 
         // 🔗 Relaciones (solo lo que necesitas mostrar)
         public ClienteDto Cliente { get; set; } = null!;

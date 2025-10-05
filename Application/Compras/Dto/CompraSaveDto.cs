@@ -28,6 +28,6 @@ namespace Application.Compras.Dto
         public decimal ImproteTotal { get; set; }
         public string? UsuarioCreacion { get; set; }
 
-        public string? UsuarioEdicion { get; set; }
+        public string? UsuarioModificacion { get; set; }
     }
 }

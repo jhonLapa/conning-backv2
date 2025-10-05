@@ -45,7 +45,7 @@ namespace Infraestructure.Configurations
             builder.Property(v => v.UsuarioCreacion)
                   .HasMaxLength(50);
 
-            builder.Property(v => v.UsuarioEdicion)
+            builder.Property(v => v.UsuarioModificacion)
                    .HasMaxLength(50);
 
             // 👉 Decimales

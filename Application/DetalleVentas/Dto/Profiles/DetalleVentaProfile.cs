@@ -9,8 +9,8 @@ namespace Application.DetalleVentas.Dtos.Profiles
         public DetalleVentaProfile()
         {
             // DetalleVenta
-            CreateMap<Domain.DetalleVenta, DetalleVentaDto>().ReverseMap();
-            CreateMap<Domain.DetalleVenta, DetalleVentaSaveDto>().ReverseMap();
+            CreateMap<DetalleVenta, DetalleVentaDto>().ReverseMap();
+            CreateMap<DetalleVenta, DetalleVentaSaveDto>().ReverseMap();
 
         }
     }

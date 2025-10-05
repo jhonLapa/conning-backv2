@@ -111,7 +111,18 @@ namespace Infraestructure.Repositories
                 .AsNoTracking()
                 .ToListAsync();
         }
+        public async Task DeleteByCompraIdAsync(int idCompra)
+        {
+            var pagos = await _context.Set<DetalleCompra>()
+                                      .Where(p => p.IdCompra == idCompra)
+                                      .ToListAsync();
 
+            if (pagos.Any())
+            {
+                _context.Set<DetalleCompra>().RemoveRange(pagos);
+                await _context.SaveChangesAsync();
+            }
+        }
 
     }
 }

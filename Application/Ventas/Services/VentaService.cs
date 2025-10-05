@@ -3,10 +3,9 @@ using Application.Ventas.Dto;
 using Application.Ventas.Services.Interfaces;
 using AutoMapper;
 using Domain;
-using Infraestructure.Repositories;
 using Infraestructure.Repositories.Interfaces;
 
-namespace Application.Venta.Services
+namespace Application.Ventas.Servicess
 {
     public class VentaService : IVentaServices
     {
@@ -42,7 +41,7 @@ namespace Application.Venta.Services
 
         public async Task<OperationResult<VentaDto>> CreateAsync(VentaSaveDto saveDto)
         {
-            var venta = _mapper.Map<Domain.Venta>(saveDto);
+            var venta = _mapper.Map<Venta>(saveDto);
 
             venta.FechaCreacion = DateTime.Now;
 
@@ -128,29 +127,45 @@ namespace Application.Venta.Services
             };
         }
 
-
         public async Task<OperationResult<VentaDto>> CreateWithDetailsAsync(VentaCompletoSaveDto saveDto)
         {
-            var existeCliente = await _clienteRepositorio.FindByIdAsync(saveDto.IdCliente);
-            if (existeCliente == null)
+            // ---------------------------------------------------------
+            // 🔍 Validar cliente
+            // ---------------------------------------------------------
+            var cliente = await _clienteRepositorio.FindByIdAsync(saveDto.IdCliente);
+            if (cliente == null)
                 throw new NotFoundCoreException("Cliente no encontrado con el id especificado.");
 
-            Domain.Venta venta;
+            // ---------------------------------------------------------
+            // 🚫 Validar que no exista otra venta con la misma serie y número
+            // ---------------------------------------------------------
+            var comprobanteExistente = await _ventaRepositorio.FindByNumeroComprobanteAsync(
+                saveDto.Serie,
+                saveDto.Numero,
+                saveDto.IdTipoComprobante,
+                saveDto.IdVenta == 0 ? null : saveDto.IdVenta
+            );
 
-            // -------------------------------------
-            // 🟢 Si IdVenta == 0 -> Crear nueva
-            // -------------------------------------
+            if (comprobanteExistente != null)
+                throw new NotFoundCoreException($"Ya existe una venta registrada con el comprobante {saveDto.Serie}-{saveDto.Numero}.");
+
+            Venta venta;
+
+            // ---------------------------------------------------------
+            // 🟢 Si IdVenta == 0 → Crear nueva
+            // ---------------------------------------------------------
             if (saveDto.IdVenta == 0)
             {
-                venta = _mapper.Map<Domain.Venta>(saveDto);
+                venta = _mapper.Map<Venta>(saveDto);
                 venta.FechaEmision = saveDto.FechaEmision ?? DateTime.Now;
                 venta.FechaCreacion = DateTime.Now;
+                venta.UsuarioCreacion = saveDto.UsuarioCreacion;
 
                 await _ventaRepositorio.SaveAsync(venta);
             }
-            // -------------------------------------
-            // 🟠 Si IdVenta existe -> Editar
-            // -------------------------------------
+            // ---------------------------------------------------------
+            // 🟠 Si IdVenta existe → Editar
+            // ---------------------------------------------------------
             else
             {
                 venta = await _ventaRepositorio.FindByIdAsync(saveDto.IdVenta);
@@ -172,7 +187,7 @@ namespace Application.Venta.Services
                 venta.Igv = saveDto.Igv;
                 venta.ImporteTotal = saveDto.ImporteTotal;
                 venta.FechaModificacion = DateTime.Now;
-                venta.UsuarioEdicion = saveDto.UsuarioEdicion;
+                venta.UsuarioModificacion = saveDto.UsuarioModificacion;
 
                 await _ventaRepositorio.SaveAsync(venta);
 
@@ -181,33 +196,36 @@ namespace Application.Venta.Services
                 await _pagoVentaCreditoRepositorio.DeleteByVentaIdAsync(venta.IdVenta);
             }
 
-            // -------------------------------------
+            // ---------------------------------------------------------
             // 🧾 Guardar detalles
-            // -------------------------------------
-            foreach (var det in saveDto.Detalles)
+            // ---------------------------------------------------------
+            if (saveDto.Detalles != null && saveDto.Detalles.Any())
             {
-                var detalle = new Domain.DetalleVenta
+                foreach (var det in saveDto.Detalles)
                 {
-                    IdVenta = venta.IdVenta,
-                    Cantidad = det.Cantidad,
-                    UnidadMedida = det.UnidadMedida,
-                    Descripcion = det.Descripcion,
-                    ValorUnitario = det.ValorUnitario,
-                    ValorTotal = det.ValorTotal,
-                    FechaCreacion = DateTime.Now
-                };
-                await _detalleVentaRepositorio.SaveAsync(detalle);
+                    var detalle = new DetalleVenta
+                    {
+                        IdVenta = venta.IdVenta,
+                        Cantidad = det.Cantidad,
+                        UnidadMedida = det.UnidadMedida,
+                        Descripcion = det.Descripcion,
+                        ValorUnitario = det.ValorUnitario,
+                        ValorTotal = det.ValorTotal,
+                        FechaCreacion = DateTime.Now
+                    };
+                    await _detalleVentaRepositorio.SaveAsync(detalle);
+                }
             }
 
-            // -------------------------------------
-            // 💳 Si la forma de pago es crédito
-            // -------------------------------------
+            // ---------------------------------------------------------
+            // 💳 Guardar pagos crédito (solo si aplica)
+            // ---------------------------------------------------------
             if (saveDto.FormaPago.Equals("credito", StringComparison.OrdinalIgnoreCase) &&
-                saveDto.PagosCredito != null)
+                saveDto.PagosCredito != null && saveDto.PagosCredito.Any())
             {
                 foreach (var pago in saveDto.PagosCredito)
                 {
-                    var pagoCredito = new Domain.PagoVentaCredito
+                    var pagoCredito = new PagoVentaCredito
                     {
                         IdVenta = venta.IdVenta,
                         FechaVencimiento = pago.FechaVencimiento ?? DateTime.Now,
@@ -219,17 +237,19 @@ namespace Application.Venta.Services
                 }
             }
 
-            // -------------------------------------
+            // ---------------------------------------------------------
             // 🟩 Retornar resultado
-            // -------------------------------------
+            // ---------------------------------------------------------
             return new OperationResult<VentaDto>
             {
                 Data = _mapper.Map<VentaDto>(venta),
+                Success = true,
                 Message = saveDto.IdVenta == 0
                     ? "Venta registrada correctamente."
                     : "Venta actualizada correctamente."
             };
         }
+
 
     }
 }

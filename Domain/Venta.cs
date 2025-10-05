@@ -37,7 +37,7 @@
         public string? UsuarioCreacion { get; set; }
 
         public DateTime? FechaModificacion { get; set; }
-        public string? UsuarioEdicion { get; set; }
+        public string? UsuarioModificacion { get; set; }
 
         // 🔗 Relaciones
         public Cliente Cliente { get; set; } = null!;

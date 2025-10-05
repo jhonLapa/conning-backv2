@@ -18,7 +18,7 @@
         public decimal Igv { get; set; }
         public decimal ImporteTotal { get; set; }
         public string? UsuarioCreacion { get; set; }
-        public string? UsuarioEdicion { get; set; }
+        public string? UsuarioModificacion { get; set; }
 
 
         // Relacionados

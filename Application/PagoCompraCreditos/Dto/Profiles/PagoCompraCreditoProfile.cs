@@ -1,5 +1,6 @@
 ﻿using Application.PagoCompraCreditos.Dto;
 using AutoMapper;
+using Domain;
 
 namespace Application.PagoCompraCreditos.Dtos.Profiles
 {
@@ -8,8 +9,8 @@ namespace Application.PagoCompraCreditos.Dtos.Profiles
         public PagoCompraCreditoProfile()
         {
             // PagoCompraCredito
-            CreateMap<Domain.PagoCompraCredito, PagoCompraCreditoDto>().ReverseMap();
-            CreateMap<Domain.PagoCompraCredito, PagoCompraCreditoSaveDto>().ReverseMap();
+            CreateMap<PagoCompraCredito, PagoCompraCreditoDto>().ReverseMap();
+            CreateMap<PagoCompraCredito, PagoCompraCreditoSaveDto>().ReverseMap();
 
         }
     }

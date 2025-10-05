@@ -37,7 +37,7 @@ namespace Application.Compras.Dto
         public string? UsuarioCreacion { get; set; }
 
         public DateTime? FechaModificacion { get; set; }
-        public string? UsuarioEdicion { get; set; }
+        public string? UsuarioModificacion { get; set; }
 
         // 🔗 Relaciones (solo lo que necesitas mostrar)
         public ProveedorDto Proveedor { get; set; } = null!;
