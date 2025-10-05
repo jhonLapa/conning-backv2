@@ -21,7 +21,7 @@ namespace Infraestructure.Configurations
                    .IsRequired();
 
             builder.Property(v => v.FechaEmision)
-                   .IsRequired();
+                 .HasColumnType("datetime2"); // recomendado
 
             builder.Property(v => v.FormaPago)
                    .HasMaxLength(50);
@@ -48,7 +48,11 @@ namespace Infraestructure.Configurations
 
             // Detracción
             builder.Property(v => v.DetraccionAplica)
-                   .HasConversion<int>(); // convierte bool <-> tinyint
+              .HasConversion(
+                  v => v ? (byte)1 : (byte)0,  // bool → tinyint
+                  v => v == 1                  // tinyint → bool
+              );
+
             builder.Property(v => v.DetraccionPorcentaje).HasPrecision(5, 2);
             builder.Property(v => v.DetraccionMonto).HasPrecision(12, 2);
             builder.Property(v => v.CuentaDetraccion).HasMaxLength(30);

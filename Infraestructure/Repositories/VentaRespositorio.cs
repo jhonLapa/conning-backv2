@@ -88,31 +88,40 @@ namespace Infraestructure.Repositories
 
         public async override Task<Venta?> FindByIdAsync(int id)
         {
-            var response = await _context.Set<Venta>()
-                                   .Include(c => c.Cliente)
-                                 .Include(c => c.TipoComprobante).FirstOrDefaultAsync(x => x.IdCliente == id);
-
-            return response;
+            return await _context.Set<Venta>()
+                                 .AsSplitQuery() // 👈 evita el warning MultipleCollectionInclude
+                                 .Include(c => c.Cliente)
+                                 .Include(c => c.TipoComprobante)
+                                 .Include(c => c.Detalles)
+                                 .Include(c => c.PagosCredito)
+                                 .FirstOrDefaultAsync(x => x.IdVenta == id);
         }
+
 
 
         public async override Task<IReadOnlyList<Venta>> FindAllAsync()
         {
             return await _context.Set<Venta>()
+                                 .AsNoTracking()
+                                 .AsSplitQuery() // 👈 importante aquí también
                                  .Include(c => c.Cliente)
                                  .Include(c => c.TipoComprobante)
-                                 .AsNoTracking()
+                                 .Include(c => c.Detalles)
+                                 .Include(c => c.PagosCredito)
                                  .ToListAsync();
         }
 
         public async Task<List<Venta>> FindByClienteIdAsync(int clienteId)
         {
             return await _context.Set<Venta>()
-                                 .Where(v => v.IdCliente == clienteId)
-                                 .Include(v => v.Cliente)
-                                 .Include(v => v.TipoComprobante)
-                                 .ToListAsync();
+                .AsNoTracking()
+                .AsSplitQuery() // evita el warning MultipleCollectionInclude
+                .Include(v => v.Cliente)
+                .Include(v => v.TipoComprobante)
+                .Include(v => v.Detalles)
+                .Include(v => v.PagosCredito)
+                .Where(v => v.IdCliente == clienteId)
+                .ToListAsync();
         }
-
     }
 }

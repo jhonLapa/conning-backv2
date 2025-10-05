@@ -1,4 +1,8 @@
-﻿using Domain;
+﻿using Application.DetalleVentas.Dto;
+using Application.Mantenedores.Dtos.Clientes;
+using Application.Mantenedores.Dtos.TiposComprobantes;
+using Application.PagoVentaCreditos.Dto;
+using Domain;
 
 namespace Application.Ventas.Dto
 {
@@ -37,8 +41,13 @@ namespace Application.Ventas.Dto
         public DateTime FechaCreacion { get; set; }
         public string? UsuarioCreacion { get; set; }
 
-        // 🔗 Relaciones
-        public Cliente Cliente { get; set; } = null!;
-        public TipoComprobante TipoComprobante { get; set; } = null!;
+        // 🔗 Relaciones (solo lo que necesitas mostrar)
+        public ClienteDto Cliente { get; set; } = null!;
+        public TipoComprobanteDto TipoComprobante { get; set; } = null!;
+
+        // 🔗 Nuevos
+        public List<DetalleVentaDto> Detalles { get; set; } = new();
+        public List<PagoVentaCreditoDto> PagosCredito { get; set; } = new();
+
     }
 }

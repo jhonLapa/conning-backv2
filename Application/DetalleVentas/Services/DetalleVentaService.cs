@@ -1,7 +1,6 @@
 ﻿using Application.DetalleVentas.Dto;
 using Application.DetalleVentas.Services.Interfaces;
 using Application.Exceptions;
-using Application.Ventas.Dto;
 using AutoMapper;
 using Domain;
 using Infraestructure.Repositories.Interfaces;

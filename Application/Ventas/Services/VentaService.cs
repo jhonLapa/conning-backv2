@@ -3,6 +3,7 @@ using Application.Ventas.Dto;
 using Application.Ventas.Services.Interfaces;
 using AutoMapper;
 using Domain;
+using Infraestructure.Repositories;
 using Infraestructure.Repositories.Interfaces;
 
 namespace Application.Venta.Services
@@ -10,11 +11,22 @@ namespace Application.Venta.Services
     public class VentaService : IVentaServices
     {
         private readonly IVentaRepositorio _ventaRepositorio;
+        private readonly IDetalleVentaRepositorio _detalleVentaRepositorio;
+        private readonly IPagoVentaCreditoRepositorio _pagoVentaCreditoRepositorio;
+        private readonly IClienteRepositorio _clienteRepositorio;
         private readonly IMapper _mapper;
 
-        public VentaService(IVentaRepositorio VentaRepositorio, IMapper mapper)
+        public VentaService(
+            IVentaRepositorio ventaRepositorio,
+            IDetalleVentaRepositorio detalleVentaRepositorio,
+            IPagoVentaCreditoRepositorio pagoVentaCreditoRepositorio,
+            IClienteRepositorio ClienteRepositorio,
+            IMapper mapper)
         {
-            _ventaRepositorio = VentaRepositorio;
+            _ventaRepositorio = ventaRepositorio;
+            _detalleVentaRepositorio = detalleVentaRepositorio;
+            _pagoVentaCreditoRepositorio = pagoVentaCreditoRepositorio;
+            _clienteRepositorio = ClienteRepositorio;
             _mapper = mapper;
         }
 
@@ -32,6 +44,7 @@ namespace Application.Venta.Services
         {
             var venta = _mapper.Map<Domain.Venta>(saveDto);
 
+            venta.FechaCreacion = DateTime.Now;
 
             await _ventaRepositorio.SaveAsync(venta);
 
@@ -115,6 +128,66 @@ namespace Application.Venta.Services
             };
         }
 
+
+
+        public async Task<OperationResult<VentaDto>> CreateWithDetailsAsync(VentaCompletoSaveDto saveDto)
+        {
+            var existeCliente = await _clienteRepositorio.FindByIdAsync(saveDto.IdCliente);
+
+            if (existeCliente == null) throw new NotFoundCoreException("Registro no encontrado con el id");
+
+            // Mapeamos la venta
+
+
+            var venta = _mapper.Map<Domain.Venta>(saveDto);
+
+            venta.FechaEmision = saveDto.FechaEmision;
+            venta.FechaCreacion = DateTime.Now;
+            // Guardamos la venta principal
+            await _ventaRepositorio.SaveAsync(venta);
+
+            // Guardamos los detalles
+            foreach (var det in saveDto.Detalles)
+            {
+                var detalle = new Domain.DetalleVenta
+                {
+                    IdVenta = venta.IdVenta,
+                    Cantidad = det.Cantidad,
+                    UnidadMedida = det.UnidadMedida,
+                    Descripcion = det.Descripcion,
+                    ValorUnitario = det.ValorUnitario,
+                    ValorTotal = det.ValorTotal,
+
+                };
+
+                await _detalleVentaRepositorio.SaveAsync(detalle);
+            }
+
+            // Si la forma de pago es crédito
+            if (saveDto.FormaPago.ToLower() == "credito" && saveDto.PagosCredito != null)
+            {
+                foreach (var pago in saveDto.PagosCredito)
+                {
+                    var pagoCredito = new Domain.PagoVentaCredito
+                    {
+                        IdVenta = venta.IdVenta,
+                        FechaVencimiento = pago.FechaVencimiento,
+                        MontoCuota = pago.MontoCuota,
+                        EstadoPago = "PENDIENTE", // PENDIENTE,
+                        FechaCreacion = DateTime.Now
+
+                    };
+
+                    await _pagoVentaCreditoRepositorio.SaveAsync(pagoCredito);
+                }
+            }
+
+            return new OperationResult<VentaDto>
+            {
+                Data = _mapper.Map<VentaDto>(venta),
+                Message = "Venta registrada correctamente"
+            };
+        }
 
     }
 }

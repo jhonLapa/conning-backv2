@@ -1,4 +1,5 @@
 ﻿using Application.Exceptions;
+using Application.Mantenedores.Dtos.Bancos;
 using Application.Mantenedores.Dtos.TiposDocumento;
 using Application.Mantenedores.Services.Interfaces;
 using AutoMapper;
@@ -47,21 +48,25 @@ namespace Application.Mantenedores.Services
 
         public async Task<OperationResult<TipoDocumentoDto>> DisabledAsync(int id)
         {
-            var documento = await _documentoRepositorio.FindByIdAsync(id);
-            documento.FechaModificacion = DateTime.Now;
-            documento.Estado = documento.Estado == 1 ? 0 : 1;
+            var bank = await _documentoRepositorio.FindByIdAsync(id);
 
-            return new OperationResult<TipoDocumentoDto>
+            if (bank == null) throw new NotFoundCoreException("Registro no encontrado con ese Id");
+
+            bank.Estado = bank.Estado == 1 ? 0 : 1;
+            bank.FechaModificacion = DateTime.Now;
+
+            await _documentoRepositorio.SaveAsync(bank);
+
+            return new OperationResult<TipoDocumentoDto>()
             {
-                Data = _mapper.Map<TipoDocumentoDto>(documento),
-                Message = documento.Estado == 1
-                        ? "Activado con éxito"
-                        : "Desactivado con éxito",
+                Data = _mapper.Map<TipoDocumentoDto>(bank),
+                Message = bank.Estado == 1
+                ? "Activado con éxito"
+                            : "Desactivado con éxito",
                 Success = true
             };
 
         }
-
         public async Task<OperationResult<TipoDocumentoDto>> EditAsync(int id, TipoDocumentoSaveDto saveDto)
         {
             var documento = await _documentoRepositorio.FindByIdAsync(id);
@@ -98,7 +103,7 @@ namespace Application.Mantenedores.Services
 
         public async Task<IReadOnlyList<TipoDocumentoSelectDto>> SelectActivo()
         {
-            var response = await _documentoRepositorio.FindAllAsync();
+            var response = await _documentoRepositorio.SelectActivo();
 
             return _mapper.Map<IReadOnlyList<TipoDocumentoSelectDto>>(response);
         }

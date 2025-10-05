@@ -101,7 +101,7 @@ namespace Application.Mantenedores.Services
 
         public async Task<IReadOnlyList<MovimientoEspecialSelectDto>> SelectActivo()
         {
-            var response = await _movimientoEspecialRepositorio.FindAllAsync();
+            var response = await _movimientoEspecialRepositorio.SelectActivo();
 
             return _mapper.Map<IReadOnlyList<MovimientoEspecialSelectDto>>(response);
         }

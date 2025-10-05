@@ -104,7 +104,7 @@ namespace Application.Mantenedores.Services
 
         public async Task<IReadOnlyList<TipoComprobanteSelectDto>> SelectActivo()
         {
-            var response = await _tipoComprobanteRepositorio.FindAllAsync();
+            var response = await _tipoComprobanteRepositorio.SelectActivo();
 
             return _mapper.Map<IReadOnlyList<TipoComprobanteSelectDto>>(response);
         }

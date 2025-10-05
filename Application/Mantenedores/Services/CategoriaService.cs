@@ -104,7 +104,7 @@ namespace Application.Mantenedores.Services
 
         public async Task<IReadOnlyList<CategoriaSelectDto>> SelectActivo()
         {
-            var response = await _categoryRepositorio.FindAllAsync();
+            var response = await _categoryRepositorio.SelectActivo();
 
             return _mapper.Map<IReadOnlyList<CategoriaSelectDto>>(response);
         }

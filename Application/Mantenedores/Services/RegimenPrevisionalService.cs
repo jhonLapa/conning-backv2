@@ -102,7 +102,7 @@ namespace Application.Mantenedores.Services
 
         public async Task<IReadOnlyList<RegimenPrevisionalSelectDto>> SelectActivo()
         {
-            var response = await _regimenPrevisionalRepositorio.FindAllAsync();
+            var response = await _regimenPrevisionalRepositorio.SelectActivo();
 
             return _mapper.Map<IReadOnlyList<RegimenPrevisionalSelectDto>>(response);
         }
