@@ -1,4 +1,4 @@
-﻿using Domain;
+﻿using Application.Mantenedores.Dtos.TiposDocumento;
 
 namespace Application.Mantenedores.Dtos.Proveedores
 {
@@ -16,7 +16,7 @@ namespace Application.Mantenedores.Dtos.Proveedores
         public DateTime? FechaModificacion { get; set; }
         public string? UsuarioCreacion { get; set; }
         public string? UsuarioModificacion { get; set; }
-        public TipoDocumento TipoDocumento { get; set; } = null!;
+        public TipoDocumentoDto TipoDocumento { get; set; } = null!;
 
     }
 }

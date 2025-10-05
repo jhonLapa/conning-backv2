@@ -1,4 +1,6 @@
-﻿namespace Domain
+﻿using System.Text.Json.Serialization;
+
+namespace Domain
 {
     public class TipoComprobante
     {
@@ -11,6 +13,7 @@
 
         // Relaciones
         public ICollection<Venta> Ventas { get; set; }
+        [JsonIgnore]
         public ICollection<Compra> Compras { get; set; }
     }
 }

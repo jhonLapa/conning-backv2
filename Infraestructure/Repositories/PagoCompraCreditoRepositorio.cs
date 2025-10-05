@@ -77,7 +77,7 @@ namespace Infraestructure.Repositories
         {
             return await _context.Set<PagoCompraCredito>()
                                  .Include(d => d.Compra)
-                                     .ThenInclude(v => v.Proveedor)          // Traer Cliente
+                                     .ThenInclude(v => v.Proveedor)          // Traer Proveedor
                                  .Include(d => d.Compra)
                                      .ThenInclude(v => v.TipoComprobante)  // Traer TipoComprobante
                                  .Where(d => d.IdCompra == idCompra)

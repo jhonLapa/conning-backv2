@@ -44,13 +44,13 @@ namespace Infraestructure.Configurations
                    .IsRequired();
 
             // Relaciones
-            builder.HasOne(v => v.Proveedor)
-                   .WithMany(c => c.Compras)
-                   .HasForeignKey(v => v.IdProveedor);
+            builder.HasOne(c => c.Proveedor)
+                   .WithMany(p => p.Compras)
+                   .HasForeignKey(c => c.IdProveedor);
 
-            builder.HasOne(v => v.TipoComprobante)
+            builder.HasOne(c => c.TipoComprobante)
                    .WithMany(tc => tc.Compras)
-                   .HasForeignKey(v => v.IdTipoComprobante);
+                   .HasForeignKey(c => c.IdTipoComprobante);
         }
     }
 }

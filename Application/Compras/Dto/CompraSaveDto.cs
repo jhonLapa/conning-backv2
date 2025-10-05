@@ -8,12 +8,13 @@ namespace Application.Compras.Dto
         public int IdTipoComprobante { get; set; }
         public string Serie { get; set; } = null!;
         public string Numero { get; set; } = null!;
-        public DateTime FechaEmision { get; set; }
+        public DateTime? FechaEmision { get; set; }
         public int IdProveedor { get; set; }
         public string? FormaPago { get; set; } = null!;
         public string TipoMoneda { get; set; } = null!;
         public string? Observacion { get; set; } = null!;
 
+        // Totales
         public decimal SubTotal { get; set; }
         public decimal Anticipios { get; set; }
         public decimal Descuentos { get; set; }

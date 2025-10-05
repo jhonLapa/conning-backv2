@@ -13,7 +13,5 @@
         public DateTime FechaCreacion { get; set; }
         public string? UsuarioCreacion { get; set; }
 
-        // Relaciones
-        public Domain.Compra Compra { get; set; }
     }
 }

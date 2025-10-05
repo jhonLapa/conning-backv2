@@ -2,7 +2,6 @@
 {
     public class PagoCompraCreditoSaveDto
     {
-        public int IdPagoCompraCredito { get; set; }
         public int IdCompra { get; set; }
         public DateTime FechaVencimiento { get; set; }
         public decimal MontoCuota { get; set; }

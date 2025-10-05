@@ -119,5 +119,16 @@ namespace DinsidesBack.Controllers
             return TypedResults.BadRequest();
 
         }
+
+        [HttpPost("RegistrarCompleto")]
+        [AllowAnonymous]
+        public async Task<Results<BadRequest, Ok<OperationResult<CompraDto>>>> PostCompleto([FromBody] CompraCompletoSaveDto request)
+        {
+            var response = await _compraService.CreateWithDetailsAsync(request);
+
+            if (response != null) return TypedResults.Ok(response);
+
+            return TypedResults.BadRequest();
+        }
     }
 }

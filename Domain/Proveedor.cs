@@ -1,4 +1,6 @@
-﻿namespace Domain
+﻿using System.Text.Json.Serialization;
+
+namespace Domain
 {
     public class Proveedor
     {
@@ -17,7 +19,7 @@
 
         // 🔗 Relaciones
         public TipoDocumento TipoDocumento { get; set; } = null!;
-
+        [JsonIgnore]
         public ICollection<Compra> Compras { get; set; } = new List<Compra>();
     }
 }

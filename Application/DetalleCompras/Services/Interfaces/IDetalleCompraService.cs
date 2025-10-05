@@ -1,14 +1,12 @@
 ﻿using Application.DetalleCompras.Dto;
+using Application.Core.Services.Interfaces;
 using Domain;
 
 namespace Application.DetalleCompras.Services.Interfaces
 {
-    public interface IDetalleCompraService
+    public interface IDetalleCompraServices : ICrudCoreService<DetalleCompraDto, DetalleCompraSaveDto, int>
     {
-        Task<IReadOnlyList<DetalleCompraDto>> FindAllAsync();
-        Task<DetalleCompraDto> FindByIdAsync(int id);
-        Task<OperationResult<DetalleCompraDto>> CreateAsync(DetalleCompraSaveDto saveDto);
-        Task<OperationResult<DetalleCompraDto>> EditAsync(int id, DetalleCompraSaveDto saveDto);
+        Task<OperationResult<List<DetalleCompraDto>>> ObtenerPorCompraAsync(int id);
         Task<PaginadoResponse<DetalleCompraDto>> BusquedaPaginado(PaginationRequest dto);
     }
 }

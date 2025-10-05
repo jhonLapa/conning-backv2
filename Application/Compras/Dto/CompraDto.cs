@@ -1,4 +1,8 @@
-﻿using Domain;
+﻿using Application.DetalleCompras.Dto;
+using Application.PagoCompraCreditos.Dto;
+using Application.Mantenedores.Dtos.Proveedores;
+using Application.Mantenedores.Dtos.TiposComprobantes;
+using Domain;
 
 namespace Application.Compras.Dto
 {
@@ -32,7 +36,12 @@ namespace Application.Compras.Dto
         public DateTime FechaCreacion { get; set; }
         public string? UsuarioCreacion { get; set; }
 
-        public TipoComprobante TipoComprobante { get; set; } = null!;
-        public Proveedor Proveedor { get; set; } = null!;
+        // 🔗 Relaciones (solo lo que necesitas mostrar)
+        public ProveedorDto Proveedor { get; set; } = null!;
+        public TipoComprobanteDto TipoComprobante { get; set; } = null!;
+
+        // 🔗 Nuevos
+        public List<DetalleCompraDto> Detalles { get; set; } = new();
+        public List<PagoCompraCreditoDto> PagosCredito { get; set; } = new();
     }
 }

@@ -5,7 +5,6 @@ namespace Application.DetalleCompras.Dto
     public class DetalleCompraSaveDto
     {
 
-        public int IdDetalleCompra { get; set; }
         public int IdCompra { get; set; }
         public int Cantidad { get; set; }
         public string UnidadMedida { get; set; }

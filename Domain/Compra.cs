@@ -7,7 +7,7 @@
         public int IdTipoComprobante { get; set; }
         public string Serie { get; set; }
         public string Numero { get; set; }
-        public DateTime FechaEmision { get; set; }
+        public DateTime? FechaEmision { get; set; }
         public int IdProveedor { get; set; }
         public string FormaPago { get; set; }
         public string TipoMoneda { get; set; }
@@ -29,10 +29,11 @@
 
         public int Estado { get; set; }
         public DateTime FechaCreacion { get; set; }
- 
+        public string? UsuarioCreacion { get; set; }
+
         // Relaciones
-        public Proveedor Proveedor { get; set; }
-        public TipoComprobante TipoComprobante { get; set; }
+        public Proveedor Proveedor { get; set; } = null!;
+        public TipoComprobante TipoComprobante { get; set; } = null!;
         public ICollection<DetalleCompra> Detalles { get; set; }
         public ICollection<PagoCompraCredito> PagosCredito { get; set; }
     }

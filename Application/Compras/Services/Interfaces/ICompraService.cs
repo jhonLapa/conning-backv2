@@ -9,5 +9,7 @@ namespace Application.Compras.Services.Interfaces
         Task<IReadOnlyList<CompraSelectDto>> SelectActivo();
         Task<PaginadoResponse<CompraDto>> BusquedaPaginado(PaginationRequest dto);
         Task<OperationResult<List<CompraDto>>> FindByProveedorIdAsync(int proveedorId);
+
+        Task<OperationResult<CompraDto>> CreateWithDetailsAsync(CompraCompletoSaveDto saveDto);
     }
 }

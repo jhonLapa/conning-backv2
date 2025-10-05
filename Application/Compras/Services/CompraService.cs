@@ -1,26 +1,34 @@
 ﻿using Application.Compras.Dto;
-using Application.Compras.Dto;
-using Application.Compras.Dto;
 using Application.Compras.Services.Interfaces;
 using Application.Exceptions;
-using Application.Compras.Dto;
 using AutoMapper;
 using Domain;
-using Infraestructure.Repositories;
 using Infraestructure.Repositories.Interfaces;
 
-namespace Application.Compras.Service
+namespace Application.Compras.Services
 {
     public class CompraService : ICompraServices
     {
         private readonly ICompraRepositorio _compraRepositorio;
+        private readonly IDetalleCompraRepositorio _detalleCompraRepositorio;
+        private readonly IPagoCompraCreditoRepositorio _pagoCompraCreditoRepositorio;
+        private readonly IProveedorRepositorio _proveedorRepositorio;
         private readonly IMapper _mapper;
 
-        public CompraService(ICompraRepositorio CompraRepositorio, IMapper mapper)
+        public CompraService(
+            ICompraRepositorio compraRepositorio,
+            IDetalleCompraRepositorio detalleCompraRepositorio,
+            IPagoCompraCreditoRepositorio pagoCompraCreditoRepositorio,
+            IProveedorRepositorio ProveedorRepositorio,
+            IMapper mapper)
         {
-            _compraRepositorio = CompraRepositorio;
+            _compraRepositorio = compraRepositorio;
+            _detalleCompraRepositorio = detalleCompraRepositorio;
+            _pagoCompraCreditoRepositorio = pagoCompraCreditoRepositorio;
+            _proveedorRepositorio = ProveedorRepositorio;
             _mapper = mapper;
         }
+
 
         public async Task<PaginadoResponse<CompraDto>> BusquedaPaginado(PaginationRequest dto)
         {
@@ -34,6 +42,8 @@ namespace Application.Compras.Service
         public async Task<OperationResult<CompraDto>> CreateAsync(CompraSaveDto saveDto)
         {
             var compra = _mapper.Map<Compra>(saveDto);
+
+            compra.FechaCreacion = DateTime.Now;
 
             await _compraRepositorio.SaveAsync(compra);
 
@@ -83,11 +93,9 @@ namespace Application.Compras.Service
 
         public async Task<CompraDto> FindByIdAsync(int id)
         {
-            var compra = await _compraRepositorio.FindByIdAsync(id);
+            var response = await _compraRepositorio.FindByIdAsync(id);
 
-            if (compra == null) throw new NotFoundCoreException("Registro no encontrado con ese id");
-
-            return _mapper.Map<CompraDto>(compra);
+            return _mapper.Map<CompraDto>(response);
         }
 
         public async Task<IReadOnlyList<CompraSelectDto>> SelectActivo()
@@ -114,6 +122,65 @@ namespace Application.Compras.Service
             {
                 Data = _mapper.Map<List<CompraDto>>(compras),
                 Message = "Compras encontradas"
+            };
+        }
+
+        public async Task<OperationResult<CompraDto>> CreateWithDetailsAsync(CompraCompletoSaveDto saveDto)
+        {
+            var existeProveedor = await _proveedorRepositorio.FindByIdAsync(saveDto.IdProveedor);
+
+            if (existeProveedor == null) throw new NotFoundCoreException("Registro no encontrado con el id");
+
+            // Mapeamos la compra
+
+
+            var compra = _mapper.Map<Compra>(saveDto);
+
+            compra.FechaEmision = saveDto.FechaEmision;
+            compra.FechaCreacion = DateTime.Now;
+            // Guardamos la compra principal
+            await _compraRepositorio.SaveAsync(compra);
+
+            // Guardamos los detalles
+            foreach (var det in saveDto.Detalles)
+            {
+                var detalle = new DetalleCompra
+                {
+                    IdCompra = compra.IdCompra,
+                    Cantidad = det.Cantidad,
+                    UnidadMedida = det.UnidadMedida,
+                    Descripcion = det.Descripcion,
+                    ValorUnitario = det.ValorUnitario,
+                    ValorTotal = det.ValorTotal,
+
+                };
+
+                await _detalleCompraRepositorio.SaveAsync(detalle);
+            }
+
+            // Si la forma de pago es crédito
+            if (saveDto.FormaPago.ToLower() == "credito" && saveDto.PagosCredito != null)
+            {
+                foreach (var pago in saveDto.PagosCredito)
+                {
+                    var pagoCredito = new Domain.PagoCompraCredito
+                    {
+                        IdCompra = compra.IdCompra,
+                        FechaVencimiento = pago.FechaVencimiento,
+                        MontoCuota = pago.MontoCuota,
+                        EstadoPago = "PENDIENTE", // PENDIENTE,
+                        FechaCreacion = DateTime.Now
+
+                    };
+
+                    await _pagoCompraCreditoRepositorio.SaveAsync(pagoCredito);
+                }
+            }
+
+            return new OperationResult<CompraDto>
+            {
+                Data = _mapper.Map<CompraDto>(compra),
+                Message = "Compra registrada correctamente"
             };
         }
 

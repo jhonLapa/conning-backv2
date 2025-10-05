@@ -13,6 +13,9 @@ namespace Infraestructure.Configurations
 
             builder.Property(dv => dv.Descripcion).HasMaxLength(200);
 
+            builder.Property(dv => dv.Cantidad)          
+               .HasPrecision(18, 2);
+
             builder.Property(dv => dv.ValorUnitario)
                     .HasPrecision(18, 2);
 
@@ -23,9 +26,9 @@ namespace Infraestructure.Configurations
                    .HasPrecision(18, 2);
 
 
-            builder.HasOne(dv => dv.Compra)
-                   .WithMany(v => v.Detalles)
-                   .HasForeignKey(dv => dv.IdCompra);
+            builder.HasOne(dc => dc.Compra)
+                   .WithMany(c => c.Detalles)
+                   .HasForeignKey(dc => dc.IdCompra);
 
 
         }
