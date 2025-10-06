@@ -1,6 +1,13 @@
-﻿namespace Domain
+﻿using Domain;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Application.Mantenedores.Dtos.Trabajadores
 {
-    public class Trabajador 
+    public class TrabajadorDto
     {
         public int IdTrabajador { get; set; }
         public int IdCategoria { get; set; }
@@ -13,9 +20,9 @@
         public string Email { get; set; }
         public string Sexo { get; set; }
         public string EstadoCivil { get; set; }
-        public int Activo { get; set; }
+        public bool Activo { get; set; }
         public string Direccion { get; set; }
-        public int AsignacionFamiliar { get; set; }
+        public bool AsignacionFamiliar { get; set; }
         public int Hijos { get; set; }
         public DateTime FechaCreacion { get; set; }
         public string? UsuarioCreacion { get; set; }
@@ -23,12 +30,8 @@
         public string? UsuarioModificacion { get; set; }
 
         // Relaciones
-
         public Categoria Categoria { get; set; }
         public RegimenPrevisional Regimen { get; set; }
         public TipoDocumento TipoDocumento { get; set; } = null!;
-        public ICollection<CuentaBancariaTrabajador> CuentasBancarias { get; set; }
-        public ICollection<TrabajadorProyecto> TrabajosProyectos { get; set; }
-
     }
 }

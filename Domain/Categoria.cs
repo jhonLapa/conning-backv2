@@ -1,4 +1,6 @@
-﻿namespace Domain
+﻿using System.Text.Json.Serialization;
+
+namespace Domain
 {
     public class Categoria
     {
@@ -11,7 +13,8 @@
         public string? UsuarioModificacion { get; set; }
 
         // Relaciones
-        public ICollection<Trabajador> Trabajadores { get; set; }
+        [JsonIgnore]
+        public ICollection<Trabajador> Trabajadores { get; set; } = new List<Trabajador>();
 
     }
 }

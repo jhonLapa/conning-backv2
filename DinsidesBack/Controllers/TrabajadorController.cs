@@ -1,0 +1,42 @@
+﻿using Application.Mantenedores.Dtos.Trabajadores;
+using Application.Mantenedores.Services.Interfaces;
+using Domain;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
+
+namespace DinsidesBack.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class TrabajadorController : ControllerBase
+    {
+        private readonly ITrabajadorService _trabajadorService;
+
+        public TrabajadorController(ITrabajadorService trabajadorService) => _trabajadorService = trabajadorService;
+
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<Results<BadRequest, Ok<IReadOnlyList<TrabajadorDto>>>> Get()
+        {
+
+            var response = await _trabajadorService.FindAllAsync();
+
+            if (response != null) return TypedResults.Ok(response);
+
+            return TypedResults.BadRequest();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<Results<BadRequest, Ok<OperationResult<TrabajadorDto>>>> Post([FromBody] TrabajadorSaveDto request)
+        {
+
+            var response = await _trabajadorService.CreateAsync(request);
+
+            if (response != null) return TypedResults.Ok(response);
+
+            return TypedResults.BadRequest();
+        }
+    }
+}

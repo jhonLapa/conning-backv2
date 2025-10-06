@@ -1,0 +1,102 @@
+﻿using Domain;
+using Infraestructure.Contexts;
+using Infraestructure.Core.Repositories;
+using Infraestructure.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Infraestructure.Repositories
+{
+    public class TrabajadorRepositorio : CrudCoreRespository<Trabajador, int>, ITrabajadorRepositorio
+    {
+        private readonly ApplicationDbContext _context;
+        public TrabajadorRepositorio(ApplicationDbContext context) : base(context) => _context = context;
+
+        public async Task<PaginadoResponse<Trabajador>> BusquedaPaginado(PaginationRequest dto)
+        {
+            var contex = _context.Set<Trabajador>()
+                        //.Include(t => t.Categoria)
+                        //.Include(t => t.Regimen)
+                        .Include(t => t.TipoDocumento)
+                        .AsQueryable();
+
+
+            if (!string.IsNullOrWhiteSpace(dto.Sort))
+            {
+                var ColumnsOrder = dto.Sort.Split(".");
+
+                var column = ColumnsOrder[0];
+                var order = ColumnsOrder[1];
+
+                contex = column switch
+                {
+                    "name" => order == "desc" ? contex.OrderByDescending(p => p.ApellidosNombres) : contex.OrderBy(p => p.ApellidosNombres),
+                    "status" => order == "desc" ? contex.OrderByDescending(p => p.Activo) : contex.OrderBy(p => p.Activo),
+                    "createAt" => order == "desc" ? contex.OrderByDescending(p => p.FechaCreacion) : contex.OrderBy(p => p.FechaCreacion),
+                };
+
+            }
+
+
+            if (dto.Filters != null && dto.Filters.Length > 0)
+            {
+                foreach (var filter in dto.Filters)
+                {
+                    var id_value = filter.Split(":");
+
+                    var id = id_value[0];
+                    var value = id_value[1];
+
+                    if (id == "status")
+                    {
+                        if (value == "activo") contex = contex.Where(p => p.Activo == 1);
+                        if (value == "inactivo") contex = contex.Where(p => p.Activo == 0);
+                    }
+                    else if (id == "name") contex = contex.Where(p => p.ApellidosNombres.Contains(value));
+
+                }
+            }
+
+            var take = dto.Take ?? 5;
+            var page = dto.Page ?? 1;
+            var skip = (page - 1) * take;
+
+            var data = await contex.Skip(skip).Take(take).ToListAsync();
+            var total = await contex.CountAsync();
+
+            var meta = new Meta
+            {
+                Page = dto.Page,
+                TotalCount = total,
+                TotalPages = (int)Math.Ceiling((double)total / take)
+            };
+
+
+            PaginadoResponse<Trabajador> response = new(data, meta);
+
+            return response;
+        }
+
+        public async Task<IReadOnlyList<Trabajador>> SelectActivo()
+        {
+            return await _context.Set<Trabajador>()
+                                 .AsNoTracking()
+                                 .Where(a => a.Activo == 1)
+                                 .ToListAsync();
+        }
+
+        public async override Task<IReadOnlyList<Trabajador>> FindAllAsync()
+        {
+            return await _context.Set<Trabajador>()
+                                 .Include(t => t.Categoria)
+                                 .Include(t => t.Regimen)
+                                 .Include(c => c.TipoDocumento)
+                                 .AsNoTracking()
+                                 .ToListAsync();
+        }
+    }
+}
