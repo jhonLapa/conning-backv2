@@ -20,9 +20,9 @@ namespace Application.Mantenedores.Dtos.Trabajadores
         public string Email { get; set; }
         public string Sexo { get; set; }
         public string EstadoCivil { get; set; }
-        public bool Activo { get; set; }
+        public int Estado { get; set; }
         public string Direccion { get; set; }
-        public bool AsignacionFamiliar { get; set; }
+        public int AsignacionFamiliar { get; set; }
         public int Hijos { get; set; }
         public DateTime FechaCreacion { get; set; }
         public string? UsuarioCreacion { get; set; }

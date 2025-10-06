@@ -7,12 +7,12 @@ using Infraestructure.Repositories.Interfaces;
 
 namespace Application.CuentasBancariasTrabajador.Services
 {
-    public class EmployeeBankAccountService : IEmployeeBankAccountServices
+    public class CuentaBancariaTrabajadorService : ICuentaBancariaTrabajadorServices
     {
         private readonly ICuentaBancariaTrabajadorRepositorio _employeeBankAccountRepositorio;
         private readonly IMapper _mapper;
 
-        public EmployeeBankAccountService(ICuentaBancariaTrabajadorRepositorio employeeBankAccountRepositorio, IMapper mapper)
+        public CuentaBancariaTrabajadorService(ICuentaBancariaTrabajadorRepositorio employeeBankAccountRepositorio, IMapper mapper)
         {
             _employeeBankAccountRepositorio = employeeBankAccountRepositorio;
             _mapper = mapper;   

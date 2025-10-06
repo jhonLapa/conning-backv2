@@ -13,7 +13,7 @@
         public string Email { get; set; }
         public string Sexo { get; set; }
         public string EstadoCivil { get; set; }
-        public int Activo { get; set; }
+        public int Estado { get; set; }
         public string Direccion { get; set; }
         public int AsignacionFamiliar { get; set; }
         public int Hijos { get; set; }

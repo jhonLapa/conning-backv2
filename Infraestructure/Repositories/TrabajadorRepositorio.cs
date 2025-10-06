@@ -35,7 +35,7 @@ namespace Infraestructure.Repositories
                 contex = column switch
                 {
                     "name" => order == "desc" ? contex.OrderByDescending(p => p.ApellidosNombres) : contex.OrderBy(p => p.ApellidosNombres),
-                    "status" => order == "desc" ? contex.OrderByDescending(p => p.Activo) : contex.OrderBy(p => p.Activo),
+                    "status" => order == "desc" ? contex.OrderByDescending(p => p.Estado) : contex.OrderBy(p => p.Estado),
                     "createAt" => order == "desc" ? contex.OrderByDescending(p => p.FechaCreacion) : contex.OrderBy(p => p.FechaCreacion),
                 };
 
@@ -53,8 +53,8 @@ namespace Infraestructure.Repositories
 
                     if (id == "status")
                     {
-                        if (value == "activo") contex = contex.Where(p => p.Activo == 1);
-                        if (value == "inactivo") contex = contex.Where(p => p.Activo == 0);
+                        if (value == "activo") contex = contex.Where(p => p.Estado == 1);
+                        if (value == "inactivo") contex = contex.Where(p => p.Estado == 0);
                     }
                     else if (id == "name") contex = contex.Where(p => p.ApellidosNombres.Contains(value));
 
@@ -85,7 +85,7 @@ namespace Infraestructure.Repositories
         {
             return await _context.Set<Trabajador>()
                                  .AsNoTracking()
-                                 .Where(a => a.Activo == 1)
+                                 .Where(a => a.Estado == 1)
                                  .ToListAsync();
         }
 

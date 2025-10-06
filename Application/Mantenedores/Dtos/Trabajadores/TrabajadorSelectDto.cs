@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Application.Mantenedores.Dtos.Trabajadores
+﻿namespace Application.Mantenedores.Dtos.Trabajadores
 {
     public class TrabajadorSelectDto
     {
+        public int IdTrabajador { get; set; }
+        public string NumeroDocumento { get; set; }
+        public string ApellidosNombres { get; set; }
     }
 }

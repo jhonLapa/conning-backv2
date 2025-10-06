@@ -6,10 +6,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infraestructure.Repositories
 {
-    public class ClienteRespositorio : CrudCoreRespository<Cliente, int>, IClienteRepositorio
+    public class ClienteRepositorio : CrudCoreRespository<Cliente, int>, IClienteRepositorio
     {
         private readonly ApplicationDbContext _context;
-        public ClienteRespositorio(ApplicationDbContext context) : base(context) => _context = context;
+        public ClienteRepositorio(ApplicationDbContext context) : base(context) => _context = context;
 
         public async Task<PaginadoResponse<Cliente>> BusquedaPaginado(PaginationRequest dto)
         {
