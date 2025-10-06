@@ -3,7 +3,7 @@
 
     public class Venta
     {
-         public int IdVenta { get; set; }
+        public int IdVenta { get; set; }
         public int IdTipoComprobante { get; set; }
         public string Serie { get; set; } = null!;
         public string Numero { get; set; } = null!;

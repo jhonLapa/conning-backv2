@@ -1,4 +1,6 @@
-﻿namespace Domain
+﻿using System.Text.Json.Serialization;
+
+namespace Domain
 {
     public class Trabajador
     {
@@ -38,6 +40,8 @@
         public Categoria? Categoria { get; set; }
         public RegimenPrevisional? Regimen { get; set; }
         public TipoDocumento? TipoDocumento { get; set; }
+        [JsonIgnore]
+        public ICollection<ProyectoEncargado> proyectoEncargados { get; set; } = new List<ProyectoEncargado>();
 
         // ✅ Relaciones 1:N
         public ICollection<CuentaBancariaTrabajador> CuentasBancarias { get; set; } = new List<CuentaBancariaTrabajador>();
