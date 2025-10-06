@@ -99,5 +99,19 @@ namespace DinsidesBack.Controllers
             return TypedResults.BadRequest();
         }
 
+        // =====================================
+        // 🔹 Crear trabajador con cuentas
+        // =====================================
+        [HttpPost("with-accounts")]
+        [AllowAnonymous]
+        public async Task<Results<BadRequest, Ok<OperationResult<TrabajadorDto>>>> PostWithAccounts([FromBody] TrabajadorWithAccountsSaveDto request)
+        {
+            var response = await _trabajadorService.CreateWithAccountsAsync(request);
+            if (response != null) return TypedResults.Ok(response);
+            return TypedResults.BadRequest();
+        }
+
+
+
     }
 }

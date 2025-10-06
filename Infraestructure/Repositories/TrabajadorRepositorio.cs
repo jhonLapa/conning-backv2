@@ -92,11 +92,29 @@ namespace Infraestructure.Repositories
         public async override Task<IReadOnlyList<Trabajador>> FindAllAsync()
         {
             return await _context.Set<Trabajador>()
-                                 .Include(t => t.Categoria)
-                                 .Include(t => t.Regimen)
-                                 .Include(c => c.TipoDocumento)
-                                 .AsNoTracking()
-                                 .ToListAsync();
+                .Include(t => t.Categoria)
+                .Include(t => t.Regimen)
+                .Include(t => t.TipoDocumento)
+                .Include(t => t.CuentasBancarias) // ✅ incluir cuentas
+                    .ThenInclude(cb => cb.Banco)   // opcional: también el banco
+                .AsNoTracking()
+                .ToListAsync();
         }
+
+        public async override Task<Trabajador?> FindByIdAsync(int id)
+        {
+            var response = await _context.Set<Trabajador>()
+                .Include(t => t.Categoria)
+                .Include(t => t.Regimen)
+                .Include(t => t.TipoDocumento)
+                .Include(t => t.CuentasBancarias) // ✅ incluir cuentas
+                    .ThenInclude(cb => cb.Banco)
+                .FirstOrDefaultAsync(t => t.IdTrabajador == id);
+
+            return response;
+        }
+
+
+
     }
 }

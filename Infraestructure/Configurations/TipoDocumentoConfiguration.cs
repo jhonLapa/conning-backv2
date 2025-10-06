@@ -12,8 +12,21 @@ namespace Infraestructure.Configurations
 
             builder.HasKey(t => t.IdTipoDocumento);
 
-            builder.Property(t => t.Nombre).HasMaxLength(50).IsRequired();
-            builder.Property(t => t.Codigo).HasMaxLength(10).IsRequired();
+            builder.Property(t => t.Nombre)
+                   .HasMaxLength(50)
+                   .IsRequired();
+
+            builder.Property(t => t.Codigo)
+                   .HasMaxLength(10)
+                   .IsRequired();
+
+            // 🔗 Evitar duplicación de FK con Trabajador
+                builder.HasMany(t => t.Trabajadores)
+                 .WithOne(t => t.TipoDocumento)
+                 .HasForeignKey(t => t.TipoDocumentoId)
+                 .HasConstraintName("FK_Trabajadores_TiposDocumento")
+                 .OnDelete(DeleteBehavior.Restrict);
+
         }
     }
 }

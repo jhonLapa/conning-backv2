@@ -11,7 +11,16 @@ namespace Infraestructure.Configurations
             builder.ToTable("Categorias");
             builder.HasKey(c => c.IdCategoria);
 
-            builder.Property(c => c.Nombre).HasMaxLength(100).IsRequired();
+            builder.Property(c => c.Nombre)
+                   .HasMaxLength(100)
+                   .IsRequired();
+
+            // 🔗 Evitar columna fantasma CategoriaIdCategoria
+            builder.HasMany(c => c.Trabajadores)
+                   .WithOne(t => t.Categoria)
+               .HasForeignKey(t => t.IdCategoria)
+               .HasConstraintName("FK_Trabajadores_Categorias")
+               .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

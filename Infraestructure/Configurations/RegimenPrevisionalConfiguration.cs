@@ -42,6 +42,14 @@ namespace Infraestructure.Configurations
 
             builder.Property(r => r.Estado)
                    .IsRequired(); // NOT NULL
+
+            // 🔗 Evitar columna fantasma RegimenPrevisionalIdRegimen
+            builder.HasMany(r => r.Trabajadores)
+              .WithOne(t => t.Regimen)
+              .HasForeignKey(t => t.IdRegimen)
+              .HasConstraintName("FK_Trabajadores_RegimenesPrevisionales")
+              .OnDelete(DeleteBehavior.Restrict);
+
         }
     }
 }
