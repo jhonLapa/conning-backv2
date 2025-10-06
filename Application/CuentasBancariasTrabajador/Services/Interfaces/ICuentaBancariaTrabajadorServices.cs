@@ -3,7 +3,7 @@ using Application.CuentasBancariasTrabajador.Dtos;
 
 namespace Application.CuentasBancariasTrabajador.Services.Interfaces
 {
-    public interface IEmployeeBankAccountServices : ICrudCoreService<CuentaBancariaTrabajadorDto, CuentaBancariaTrabajadorSaveDto , int>
+    public interface ICuentaBancariaTrabajadorServices : ICrudCoreService<CuentaBancariaTrabajadorDto, CuentaBancariaTrabajadorSaveDto , int>
     {
     }
 }

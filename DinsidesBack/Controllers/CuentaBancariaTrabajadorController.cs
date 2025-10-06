@@ -11,8 +11,8 @@ namespace DinsidesBack.Controllers
     [ApiController]
     public class CuentaBancariaTrabajadorController : ControllerBase
     {
-        private readonly IEmployeeBankAccountServices _employeeBankAccountServices;
-        public CuentaBancariaTrabajadorController(IEmployeeBankAccountServices employeeBankAccountServices)
+        private readonly ICuentaBancariaTrabajadorServices _employeeBankAccountServices;
+        public CuentaBancariaTrabajadorController(ICuentaBancariaTrabajadorServices employeeBankAccountServices)
         {
             _employeeBankAccountServices = employeeBankAccountServices;
         }

@@ -17,6 +17,7 @@ namespace Domain
         public ICollection<Cliente> Clientes { get; set; } = new List<Cliente>();
         [JsonIgnore]
         public ICollection<Proveedor> Proveedores { get; set; } = new List<Proveedor>();
+        [JsonIgnore]
         public ICollection<Trabajador> Trabajadores { get; set; } = new List<Trabajador>();
     }
 }

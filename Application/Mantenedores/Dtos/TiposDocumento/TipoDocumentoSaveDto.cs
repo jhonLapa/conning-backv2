@@ -3,6 +3,7 @@
     public class TipoDocumentoSaveDto
     {
         public string Nombre { get; set; } = null!;
-        public string Codigo { get; set; } = null!;
+        public string? UsuarioModificacion { get; set; }
+
     }
 }

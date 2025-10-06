@@ -5,7 +5,7 @@ using AutoMapper;
 using Domain;
 using Infraestructure.Repositories.Interfaces;
 
-namespace Application.DetalleVenta.Services
+namespace Application.DetalleVentas.Services
 {
     public class DetalleVentaService : IDetalleVentaServices
     {
@@ -30,7 +30,7 @@ namespace Application.DetalleVenta.Services
 
         public async Task<OperationResult<DetalleVentaDto>> CreateAsync(DetalleVentaSaveDto saveDto)
         {
-            var detalleVenta = _mapper.Map<Domain.DetalleVenta>(saveDto);
+            var detalleVenta = _mapper.Map<DetalleVenta>(saveDto);
 
 
             await _detalleVentaRepositorio.SaveAsync(detalleVenta);

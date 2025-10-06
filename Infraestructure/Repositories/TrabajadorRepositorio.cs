@@ -3,19 +3,27 @@ using Infraestructure.Contexts;
 using Infraestructure.Core.Repositories;
 using Infraestructure.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Infraestructure.Repositories
 {
-    public class ClienteRespositorio : CrudCoreRespository<Cliente, int>, IClienteRepositorio
+    public class TrabajadorRepositorio : CrudCoreRespository<Trabajador, int>, ITrabajadorRepositorio
     {
         private readonly ApplicationDbContext _context;
-        public ClienteRespositorio(ApplicationDbContext context) : base(context) => _context = context;
+        public TrabajadorRepositorio(ApplicationDbContext context) : base(context) => _context = context;
 
-        public async Task<PaginadoResponse<Cliente>> BusquedaPaginado(PaginationRequest dto)
+        public async Task<PaginadoResponse<Trabajador>> BusquedaPaginado(PaginationRequest dto)
         {
-            var contex = _context.Set<Cliente>()
-                     .Include(c => c.TipoDocumento) 
-                     .AsQueryable();
+            var contex = _context.Set<Trabajador>()
+                        //.Include(t => t.Categoria)
+                        //.Include(t => t.Regimen)
+                        .Include(t => t.TipoDocumento)
+                        .AsQueryable();
+
 
             if (!string.IsNullOrWhiteSpace(dto.Sort))
             {
@@ -26,7 +34,7 @@ namespace Infraestructure.Repositories
 
                 contex = column switch
                 {
-                    "name" => order == "desc" ? contex.OrderByDescending(p => p.NombreCompleto) : contex.OrderBy(p => p.NombreCompleto),
+                    "name" => order == "desc" ? contex.OrderByDescending(p => p.ApellidosNombres) : contex.OrderBy(p => p.ApellidosNombres),
                     "status" => order == "desc" ? contex.OrderByDescending(p => p.Estado) : contex.OrderBy(p => p.Estado),
                     "createAt" => order == "desc" ? contex.OrderByDescending(p => p.FechaCreacion) : contex.OrderBy(p => p.FechaCreacion),
                 };
@@ -48,7 +56,7 @@ namespace Infraestructure.Repositories
                         if (value == "activo") contex = contex.Where(p => p.Estado == 1);
                         if (value == "inactivo") contex = contex.Where(p => p.Estado == 0);
                     }
-                    else if (id == "name") contex = contex.Where(p => p.NombreCompleto.Contains(value));
+                    else if (id == "name") contex = contex.Where(p => p.ApellidosNombres.Contains(value));
 
                 }
             }
@@ -68,40 +76,27 @@ namespace Infraestructure.Repositories
             };
 
 
-            PaginadoResponse<Cliente> response = new(data, meta);
+            PaginadoResponse<Trabajador> response = new(data, meta);
 
             return response;
         }
 
-        public  async Task<IReadOnlyList<Cliente>> SelectActivo()
+        public async Task<IReadOnlyList<Trabajador>> SelectActivo()
         {
-            return await _context.Set<Cliente>()
+            return await _context.Set<Trabajador>()
                                  .AsNoTracking()
                                  .Where(a => a.Estado == 1)
                                  .ToListAsync();
         }
 
-
-        public async override Task<Cliente?> FindByIdAsync(int id)
+        public async override Task<IReadOnlyList<Trabajador>> FindAllAsync()
         {
-            var response = await _context.Set<Cliente>()
-                .Include(x => x.TipoDocumento)
-                .FirstOrDefaultAsync(x => x.IdCliente == id);
-
-            return response;
-        }
-
-
-        public async override Task<IReadOnlyList<Cliente>> FindAllAsync()
-        {
-            return await _context.Set<Cliente>()
-                                 .Include(c => c.TipoDocumento)  
+            return await _context.Set<Trabajador>()
+                                 .Include(t => t.Categoria)
+                                 .Include(t => t.Regimen)
+                                 .Include(c => c.TipoDocumento)
                                  .AsNoTracking()
                                  .ToListAsync();
         }
-
-
     }
 }
-
-

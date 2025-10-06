@@ -30,7 +30,7 @@ namespace Application.DetalleCompras.Service
 
         public async Task<OperationResult<DetalleCompraDto>> CreateAsync(DetalleCompraSaveDto saveDto)
         {
-            var detalleCompra = _mapper.Map<Domain.DetalleCompra>(saveDto);
+            var detalleCompra = _mapper.Map<DetalleCompra>(saveDto);
 
             await _detalleCompraRepositorio.SaveAsync(detalleCompra);
 

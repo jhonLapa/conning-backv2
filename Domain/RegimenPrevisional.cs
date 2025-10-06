@@ -1,4 +1,6 @@
-﻿namespace Domain
+﻿using System.Text.Json.Serialization;
+
+namespace Domain
 {
     public class RegimenPrevisional
     {
@@ -17,6 +19,7 @@
         public int Estado { get; set; }
 
         // Relaciones
+        [JsonIgnore]
         public ICollection<Trabajador> Trabajadores { get; set; } = new List<Trabajador>();
     }
 }

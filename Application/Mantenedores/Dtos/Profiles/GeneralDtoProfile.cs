@@ -10,6 +10,7 @@ using Application.Mantenedores.Dtos.RegimenesPrevisionales;
 using Application.Mantenedores.Dtos.Roles;
 using Application.Mantenedores.Dtos.TiposComprobantes;
 using Application.Mantenedores.Dtos.TiposDocumento;
+using Application.Mantenedores.Dtos.Trabajadores;
 using AutoMapper;
 using Domain;
 
@@ -81,6 +82,10 @@ namespace Application.Mantenedores.Dtos.Profiles
             CreateMap<Proveedor, ProveedorSelectDto>().ReverseMap();
 
 
+            // Grupo Trabajador
+            CreateMap<Trabajador, TrabajadorDto>().ReverseMap();
+            CreateMap<Trabajador, TrabajadorSaveDto>().ReverseMap();
+            CreateMap<Trabajador, TrabajadorSelectDto>().ReverseMap();
         }
     }
 }

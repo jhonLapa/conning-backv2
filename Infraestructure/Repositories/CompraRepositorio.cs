@@ -119,5 +119,20 @@ namespace Infraestructure.Repositories
                                  .Where(v => v.IdProveedor == proveedorId)
                                  .ToListAsync();
         }
+
+        public async Task<Compra?> FindByNumeroComprobanteAsync(string serie, string numero, int idTipoComprobante, int? excluirId = null)
+        {
+            var query = _context.Set<Compra>()
+                .AsNoTracking()
+                .Where(c =>
+                    c.IdTipoComprobante == idTipoComprobante &&
+                    c.Serie.ToLower() == serie.ToLower() &&
+                    c.Numero.ToLower() == numero.ToLower());
+
+            if (excluirId.HasValue)
+                query = query.Where(c => c.IdCompra != excluirId.Value);
+
+            return await query.FirstOrDefaultAsync();
+        }
     }
 }

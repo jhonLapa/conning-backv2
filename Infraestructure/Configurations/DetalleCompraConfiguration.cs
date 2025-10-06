@@ -25,6 +25,10 @@ namespace Infraestructure.Configurations
             builder.Property(dv => dv.ValorTotal)
                    .HasPrecision(18, 2);
 
+            builder.Property(v => v.FechaCreacion)
+             .HasColumnType("datetime2")  // tu tabla está como DATETIME
+             .IsRequired();
+
 
             builder.HasOne(dc => dc.Compra)
                    .WithMany(c => c.Detalles)

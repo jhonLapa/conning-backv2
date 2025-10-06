@@ -112,6 +112,18 @@ namespace Infraestructure.Repositories
         }
 
 
+        public async Task DeleteByCompraIdAsync(int idCompra)
+        {
+            var pagos = await _context.Set<PagoCompraCredito>()
+                                      .Where(p => p.IdCompra == idCompra)
+                                      .ToListAsync();
+
+            if (pagos.Any())
+            {
+                _context.Set<PagoCompraCredito>().RemoveRange(pagos);
+                await _context.SaveChangesAsync();
+            }
+        }
 
 
     }

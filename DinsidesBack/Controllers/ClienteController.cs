@@ -95,6 +95,8 @@ namespace DinsidesBack.Controllers
             if (response != null) return TypedResults.Ok(response);
 
             return TypedResults.BadRequest();
+
+
         }
 
     }

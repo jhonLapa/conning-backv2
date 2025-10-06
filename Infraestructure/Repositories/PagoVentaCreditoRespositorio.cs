@@ -113,7 +113,18 @@ namespace Infraestructure.Repositories
         }
 
 
+        public async Task DeleteByVentaIdAsync(int idVenta)
+        {
+            var pagos = await _context.Set<PagoVentaCredito>()
+                                      .Where(p => p.IdVenta == idVenta)
+                                      .ToListAsync();
 
+            if (pagos.Any())
+            {
+                _context.Set<PagoVentaCredito>().RemoveRange(pagos);
+                await _context.SaveChangesAsync();
+            }
+        }
 
     }
 }
