@@ -11,6 +11,7 @@ namespace Infraestructure.Configurations
             builder.ToTable("Compras");
             builder.HasKey(v => v.IdCompra);
 
+            // 🔹 Strings
             builder.Property(v => v.Serie)
                    .HasMaxLength(20)
                    .IsRequired();
@@ -29,31 +30,38 @@ namespace Infraestructure.Configurations
             builder.Property(v => v.Observacion)
                    .HasColumnType("TEXT");
 
-            // 👉 Fechas
-            builder.Property(v => v.FechaEmision)
-                   .HasColumnType("date")      // tu tabla está como DATE
-                   .IsRequired();
-
-            builder.Property(v => v.FechaCreacion)
-                   .HasColumnType("datetime2")
-                   .IsRequired();
-
-            builder.Property(v => v.FechaModificacion)
-                   .HasColumnType("datetime2");
-
-
             builder.Property(v => v.UsuarioCreacion)
-                  .HasMaxLength(50);
+                   .HasMaxLength(50);
 
             builder.Property(v => v.UsuarioModificacion)
                    .HasMaxLength(50);
 
-            // 👉 Decimales
-            builder.Property(v => v.ImporteTotal)
-                   .HasPrecision(12, 2)        // coincide con la tabla
+            // 🔹 Fechas
+            builder.Property(v => v.FechaEmision)
+                   .HasColumnType("date")
                    .IsRequired();
 
-            // Relaciones
+            builder.Property(v => v.FechaCreacion)
+                   .HasColumnType("datetime2(3)")
+                   .IsRequired();
+
+            builder.Property(v => v.FechaModificacion)
+                   .HasColumnType("datetime2(3)");
+
+            // 🔹 Campos decimales con precisión explícita
+            builder.Property(v => v.SubTotal).HasPrecision(12, 2);
+            builder.Property(v => v.Anticipos).HasPrecision(12, 2);
+            builder.Property(v => v.Descuentos).HasPrecision(12, 2);
+            builder.Property(v => v.ValorCompra).HasPrecision(12, 2);
+            builder.Property(v => v.Isc).HasPrecision(12, 2);
+            builder.Property(v => v.Igv).HasPrecision(12, 2);
+            builder.Property(v => v.Icbper).HasPrecision(12, 2);
+            builder.Property(v => v.OtrosCargos).HasPrecision(12, 2);
+            builder.Property(v => v.OtrosTributos).HasPrecision(12, 2);
+            builder.Property(v => v.MontoRedondeo).HasPrecision(12, 2);
+            builder.Property(v => v.ImporteTotal).HasPrecision(12, 2).IsRequired();
+
+            // 🔹 Relaciones
             builder.HasOne(c => c.Proveedor)
                    .WithMany(p => p.Compras)
                    .HasForeignKey(c => c.IdProveedor);

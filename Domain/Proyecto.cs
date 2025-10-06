@@ -18,8 +18,10 @@ namespace Domain
         public string? UsuarioModificacion { get; set; }
 
         // 🔗 Relaciones
-        [JsonIgnore]   // evita el ciclo
+        [JsonIgnore]
         public Cliente Cliente { get; set; } = null!;
         public ICollection<TrabajadorProyecto> TrabajadoresProyectos { get; set; } = new List<TrabajadorProyecto>();
+        public ICollection<Planilla> Planillas { get; set; } = new List<Planilla>(); // 👈 nueva relación
+
     }
 }
