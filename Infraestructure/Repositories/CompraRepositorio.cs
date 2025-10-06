@@ -14,8 +14,8 @@ namespace Infraestructure.Repositories
         public async Task<PaginadoResponse<Compra>> BusquedaPaginado(PaginationRequest dto)
         {
             var contex = _context.Set<Compra>()
-                     .Include(c => c.TipoComprobante)
                      .Include(c => c.Proveedor)
+                     .Include(c => c.TipoComprobante)
                      .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(dto.Sort))
@@ -49,7 +49,7 @@ namespace Infraestructure.Repositories
                         if (value == "activo") contex = contex.Where(p => p.Estado == 1);
                         if (value == "inactivo") contex = contex.Where(p => p.Estado == 0);
                     }
-                    else if (id == "serie") contex = contex.Where(p => p.Serie.Contains(value));
+                    else if (id == "name") contex = contex.Where(p => p.Serie.Contains(value));
 
                 }
             }
@@ -85,23 +85,54 @@ namespace Infraestructure.Repositories
 
         public async override Task<Compra?> FindByIdAsync(int id)
         {
-            var response = await _context.Set<Compra>()
-                .Include(x => x.TipoComprobante)
-                .Include(x => x.Proveedor)
-                .FirstOrDefaultAsync(x => x.IdCompra == id);
-
-            return response;
+            return await _context.Set<Compra>()
+                                  .AsSplitQuery() // 👈 evita el warning MultipleCollectionInclude
+                                  .Include(c => c.Proveedor)
+                                  .Include(c => c.TipoComprobante)
+                                  .Include(c => c.Detalles)
+                                  .Include(c => c.PagosCredito)
+                                  .FirstOrDefaultAsync(x => x.IdCompra == id);          
         }
 
 
         public async override Task<IReadOnlyList<Compra>> FindAllAsync()
         {
             return await _context.Set<Compra>()
-                                 .Include(c => c.TipoComprobante)
-                                 .Include(c => c.Proveedor)
                                  .AsNoTracking()
+                                 .AsSplitQuery() // 👈 importante aquí también
+                                 .Include(c => c.Proveedor)
+                                 .Include(c => c.TipoComprobante)          
+                                 .Include(c => c.Detalles)
+                                 .Include(c => c.PagosCredito)
                                  .ToListAsync();
         }
 
+        public async Task<List<Compra>> FindByProveedorIdAsync(int proveedorId)
+        {
+            return await _context.Set<Compra>()
+                                 .AsNoTracking()                                
+                                 .AsSplitQuery() // evita el warning MultipleCollectionInclude
+                                 .Include(v => v.Proveedor)
+                                 .Include(v => v.TipoComprobante)
+                                 .Include(v => v.Detalles)
+                                 .Include(v => v.PagosCredito)
+                                 .Where(v => v.IdProveedor == proveedorId)
+                                 .ToListAsync();
+        }
+
+        public async Task<Compra?> FindByNumeroComprobanteAsync(string serie, string numero, int idTipoComprobante, int? excluirId = null)
+        {
+            var query = _context.Set<Compra>()
+                .AsNoTracking()
+                .Where(c =>
+                    c.IdTipoComprobante == idTipoComprobante &&
+                    c.Serie.ToLower() == serie.ToLower() &&
+                    c.Numero.ToLower() == numero.ToLower());
+
+            if (excluirId.HasValue)
+                query = query.Where(c => c.IdCompra != excluirId.Value);
+
+            return await query.FirstOrDefaultAsync();
+        }
     }
 }

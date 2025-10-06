@@ -8,6 +8,8 @@ namespace Infraestructure.Repositories.Interfaces
         Task<PaginadoResponse<Venta>> BusquedaPaginado(PaginationRequest dto);
         Task<IReadOnlyList<Venta>> SelectActivo();
         Task<List<Venta>> FindByClienteIdAsync(int clienteId);
+        Task<Venta?> FindByNumeroComprobanteAsync(string serie, string numero, int idTipoComprobante, int? excluirId = null);
+
 
     }
 }

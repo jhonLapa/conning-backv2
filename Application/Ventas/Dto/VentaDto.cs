@@ -41,6 +41,9 @@ namespace Application.Ventas.Dto
         public DateTime FechaCreacion { get; set; }
         public string? UsuarioCreacion { get; set; }
 
+        public DateTime? FechaModificacion { get; set; }
+        public string? UsuarioModificacion { get; set; }
+
         // 🔗 Relaciones (solo lo que necesitas mostrar)
         public ClienteDto Cliente { get; set; } = null!;
         public TipoComprobanteDto TipoComprobante { get; set; } = null!;

@@ -1,5 +1,4 @@
-﻿
-using Domain;
+﻿using Domain;
 using Infraestructure.Contexts;
 using Infraestructure.Core.Repositories;
 using Infraestructure.Repositories.Interfaces;
@@ -7,14 +6,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infraestructure.Repositories
 {
-    public class PagoVentaCreditoRespositorio : CrudCoreRespository<PagoVentaCredito, int>, IPagoVentaCreditoRepositorio
+    public class PagoCompraCreditoRespositorio : CrudCoreRespository<PagoCompraCredito, int>, IPagoCompraCreditoRepositorio
     {
         private readonly ApplicationDbContext _context;
-        public PagoVentaCreditoRespositorio(ApplicationDbContext context) : base(context) => _context = context;
+        public PagoCompraCreditoRespositorio(ApplicationDbContext context) : base(context) => _context = context;
 
-        public async Task<PaginadoResponse<PagoVentaCredito>> BusquedaPaginado(PaginationRequest dto)
+        public async Task<PaginadoResponse<PagoCompraCredito>> BusquedaPaginado(PaginationRequest dto)
         {
-            var contex = _context.Set<PagoVentaCredito>().AsQueryable();
+            var contex = _context.Set<PagoCompraCredito>().AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(dto.Sort))
             {
@@ -25,8 +24,8 @@ namespace Infraestructure.Repositories
 
                 contex = column switch
                 {
-                    "idPagoVentaCredito" => order == "desc" ? contex.OrderByDescending(p => p.IdPagoVentaCredito) : contex.OrderBy(p => p.IdPagoVentaCredito),
-                    "idVenta" => order == "desc" ? contex.OrderByDescending(p => p.IdVenta) : contex.OrderBy(p => p.IdVenta),
+                    "idPagoCompraCredito" => order == "desc" ? contex.OrderByDescending(p => p.IdPagoCompraCredito) : contex.OrderBy(p => p.IdPagoCompraCredito),
+                    "idCompra" => order == "desc" ? contex.OrderByDescending(p => p.IdCompra) : contex.OrderBy(p => p.IdCompra),
                     "createAt" => order == "desc" ? contex.OrderByDescending(p => p.FechaCreacion) : contex.OrderBy(p => p.FechaCreacion),
                 };
 
@@ -44,9 +43,9 @@ namespace Infraestructure.Repositories
 
                     switch (id)
                     {
-                        case "idVenta":
-                            if (int.TryParse(value, out int ventaId))
-                                contex = contex.Where(p => p.IdVenta == ventaId);
+                        case "idCompra":
+                            if (int.TryParse(value, out int compraId))
+                                contex = contex.Where(p => p.IdCompra == compraId);
                             break;
                     }
                 }
@@ -68,63 +67,64 @@ namespace Infraestructure.Repositories
             };
 
 
-            PaginadoResponse<PagoVentaCredito> response = new(data, meta);
+            PaginadoResponse<PagoCompraCredito> response = new(data, meta);
 
             return response;
         }
 
 
-        public async Task<List<PagoVentaCredito>> ObtenerPorVentaAsync(int idVenta)
+        public async Task<List<PagoCompraCredito>> ObtenerPorCompraAsync(int idCompra)
         {
-            return await _context.Set<PagoVentaCredito>()
-                                 .Include(d => d.Venta)
-                                     .ThenInclude(v => v.Cliente)          // Traer Cliente
-                                 .Include(d => d.Venta)
+            return await _context.Set<PagoCompraCredito>()
+                                 .Include(d => d.Compra)
+                                     .ThenInclude(v => v.Proveedor)          // Traer Proveedor
+                                 .Include(d => d.Compra)
                                      .ThenInclude(v => v.TipoComprobante)  // Traer TipoComprobante
-                                 .Where(d => d.IdVenta == idVenta)
+                                 .Where(d => d.IdCompra == idCompra)
                                  .ToListAsync();
         }
 
 
 
-        public async override Task<PagoVentaCredito?> FindByIdAsync(int id)
+        public async override Task<PagoCompraCredito?> FindByIdAsync(int id)
         {
-            var response = await _context.Set<PagoVentaCredito>()
-                .Include(x => x.Venta)
-                    .ThenInclude(v => v.Cliente)
-                .Include(x => x.Venta)
+            var response = await _context.Set<PagoCompraCredito>()
+                .Include(x => x.Compra)
+                    .ThenInclude(v => v.Proveedor)
+                .Include(x => x.Compra)
                     .ThenInclude(v => v.TipoComprobante)
-                .FirstOrDefaultAsync(x => x.IdPagoVentaCredito == id);
+                .FirstOrDefaultAsync(x => x.IdPagoCompraCredito == id);
 
             return response;
         }
 
 
 
-        public async override Task<IReadOnlyList<PagoVentaCredito>> FindAllAsync()
+        public async override Task<IReadOnlyList<PagoCompraCredito>> FindAllAsync()
         {
-            return await _context.Set<PagoVentaCredito>()
-                .Include(c => c.Venta)
-                    .ThenInclude(v => v.Cliente)
-                .Include(c => c.Venta)
+            return await _context.Set<PagoCompraCredito>()
+                .Include(c => c.Compra)
+                    .ThenInclude(v => v.Proveedor)
+                .Include(c => c.Compra)
                     .ThenInclude(v => v.TipoComprobante)
                 .AsNoTracking()
                 .ToListAsync();
         }
 
 
-        public async Task DeleteByVentaIdAsync(int idVenta)
+        public async Task DeleteByCompraIdAsync(int idCompra)
         {
-            var pagos = await _context.Set<PagoVentaCredito>()
-                                      .Where(p => p.IdVenta == idVenta)
+            var pagos = await _context.Set<PagoCompraCredito>()
+                                      .Where(p => p.IdCompra == idCompra)
                                       .ToListAsync();
 
             if (pagos.Any())
             {
-                _context.Set<PagoVentaCredito>().RemoveRange(pagos);
+                _context.Set<PagoCompraCredito>().RemoveRange(pagos);
                 await _context.SaveChangesAsync();
             }
         }
+
 
     }
 }

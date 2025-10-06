@@ -1,5 +1,6 @@
 ﻿using Application.Ventas.Dto;
 using AutoMapper;
+using Domain;
 
 namespace Application.Ventas.Dtos.Profiles
 {
@@ -7,17 +8,23 @@ namespace Application.Ventas.Dtos.Profiles
     {
         public VentaProfile()
         {
-            // Venta
-            CreateMap<Domain.Venta, VentaDto>().ReverseMap();
-            CreateMap<Domain.Venta, VentaSaveDto>().ReverseMap();
-            CreateMap<Domain.Venta, VentaSelectDto>().ReverseMap();
-            CreateMap<Domain.Venta, VentaCompletoSaveDto>().ReverseMap();
+            // Venta básica
+            CreateMap<Venta, VentaDto>().ReverseMap();
+            CreateMap<Venta, VentaSaveDto>().ReverseMap();
+            CreateMap<Venta, VentaSelectDto>().ReverseMap();
 
-            // DetalleVenta <-> DetallesVentaSaveDto
-            CreateMap<Domain.DetalleVenta, DetallesVentaSaveDto>().ReverseMap();
+            // ⚙️ VentaCompletoSaveDto <-> Venta
+            // Se ignoran las colecciones Detalles y PagosCredito para evitar duplicados
+            CreateMap<VentaCompletoSaveDto, Venta>()
+                .ForMember(dest => dest.Detalles, opt => opt.Ignore())
+                .ForMember(dest => dest.PagosCredito, opt => opt.Ignore())
+                .ReverseMap();
 
-            // PagoVentaCredito <-> PagosVentaCreditoSaveDto
-            CreateMap<Domain.PagoVentaCredito, PagosVentaCreditoSaveDto>().ReverseMap();
+            // ✅ DetalleVenta <-> DetallesVentaSaveDto
+            CreateMap<DetalleVenta, DetallesVentaSaveDto>().ReverseMap();
+
+            // ✅ PagoVentaCredito <-> PagosVentaCreditoSaveDto
+            CreateMap<PagoVentaCredito, PagosVentaCreditoSaveDto>().ReverseMap();
         }
     }
 }

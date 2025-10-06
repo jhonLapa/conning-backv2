@@ -36,6 +36,9 @@
         public DateTime FechaCreacion { get; set; }
         public string? UsuarioCreacion { get; set; }
 
+        public DateTime? FechaModificacion { get; set; }
+        public string? UsuarioModificacion { get; set; }
+
         // 🔗 Relaciones
         public Cliente Cliente { get; set; } = null!;
         public TipoComprobante TipoComprobante { get; set; } = null!;

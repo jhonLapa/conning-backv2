@@ -31,20 +31,34 @@ namespace Application.Mantenedores.Services
 
         public async Task<OperationResult<TipoDocumentoDto>> CreateAsync(TipoDocumentoSaveDto saveDto)
         {
-            var documento =  _mapper.Map<TipoDocumento>(saveDto);
-            documento.FechaCreacion = DateTime.Now;
-            documento.Estado = 1;
+            // 🚫 Validar duplicado por nombre
+            var existe = await _documentoRepositorio.ExistsAsync(d =>
+                d.Nombre.ToLower() == saveDto.Nombre.ToLower());
 
-            var response = await _documentoRepositorio.SaveAsync(documento);
+            if (existe)
+                throw new NotFoundCoreException("Ya existe un Tipo de Documento con el mismo nombre.");
 
-            return new OperationResult<TipoDocumentoDto>()
+            // ⚙️ Generar código automáticamente con prefijo "D"
+            var codigoGenerado = await _documentoRepositorio.GenerarCodigoAsync("D");
+
+            var documento = new TipoDocumento
             {
-                Data = _mapper.Map<TipoDocumentoDto>(documento),
-                Message = "Documento Creado Con Exito",
-                Success = true
+                Nombre = saveDto.Nombre,
+                Codigo = codigoGenerado,
+                FechaCreacion = DateTime.Now,
+                Estado = 1
             };
 
+            await _documentoRepositorio.SaveAsync(documento);
+
+            return new OperationResult<TipoDocumentoDto>
+            {
+                Data = _mapper.Map<TipoDocumentoDto>(documento),
+                Message = $"Documento creado con código {codigoGenerado}",
+                Success = true
+            };
         }
+
 
         public async Task<OperationResult<TipoDocumentoDto>> DisabledAsync(int id)
         {
@@ -70,22 +84,36 @@ namespace Application.Mantenedores.Services
         public async Task<OperationResult<TipoDocumentoDto>> EditAsync(int id, TipoDocumentoSaveDto saveDto)
         {
             var documento = await _documentoRepositorio.FindByIdAsync(id);
+            if (documento == null)
+                throw new NotFoundCoreException("Documento no encontrado con ese id.");
+
+            // 🚫 Validar duplicado de nombre (excluyendo el mismo ID)
+            var existeDuplicado = await _documentoRepositorio.ExistsAsync(d =>
+                d.Nombre.ToLower() == saveDto.Nombre.ToLower(), id);
+
+            if (existeDuplicado)
+                throw new NotFoundCoreException("Ya existe otro Tipo de Documento con el mismo nombre.");
+
+            // ⚙️ Actualizar datos
+            documento.Nombre = saveDto.Nombre;
             documento.FechaModificacion = DateTime.Now;
+            documento.UsuarioModificacion = saveDto.UsuarioModificacion ?? "admin";
 
-            if (documento == null) throw new NotFoundCoreException("Documento no encontrado con ese id");
-
-            _mapper.Map(saveDto, documento);
+            // ⚡ Si el código está vacío (caso raro), generar uno nuevo
+            if (string.IsNullOrWhiteSpace(documento.Codigo))
+                documento.Codigo = await _documentoRepositorio.GenerarCodigoAsync("D");
 
             await _documentoRepositorio.SaveAsync(documento);
 
-            return new OperationResult<TipoDocumentoDto>()
+            return new OperationResult<TipoDocumentoDto>
             {
                 Data = _mapper.Map<TipoDocumentoDto>(documento),
-                Message = "Documento Actualizado Con Exito",
+                Message = "Documento actualizado con éxito.",
                 Success = true
             };
-
         }
+
+
 
         public async Task<IReadOnlyList<TipoDocumentoDto>> FindAllAsync()
         {

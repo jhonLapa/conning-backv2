@@ -1,7 +1,4 @@
-﻿
-
-
-using Domain;
+﻿using Domain;
 using Infraestructure.Contexts;
 using Infraestructure.Core.Repositories;
 using Infraestructure.Repositories.Interfaces;

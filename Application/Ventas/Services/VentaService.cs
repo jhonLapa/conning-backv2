@@ -3,10 +3,9 @@ using Application.Ventas.Dto;
 using Application.Ventas.Services.Interfaces;
 using AutoMapper;
 using Domain;
-using Infraestructure.Repositories;
 using Infraestructure.Repositories.Interfaces;
 
-namespace Application.Venta.Services
+namespace Application.Ventas.Servicess
 {
     public class VentaService : IVentaServices
     {
@@ -42,7 +41,7 @@ namespace Application.Venta.Services
 
         public async Task<OperationResult<VentaDto>> CreateAsync(VentaSaveDto saveDto)
         {
-            var venta = _mapper.Map<Domain.Venta>(saveDto);
+            var venta = _mapper.Map<Venta>(saveDto);
 
             venta.FechaCreacion = DateTime.Now;
 
@@ -128,66 +127,129 @@ namespace Application.Venta.Services
             };
         }
 
-
-
         public async Task<OperationResult<VentaDto>> CreateWithDetailsAsync(VentaCompletoSaveDto saveDto)
         {
-            var existeCliente = await _clienteRepositorio.FindByIdAsync(saveDto.IdCliente);
+            // ---------------------------------------------------------
+            // 🔍 Validar cliente
+            // ---------------------------------------------------------
+            var cliente = await _clienteRepositorio.FindByIdAsync(saveDto.IdCliente);
+            if (cliente == null)
+                throw new NotFoundCoreException("Cliente no encontrado con el id especificado.");
 
-            if (existeCliente == null) throw new NotFoundCoreException("Registro no encontrado con el id");
+            // ---------------------------------------------------------
+            // 🚫 Validar que no exista otra venta con la misma serie y número
+            // ---------------------------------------------------------
+            var comprobanteExistente = await _ventaRepositorio.FindByNumeroComprobanteAsync(
+                saveDto.Serie,
+                saveDto.Numero,
+                saveDto.IdTipoComprobante,
+                saveDto.IdVenta == 0 ? null : saveDto.IdVenta
+            );
 
-            // Mapeamos la venta
+            if (comprobanteExistente != null)
+                throw new NotFoundCoreException($"Ya existe una venta registrada con el comprobante {saveDto.Serie}-{saveDto.Numero}.");
 
+            Venta venta;
 
-            var venta = _mapper.Map<Domain.Venta>(saveDto);
-
-            venta.FechaEmision = saveDto.FechaEmision;
-            venta.FechaCreacion = DateTime.Now;
-            // Guardamos la venta principal
-            await _ventaRepositorio.SaveAsync(venta);
-
-            // Guardamos los detalles
-            foreach (var det in saveDto.Detalles)
+            // ---------------------------------------------------------
+            // 🟢 Si IdVenta == 0 → Crear nueva
+            // ---------------------------------------------------------
+            if (saveDto.IdVenta == 0)
             {
-                var detalle = new Domain.DetalleVenta
-                {
-                    IdVenta = venta.IdVenta,
-                    Cantidad = det.Cantidad,
-                    UnidadMedida = det.UnidadMedida,
-                    Descripcion = det.Descripcion,
-                    ValorUnitario = det.ValorUnitario,
-                    ValorTotal = det.ValorTotal,
+                venta = _mapper.Map<Venta>(saveDto);
+                venta.FechaEmision = saveDto.FechaEmision ?? DateTime.Now;
+                venta.FechaCreacion = DateTime.Now;
+                venta.UsuarioCreacion = saveDto.UsuarioCreacion;
 
-                };
+                await _ventaRepositorio.SaveAsync(venta);
+            }
+            // ---------------------------------------------------------
+            // 🟠 Si IdVenta existe → Editar
+            // ---------------------------------------------------------
+            else
+            {
+                venta = await _ventaRepositorio.FindByIdAsync(saveDto.IdVenta);
+                if (venta == null)
+                    throw new NotFoundCoreException($"Venta con id {saveDto.IdVenta} no encontrada.");
 
-                await _detalleVentaRepositorio.SaveAsync(detalle);
+                // Actualizar campos principales
+                venta.IdTipoComprobante = saveDto.IdTipoComprobante;
+                venta.Serie = saveDto.Serie;
+                venta.Numero = saveDto.Numero;
+                venta.FechaEmision = saveDto.FechaEmision ?? venta.FechaEmision;
+                venta.IdCliente = saveDto.IdCliente;
+                venta.FormaPago = saveDto.FormaPago;
+                venta.TipoMoneda = saveDto.TipoMoneda;
+                venta.Observacion = saveDto.Observacion;
+                venta.SubTotal = saveDto.SubTotal;
+                venta.Descuentos = saveDto.Descuentos;
+                venta.ValorVenta = saveDto.ValorVenta;
+                venta.Igv = saveDto.Igv;
+                venta.ImporteTotal = saveDto.ImporteTotal;
+                venta.FechaModificacion = DateTime.Now;
+                venta.UsuarioModificacion = saveDto.UsuarioModificacion;
+
+                await _ventaRepositorio.SaveAsync(venta);
+
+                // 🔥 Limpiar detalles y pagos anteriores
+                await _detalleVentaRepositorio.DeleteByVentaIdAsync(venta.IdVenta);
+                await _pagoVentaCreditoRepositorio.DeleteByVentaIdAsync(venta.IdVenta);
             }
 
-            // Si la forma de pago es crédito
-            if (saveDto.FormaPago.ToLower() == "credito" && saveDto.PagosCredito != null)
+            // ---------------------------------------------------------
+            // 🧾 Guardar detalles
+            // ---------------------------------------------------------
+            if (saveDto.Detalles != null && saveDto.Detalles.Any())
+            {
+                foreach (var det in saveDto.Detalles)
+                {
+                    var detalle = new DetalleVenta
+                    {
+                        IdVenta = venta.IdVenta,
+                        Cantidad = det.Cantidad,
+                        UnidadMedida = det.UnidadMedida,
+                        Descripcion = det.Descripcion,
+                        ValorUnitario = det.ValorUnitario,
+                        ValorTotal = det.ValorTotal,
+                        FechaCreacion = DateTime.Now
+                    };
+                    await _detalleVentaRepositorio.SaveAsync(detalle);
+                }
+            }
+
+            // ---------------------------------------------------------
+            // 💳 Guardar pagos crédito (solo si aplica)
+            // ---------------------------------------------------------
+            if (saveDto.FormaPago.Equals("credito", StringComparison.OrdinalIgnoreCase) &&
+                saveDto.PagosCredito != null && saveDto.PagosCredito.Any())
             {
                 foreach (var pago in saveDto.PagosCredito)
                 {
-                    var pagoCredito = new Domain.PagoVentaCredito
+                    var pagoCredito = new PagoVentaCredito
                     {
                         IdVenta = venta.IdVenta,
-                        FechaVencimiento = pago.FechaVencimiento,
+                        FechaVencimiento = pago.FechaVencimiento ?? DateTime.Now,
                         MontoCuota = pago.MontoCuota,
-                        EstadoPago = "PENDIENTE", // PENDIENTE,
+                        EstadoPago = "PENDIENTE",
                         FechaCreacion = DateTime.Now
-
                     };
-
                     await _pagoVentaCreditoRepositorio.SaveAsync(pagoCredito);
                 }
             }
 
+            // ---------------------------------------------------------
+            // 🟩 Retornar resultado
+            // ---------------------------------------------------------
             return new OperationResult<VentaDto>
             {
                 Data = _mapper.Map<VentaDto>(venta),
-                Message = "Venta registrada correctamente"
+                Success = true,
+                Message = saveDto.IdVenta == 0
+                    ? "Venta registrada correctamente."
+                    : "Venta actualizada correctamente."
             };
         }
+
 
     }
 }

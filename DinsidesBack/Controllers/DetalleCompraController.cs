@@ -1,5 +1,8 @@
 ﻿using Application.DetalleCompras.Dto;
+using Application.DetalleCompras.Dto;
+using Application.DetalleCompras.Dto;
 using Application.DetalleCompras.Services.Interfaces;
+using Application.DetalleCompras.Dto;
 using Domain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -11,8 +14,8 @@ namespace DinsidesBack.Controllers
     [ApiController]
     public class DetalleCompraController : ControllerBase
     {
-        private readonly IDetalleCompraService _detalleCompraService;
-        public DetalleCompraController(IDetalleCompraService detalleCompraService) => _detalleCompraService = detalleCompraService;
+        private readonly IDetalleCompraServices _detalleCompraService;
+        public DetalleCompraController(IDetalleCompraServices DetalleCompraService) => _detalleCompraService = DetalleCompraService;
 
         [HttpGet]
         [AllowAnonymous]
@@ -28,14 +31,23 @@ namespace DinsidesBack.Controllers
 
         [HttpGet("{id}")]
         [AllowAnonymous]
-        public async Task<Results<BadRequest, Ok<DetalleCompraDto>>> Get(int id)
+        public async Task<Results<NotFound<OperationResult<DetalleCompraDto>>, Ok<OperationResult<DetalleCompraDto>>>> Get(int id)
         {
             var response = await _detalleCompraService.FindByIdAsync(id);
 
-            if (response != null) return TypedResults.Ok(response);
+            if (response == null)
+            {
+                return TypedResults.NotFound(new OperationResult<DetalleCompraDto>
+                {
+                    Data = null,
+                    Message = $"No se encontró ningun dato con el Id {id}"
+                });
+            }
 
-            return TypedResults.BadRequest();
-
+            return TypedResults.Ok(new OperationResult<DetalleCompraDto>
+            {
+                Data = response,
+            });
         }
 
         [HttpPost]
@@ -62,6 +74,21 @@ namespace DinsidesBack.Controllers
             return TypedResults.BadRequest();
         }
 
+        [HttpGet("compra/{idCompra}")]
+        [AllowAnonymous]
+        public async Task<Results<
+            NotFound<OperationResult<List<DetalleCompraDto>>>,
+            Ok<OperationResult<List<DetalleCompraDto>>>>> ObtenerPorCompraAsync(int idCompra)
+        {
+            var result = await _detalleCompraService.ObtenerPorCompraAsync(idCompra);
+
+            if (result.Data == null || !result.Data.Any())
+                return TypedResults.NotFound(result);
+
+            return TypedResults.Ok(result);
+        }
+
+
         [HttpGet("BusquedaPaginado")]
         [AllowAnonymous]
         public async Task<Results<BadRequest, Ok<PaginadoResponse<DetalleCompraDto>>>> BusquedaPaginado([FromQuery] PaginationRequest dto)
@@ -71,6 +98,19 @@ namespace DinsidesBack.Controllers
             if (response != null) return TypedResults.Ok(response);
 
             return TypedResults.BadRequest();
-        } 
+        }
+
+        [HttpDelete("{id}")]
+        [AllowAnonymous]
+        public async Task<Results<BadRequest, Ok<OperationResult<DetalleCompraDto>>>> Delete(int id)
+        {
+            var response = await _detalleCompraService.DisabledAsync(id);
+
+            if (response != null) return TypedResults.Ok(response);
+
+            return TypedResults.BadRequest();
+
+        }
+
     }
 }

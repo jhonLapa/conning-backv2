@@ -6,5 +6,8 @@ namespace Infraestructure.Repositories.Interfaces
     public interface ICompraRepositorio : ICrudCoreRespository<Compra, int>
     {
         Task<PaginadoResponse<Compra>> BusquedaPaginado(PaginationRequest dto);
+        Task<IReadOnlyList<Compra>> SelectActivo();
+        Task<List<Compra>> FindByProveedorIdAsync(int proveedorId);
+        Task<Compra?> FindByNumeroComprobanteAsync(string serie, string numero, int idTipoComprobante, int? excluirId = null);
     }
 }

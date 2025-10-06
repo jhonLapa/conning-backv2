@@ -7,7 +7,7 @@ using Infraestructure.Repositories.Interfaces;
 
 namespace Application.DetalleCompras.Service
 {
-    public class DetalleCompraService : IDetalleCompraService
+    public class DetalleCompraService : IDetalleCompraServices
     {
         private readonly IDetalleCompraRepositorio _detalleCompraRepositorio;
         private readonly IMapper _mapper;
@@ -26,6 +26,7 @@ namespace Application.DetalleCompras.Service
 
             return new PaginadoResponse<DetalleCompraDto>(data, response.Meta);
         }
+        
 
         public async Task<OperationResult<DetalleCompraDto>> CreateAsync(DetalleCompraSaveDto saveDto)
         {
@@ -37,10 +38,20 @@ namespace Application.DetalleCompras.Service
             {
                 Data = _mapper.Map<DetalleCompraDto>(detalleCompra),
                 Message = "Creado con Exito",
-                Success = true
             };
         }
 
+        public async Task<OperationResult<DetalleCompraDto>> DisabledAsync(int id)
+        {
+            var detalleCompra = await _detalleCompraRepositorio.FindByIdAsync(id);
+            if (detalleCompra == null) throw new NotFoundCoreException("Registro no encontrado con el id");
+
+            return new OperationResult<DetalleCompraDto>()
+            {
+                Data = _mapper.Map<DetalleCompraDto>(detalleCompra),
+                Message = "Se ha Desactivado",
+            };
+        }
 
         public async Task<OperationResult<DetalleCompraDto>> EditAsync(int id, DetalleCompraSaveDto saveDto)
         {
@@ -55,8 +66,7 @@ namespace Application.DetalleCompras.Service
             return new OperationResult<DetalleCompraDto>()
             {
                 Data = _mapper.Map<DetalleCompraDto>(detalleCompra),
-                Message = "actualizado con exito",
-                Success = true
+                Message = "Actualizado con exito",
             };
 
         }
@@ -70,12 +80,31 @@ namespace Application.DetalleCompras.Service
 
         public async Task<DetalleCompraDto> FindByIdAsync(int id)
         {
-            var detalleCompra = await _detalleCompraRepositorio.FindByIdAsync(id);
+            var response = await _detalleCompraRepositorio.FindByIdAsync(id);
 
-            if (detalleCompra == null) throw new NotFoundCoreException("Registro no encontrado con ese id");
-
-            return _mapper.Map<DetalleCompraDto>(detalleCompra);
+            return _mapper.Map<DetalleCompraDto>(response);
         }
+
+        public async Task<OperationResult<List<DetalleCompraDto>>> ObtenerPorCompraAsync(int id)
+        {
+            var response = await _detalleCompraRepositorio.ObtenerPorCompraAsync(id);
+
+            if (response == null || !response.Any())
+            {
+                return new OperationResult<List<DetalleCompraDto>>
+                {
+                    Data = new List<DetalleCompraDto>(),
+                    Message = $"No existen  datos registrados para la compra con Id {id}"
+                };
+            }
+
+            return new OperationResult<List<DetalleCompraDto>>
+            {
+                Data = _mapper.Map<List<DetalleCompraDto>>(response),
+                Message = "Datos no encontrados"
+            };
+        }
+
     }
 }
 

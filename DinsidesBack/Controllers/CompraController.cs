@@ -11,8 +11,8 @@ namespace DinsidesBack.Controllers
     [ApiController]
     public class CompraController : ControllerBase
     {
-        private readonly ICompraService _compraService;
-        public CompraController(ICompraService compraService) => _compraService = compraService;
+        private readonly ICompraServices _compraService;
+        public CompraController(ICompraServices CompraService) => _compraService = CompraService;
 
         [HttpGet]
         [AllowAnonymous]
@@ -28,14 +28,23 @@ namespace DinsidesBack.Controllers
 
         [HttpGet("{id}")]
         [AllowAnonymous]
-        public async Task<Results<BadRequest, Ok<CompraDto>>> Get(int id)
+        public async Task<Results<NotFound<OperationResult<CompraDto>>, Ok<OperationResult<CompraDto>>>> Get(int id)
         {
             var response = await _compraService.FindByIdAsync(id);
 
-            if (response != null) return TypedResults.Ok(response);
+            if (response == null)
+            {
+                return TypedResults.NotFound(new OperationResult<CompraDto>
+                {
+                    Data = null,
+                    Message = $"No se encontró ninguna compra con el Id {id}"
+                });
+            }
 
-            return TypedResults.BadRequest();
-
+            return TypedResults.Ok(new OperationResult<CompraDto>
+            {
+                Data = response,
+            });
         }
 
         [HttpPost]
@@ -62,6 +71,32 @@ namespace DinsidesBack.Controllers
             return TypedResults.BadRequest();
         }
 
+        [HttpGet("SelectActivo")]
+        [AllowAnonymous]
+        public async Task<Results<BadRequest, Ok<IReadOnlyList<CompraSelectDto>>>> SelSelectActivoect()
+        {
+
+            var response = await _compraService.SelectActivo();
+
+            if (response != null) return TypedResults.Ok(response);
+
+            return TypedResults.BadRequest();
+        }
+
+        [HttpGet("proveedor/{proveedorId}")]
+        [AllowAnonymous]
+        public async Task<Results<
+            NotFound<OperationResult<List<CompraDto>>>,
+            Ok<OperationResult<List<CompraDto>>>>> GetByProveedorId(int proveedorId)
+        {
+            var result = await _compraService.FindByProveedorIdAsync(proveedorId);
+
+            if (result.Data == null || !result.Data.Any())
+                return TypedResults.NotFound(result);
+
+            return TypedResults.Ok(result);
+        }
+
         [HttpGet("BusquedaPaginado")]
         [AllowAnonymous]
         public async Task<Results<BadRequest, Ok<PaginadoResponse<CompraDto>>>> BusquedaPaginado([FromQuery] PaginationRequest dto)
@@ -83,6 +118,17 @@ namespace DinsidesBack.Controllers
 
             return TypedResults.BadRequest();
 
+        }
+
+        [HttpPost("RegistrarCompleto")]
+        [AllowAnonymous]
+        public async Task<Results<BadRequest, Ok<OperationResult<CompraDto>>>> PostCompleto([FromBody] CompraCompletoSaveDto request)
+        {
+            var response = await _compraService.CreateWithDetailsAsync(request);
+
+            if (response != null) return TypedResults.Ok(response);
+
+            return TypedResults.BadRequest();
         }
     }
 }

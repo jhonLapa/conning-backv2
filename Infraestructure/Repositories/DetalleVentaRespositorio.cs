@@ -116,7 +116,18 @@ namespace Infraestructure.Repositories
                 .ToListAsync();
         }
 
+        public async Task DeleteByVentaIdAsync(int idVenta)
+        {
+            var detalles = await _context.Set<DetalleVenta>()
+                                         .Where(d => d.IdVenta == idVenta)
+                                         .ToListAsync();
 
+            if (detalles.Any())
+            {
+                _context.Set<DetalleVenta>().RemoveRange(detalles);
+                await _context.SaveChangesAsync();
+            }
+        }
 
     }
 }
