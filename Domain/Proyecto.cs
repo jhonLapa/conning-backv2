@@ -20,6 +20,7 @@ namespace Domain
         // 🔗 Relaciones
         [JsonIgnore]
         public Cliente Cliente { get; set; } = null!;
+        [JsonIgnore]
         public ICollection<TrabajadorProyecto> TrabajadoresProyectos { get; set; } = new List<TrabajadorProyecto>();
         public ICollection<Planilla> Planillas { get; set; } = new List<Planilla>(); // 👈 nueva relación
 

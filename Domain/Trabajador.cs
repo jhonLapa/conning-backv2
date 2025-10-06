@@ -36,10 +36,12 @@ namespace Domain
         // 🔗 Relaciones principales
         // ============================================
 
-        // ✅ Se recomienda el sufijo de clave FK “Id” para evitar columnas duplicadas
         public Categoria? Categoria { get; set; }
         public RegimenPrevisional? Regimen { get; set; }
         public TipoDocumento? TipoDocumento { get; set; }
+        public ICollection<CuentaBancariaTrabajador> CuentasBancarias { get; set; }
+        [JsonIgnore]
+        public ICollection<TrabajadorProyecto> TrabajosProyectos { get; set; }
         [JsonIgnore]
         public ICollection<ProyectoEncargado> proyectoEncargados { get; set; } = new List<ProyectoEncargado>();
 
