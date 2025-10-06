@@ -7,6 +7,6 @@ namespace Infraestructure.Repositories.Interfaces
     {
         Task<Rol> FillName(string name);
         Task<PaginadoResponse<Rol>> BusquedaPaginado(PaginationRequest dto);
-
+        Task<IReadOnlyList<Rol>> SelectActivo();
     }
 }

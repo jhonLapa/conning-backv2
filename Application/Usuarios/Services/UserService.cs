@@ -4,13 +4,10 @@ using Application.Exceptions;
 using Application.Usuarios.Dto;
 using Application.Usuarios.Services.Interface;
 using AutoMapper;
-using Azure.Core;
 using Domain;
-using Infraestructure.Repositories;
 using Infraestructure.Repositories.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using System.Security.Cryptography;
 
 namespace Application.Usuarios.Services
 {
@@ -19,7 +16,7 @@ namespace Application.Usuarios.Services
         private readonly IMapper _mapper;
         private readonly IUsuarioRepositorio _usuarioRepositorio;
         private readonly IRolRepositorio _rolRepositorio;
-        private readonly IUserRolRepositorio _userRolRepositorio;
+        private readonly IUserRoleRepositorio _userRolRepositorio;
         private readonly IJwtServices _securityService;
         private readonly IConfiguration _configuration;
         private readonly ILogger<UserService> _logger;
@@ -27,7 +24,7 @@ namespace Application.Usuarios.Services
             IMapper mapper,
             IRolRepositorio rolRepositorio ,
             IUsuarioRepositorio usuarioRepositorio, 
-            IUserRolRepositorio userRolRepositorio,
+            IUserRoleRepositorio userRolRepositorio,
             IJwtServices securityService, 
             IConfiguration configuration, 
             ILogger<UserService> logger)
@@ -41,9 +38,9 @@ namespace Application.Usuarios.Services
             _logger = logger;
         }
 
-        public async Task<OperationResult<UserDto>> CreateAsync(UserRolSaveDto saveDto)
+        public async Task<OperationResult<UserDto>> CreateAsync(UserRoleSaveDto saveDto)
         {
-            var user = _mapper.Map<User>(saveDto.User);
+            var user = _mapper.Map<User>(saveDto.UserId);
 
             var email = await _usuarioRepositorio.FindByEmailAsync(user.Email);
 
@@ -51,7 +48,7 @@ namespace Application.Usuarios.Services
             {
                 throw new NotFoundCoreException("Correo ya registrado");
             }
-            _ = await _rolRepositorio.FindByIdAsync(saveDto.Rol.RoleId) ?? throw new NotFoundCoreException("Rol es Necesario"); ;
+            _ = await _rolRepositorio.FindByIdAsync(saveDto.RoleId) ?? throw new NotFoundCoreException("Rol es Necesario"); ;
 
             user.Password = _securityService.HashPassword(user.Email, user.Password);
             user.AuditCreateUser = 1;
@@ -62,7 +59,7 @@ namespace Application.Usuarios.Services
 
             var rol_usuario = new UserRole();
 
-            rol_usuario.RoleId= saveDto.Rol.RoleId;
+            rol_usuario.RoleId= saveDto.RoleId;
             rol_usuario.UserId = user.UserId;
             rol_usuario.State = true;
             rol_usuario.AuditCreateDate= DateTime.Now;
@@ -103,7 +100,7 @@ namespace Application.Usuarios.Services
             };
         }
 
-        public async Task<OperationResult<UserDto>> EditAsync(int id, UserRolSaveDto saveDto)
+        public async Task<OperationResult<UserDto>> EditAsync(int id, UserRoleSaveDto saveDto)
         {
             User user = await _usuarioRepositorio.FindByIdAsync(id) ?? throw new NotFoundCoreException("Usuario no Registrado con ese id");
             
@@ -167,8 +164,22 @@ namespace Application.Usuarios.Services
             };
         }
 
+        public async Task<PaginadoResponse<UserDto>> BusquedaPaginado(PaginationRequest dto)
+        {
+            var response = await _usuarioRepositorio.BusquedaPaginado(dto);
 
-        
-       
+            var data = _mapper.Map<ICollection<UserDto>>(response.Data);
+
+            return new PaginadoResponse<UserDto>(data, response.Meta);
+        }
+
+        public async Task<IReadOnlyList<UserSelectDto>> SelectActivo()
+        {
+            var response = await _usuarioRepositorio.SelectActivo();
+
+            return _mapper.Map<IReadOnlyList<UserSelectDto>>(response);
+        }
+
+
     }
 }

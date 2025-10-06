@@ -14,6 +14,5 @@ namespace Application.DetalleCompras.Dto
         public decimal? Icbper { get; set; }
         public decimal? ValorTotal { get; set; }
 
-        public Compra Compra { get; set; } = null!;
     }
 }

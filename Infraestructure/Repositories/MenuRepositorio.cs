@@ -6,18 +6,17 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infraestructure.Repositories
 {
-    public class UsuarioRepository : CrudCoreRespository<User, int>, IUsuarioRepositorio
+    public class MenuRepositorio : CrudCoreRespository<Menu, int>, IMenuRepositorio
     {
-        private readonly ApplicationDbContext _context;
-
-        public UsuarioRepository(ApplicationDbContext context) : base(context)
+        private readonly ApplicationDbContext _dbContext;
+        public MenuRepositorio(ApplicationDbContext context) : base(context)
         {
-            _context = context;
+            _dbContext = context;
         }
 
-        public async Task<PaginadoResponse<User>> BusquedaPaginado(PaginationRequest dto)
+        public async Task<PaginadoResponse<Menu>> BusquedaPaginado(PaginationRequest dto)
         {
-            var contex = _context.Set<User>().AsQueryable();
+            var contex = _context.Set<Menu>().AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(dto.Sort))
             {
@@ -28,7 +27,9 @@ namespace Infraestructure.Repositories
 
                 contex = column switch
                 {
-                    "name" => order == "desc" ? contex.OrderByDescending(p => p.FirstName) : contex.OrderBy(p => p.FirstName),
+                    "name" => order == "desc" ? contex.OrderByDescending(p => p.Name) : contex.OrderBy(p => p.Name),
+                    "descripcion" => order == "desc" ? contex.OrderByDescending(p => p.Icon) : contex.OrderBy(p => p.Icon),
+                    "url" => order == "desc" ? contex.OrderByDescending(p => p.Url) : contex.OrderBy(p => p.Url),
                     "status" => order == "desc" ? contex.OrderByDescending(p => p.State) : contex.OrderBy(p => p.State),
                     "createAt" => order == "desc" ? contex.OrderByDescending(p => p.AuditCreateDate) : contex.OrderBy(p => p.AuditCreateDate),
                 };
@@ -50,7 +51,7 @@ namespace Infraestructure.Repositories
                         if (value == "activo") contex = contex.Where(p => p.State == true);
                         if (value == "inactivo") contex = contex.Where(p => p.State == false);
                     }
-                    else if (id == "nombre") contex = contex.Where(p => p.FirstName.Contains(value));
+                    else if (id == "nombre") contex = contex.Where(p => p.Name.Contains(value));
 
                 }
             }
@@ -70,20 +71,14 @@ namespace Infraestructure.Repositories
             };
 
 
-            PaginadoResponse<User> response = new(data, meta);
+            PaginadoResponse<Menu> response = new(data, meta);
 
             return response;
         }
 
-        public async Task<User> FindByEmailAsync(string email)
+        public async Task<IReadOnlyList<Menu>> SelectActivo()
         {
-            return await _context.Set<User>()
-                .Where(t => t.Email == email).FirstOrDefaultAsync();
-        }
-
-        public async Task<IReadOnlyList<User>> SelectActivo()
-        {
-            return await _context.Set<User>()
+            return await _context.Set<Menu>()
                                  .AsNoTracking()
                                  .Where(a => a.State == true)
                                  .ToListAsync();

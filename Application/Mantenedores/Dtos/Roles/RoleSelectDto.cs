@@ -1,11 +1,8 @@
 ﻿namespace Application.Mantenedores.Dtos.Roles
 {
-    public class RolDto
+    public class RolSelectDto
     {
         public int RoleId { get; set; }
         public string Name { get; set; }
-        public string Descripcion { get; set; }
-        public bool State { get; set; }
-
     }
 }
