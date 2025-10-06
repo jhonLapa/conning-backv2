@@ -2,9 +2,6 @@
 using Application.Mantenedores.Dtos.Categorias;
 using Application.Mantenedores.Dtos.RegimenesPrevisionales;
 using Application.Mantenedores.Dtos.TiposDocumento;
-using Domain;
-using System;
-using System.Collections.Generic;
 
 namespace Application.Mantenedores.Dtos.Trabajadores
 {
@@ -30,12 +27,10 @@ namespace Application.Mantenedores.Dtos.Trabajadores
         public DateTime? FechaModificacion { get; set; }
         public string? UsuarioModificacion { get; set; }
 
-        // 🔗 Relaciones
         public CategoriaDto? Categoria { get; set; }
         public RegimenPrevisionalDto? Regimen { get; set; }
         public TipoDocumentoDto? TipoDocumento { get; set; }
 
-        // ✅ NUEVO: lista de cuentas bancarias del trabajador
         public List<CuentaBancoDto> CuentasBancarias { get; set; } = new();
     }
 

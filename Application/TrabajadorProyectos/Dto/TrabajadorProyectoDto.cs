@@ -1,4 +1,5 @@
-﻿using Domain;
+﻿using Application.Mantenedores.Dtos.Proyectos;
+using Application.Mantenedores.Dtos.Trabajadores;
 
 namespace Application.TrabajadorProyectos.Dto
 {
@@ -14,7 +15,7 @@ namespace Application.TrabajadorProyectos.Dto
         public string? UsuarioCreacion { get; set; }
 
         // Relaciones
-        public Trabajador Trabajador { get; set; }
-        public Proyecto Proyecto { get; set; }
+        public TrabajadorDto Trabajador { get; set; }
+        public ProyectoDto Proyecto { get; set; }
     }
 }
