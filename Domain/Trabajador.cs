@@ -30,6 +30,7 @@ namespace Domain
         public RegimenPrevisional Regimen { get; set; }
         public TipoDocumento TipoDocumento { get; set; } = null!;
         public ICollection<CuentaBancariaTrabajador> CuentasBancarias { get; set; }
+        [JsonIgnore]
         public ICollection<TrabajadorProyecto> TrabajosProyectos { get; set; }
         [JsonIgnore]
         public ICollection<ProyectoEncargado> proyectoEncargados { get; set; } = new List<ProyectoEncargado>();
