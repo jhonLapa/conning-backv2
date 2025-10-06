@@ -6,6 +6,7 @@ namespace Infraestructure.Repositories.Interfaces
     public interface IUsuarioRepositorio : ICrudCoreRespository<User, int>
     {
         Task<User> FindByEmailAsync(string email);
+        Task<IReadOnlyList<User>> SelectActivo();
         Task<PaginadoResponse<User>> BusquedaPaginado(PaginationRequest dto);
 
     }

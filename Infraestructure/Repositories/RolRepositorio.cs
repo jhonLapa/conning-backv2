@@ -75,7 +75,13 @@ namespace Infraestructure.Repositories
             return response;
         }
 
-
+        public async Task<IReadOnlyList<Rol>> SelectActivo()
+        {
+            return await _context.Set<Rol>()
+                                 .AsNoTracking()
+                                 .Where(a => a.State == true)
+                                 .ToListAsync();
+        }
 
         public async Task<Rol> FillName(string name)
         {

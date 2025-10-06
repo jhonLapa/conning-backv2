@@ -2,6 +2,7 @@
 using Application.Mantenedores.Dtos.Bancos;
 using Application.Mantenedores.Dtos.Categorias;
 using Application.Mantenedores.Dtos.Clientes;
+using Application.Mantenedores.Dtos.Menus;
 using Application.Mantenedores.Dtos.MovimientosEspeciales;
 using Application.Mantenedores.Dtos.Proveedores;
 using Application.Mantenedores.Dtos.Proyectos;
@@ -35,9 +36,14 @@ namespace Application.Mantenedores.Dtos.Profiles
             CreateMap<Proyecto, ProyectoSelectDto>().ReverseMap();
 
             //Rol 
-            CreateMap<Rol , RoleDto>().ReverseMap();
-            CreateMap<Rol , RoleSaveDto>().ReverseMap();
+            CreateMap<Rol , RolDto>().ReverseMap();
+            CreateMap<Rol , RolSaveDto>().ReverseMap();
+            CreateMap<Rol, RolSelectDto>().ReverseMap();
 
+            //Menu 
+            CreateMap<Menu, MenuDto>().ReverseMap();
+            CreateMap<Menu, MenuSaveDto>().ReverseMap();
+            CreateMap<Menu, MenuSelectDto>().ReverseMap();
 
             // categoria
             CreateMap<Categoria, CategoriaDto>().ReverseMap();
