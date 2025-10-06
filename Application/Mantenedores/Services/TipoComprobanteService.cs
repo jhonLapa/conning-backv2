@@ -1,10 +1,8 @@
 ﻿using Application.Exceptions;
 using Application.Mantenedores.Dtos.TiposComprobantes;
-using Application.Mantenedores.Dtos.TiposDocumento;
 using Application.Mantenedores.Services.Interfaces;
 using AutoMapper;
 using Domain;
-using Infraestructure.Repositories;
 using Infraestructure.Repositories.Interfaces;
 
 namespace Application.Mantenedores.Services

@@ -21,5 +21,7 @@ namespace Domain
         [JsonIgnore]   // evita el ciclo
         public Cliente Cliente { get; set; } = null!;
         public ICollection<TrabajadorProyecto> TrabajadoresProyectos { get; set; } = new List<TrabajadorProyecto>();
+        [JsonIgnore]
+        public ICollection<ProyectoEncargado> proyectoEncargados { get; set; } = new List<ProyectoEncargado>();
     }
 }
