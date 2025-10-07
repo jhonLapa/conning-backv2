@@ -17,5 +17,8 @@ namespace Domain
 
         [JsonIgnore]
         public Proyecto? Proyecto { get; set; }
+
+        [JsonIgnore]
+        public ICollection<AportesPlanilla> AportesPlanilla { get; set; } = new List<AportesPlanilla>();
     }
 }

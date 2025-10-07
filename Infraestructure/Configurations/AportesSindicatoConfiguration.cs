@@ -10,7 +10,7 @@ namespace Infraestructure.Configurations
         {
             builder.ToTable("AportesSindicato");
 
-            // 🔑 Clave primaria
+            // Clave primaria
             builder.HasKey(a => a.IdAporteSindicato);
 
             builder.Property(a => a.IdAporteSindicato)
@@ -18,7 +18,6 @@ namespace Infraestructure.Configurations
                    .ValueGeneratedOnAdd()
                    .UseIdentityColumn();
 
-            // 📌 Campos obligatorios
             builder.Property(a => a.IdProyecto)
                    .HasColumnName("idProyecto")
                    .IsRequired();
@@ -36,7 +35,6 @@ namespace Infraestructure.Configurations
                    .HasColumnType("decimal(12,2)")
                    .IsRequired();
 
-            // 📅 Fechas
             builder.Property(a => a.FechaVencimiento)
                    .HasColumnName("fechaVencimiento")
                    .HasColumnType("date")
@@ -45,30 +43,28 @@ namespace Infraestructure.Configurations
             builder.Property(a => a.FechaPago)
                    .HasColumnName("fechaPago")
                    .HasColumnType("date")
-                   .IsRequired(false); // puede ser nulo
+                   .IsRequired(false);
 
             builder.Property(a => a.FechaCreacion)
                    .HasColumnName("fechaCreacion")
                    .HasColumnType("datetime2")
                    .IsRequired();
 
-            // ⚙️ Estado — sin valor por defecto
             builder.Property(a => a.Estado)
                    .HasColumnName("estado")
-                   .IsRequired(); // sin .HasDefaultValue()
+                   .IsRequired();
 
-            // 📝 Otros campos
             builder.Property(a => a.Observacion)
                    .HasColumnName("observacion")
                    .HasMaxLength(200)
-                   .IsUnicode(false); // varchar(200)
+                   .IsUnicode(false);
 
             builder.Property(a => a.UsuarioCreacion)
                    .HasColumnName("usuarioCreacion")
                    .HasMaxLength(50)
-                   .IsUnicode(false); // varchar(50)
+                   .IsUnicode(false);
 
-            // 🔗 Relación con Proyecto
+            // Relación con Proyecto
             builder.HasOne(a => a.Proyecto)
                    .WithMany(p => p.AportesSindicato)
                    .HasForeignKey(a => a.IdProyecto)

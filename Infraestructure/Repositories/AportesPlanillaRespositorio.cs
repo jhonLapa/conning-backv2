@@ -6,16 +6,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infraestructure.Repositories
 {
-    public class AportesSindicatoRespositorio : CrudCoreRespository<AportesSindicato, int>, IAportesSindicatoRepositorio
+    public class AportesPlanillaRespositorio : CrudCoreRespository<AportesPlanilla, int>, IAportesPlanillaRepositorio
     {
         private readonly ApplicationDbContext _context;
-        public AportesSindicatoRespositorio(ApplicationDbContext context) : base(context) => _context = context;
+        public AportesPlanillaRespositorio(ApplicationDbContext context) : base(context) => _context = context;
 
-        public async Task<PaginadoResponse<AportesSindicato>> BusquedaPaginado(PaginationRequest dto)
+        public async Task<PaginadoResponse<AportesPlanilla>> BusquedaPaginado(PaginationRequest dto)
         {
 
-            var contex = _context.Set<AportesSindicato>()
-              .Include(c => c.Proyecto)
+            var contex = _context.Set<AportesPlanilla>()
+              .Include(c => c.Planilla)
               .AsQueryable();
 
 
@@ -28,9 +28,9 @@ namespace Infraestructure.Repositories
 
                 contex = column switch
                 {
-                    "name" => order == "desc" ? contex.OrderByDescending(p => p.UsuarioCreacion) : contex.OrderBy(p => p.UsuarioCreacion),
+                    "name" => order == "desc" ? contex.OrderByDescending(p => p.TipoAporte) : contex.OrderBy(p => p.TipoAporte),
                     "status" => order == "desc" ? contex.OrderByDescending(p => p.Estado) : contex.OrderBy(p => p.Estado),
-                    "createAt" => order == "desc" ? contex.OrderByDescending(p => p.FechaCreacion) : contex.OrderBy(p => p.FechaCreacion),
+                    "createAt" => order == "desc" ? contex.OrderByDescending(p => p.FechaVencimiento) : contex.OrderBy(p => p.FechaVencimiento),
                 };
 
             }
@@ -50,7 +50,7 @@ namespace Infraestructure.Repositories
                         if (value == "activo") contex = contex.Where(p => p.Estado == 1);
                         if (value == "inactivo") contex = contex.Where(p => p.Estado == 0);
                     }
-                    else if (id == "name") contex = contex.Where(p => p.UsuarioCreacion.Contains(value));
+                    else if (id == "name") contex = contex.Where(p => p.TipoAporte.Contains(value));
 
                 }
             }
@@ -70,36 +70,36 @@ namespace Infraestructure.Repositories
             };
 
 
-            PaginadoResponse<AportesSindicato> response = new(data, meta);
+            PaginadoResponse<AportesPlanilla> response = new(data, meta);
 
             return response;
         }
 
 
-        public async Task<IReadOnlyList<AportesSindicato>> SelectActivo()
+        public async Task<IReadOnlyList<AportesPlanilla>> SelectActivo()
         {
-            return await _context.Set<AportesSindicato>()
+            return await _context.Set<AportesPlanilla>()
                                  .AsNoTracking()
                                  .Where(a => a.Estado == 1)
                                  .ToListAsync();
         }
 
-        public async override Task<AportesSindicato?> FindByIdAsync(int id)
+        public async override Task<AportesPlanilla?> FindByIdAsync(int id)
         {
-            return await _context.Set<AportesSindicato>()
-                                 .AsSplitQuery()
-                                 .Include(c => c.Proyecto)
-                                 .FirstOrDefaultAsync(x => x.IdAporteSindicato == id);
+            return await _context.Set<AportesPlanilla>()
+                                 .AsSplitQuery() // 👈 evita el warning MultipleCollectionInclude
+                                 .Include(c => c.Planilla)
+                                 .FirstOrDefaultAsync(x => x.IdAportesPlanilla == id);
         }
 
 
 
-        public async override Task<IReadOnlyList<AportesSindicato>> FindAllAsync()
+        public async override Task<IReadOnlyList<AportesPlanilla>> FindAllAsync()
         {
-            return await _context.Set<AportesSindicato>()
+            return await _context.Set<AportesPlanilla>()
                                  .AsNoTracking()
-                                 .AsSplitQuery()
-                                 .Include(c => c.Proyecto)
+                                 .AsSplitQuery() // 👈 importante aquí también
+                                 .Include(c => c.Planilla)
                                  .ToListAsync();
         }
 
