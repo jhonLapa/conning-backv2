@@ -1,11 +1,6 @@
 ﻿using Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Infraestructure.Configurations
 {
@@ -15,14 +10,15 @@ namespace Infraestructure.Configurations
         {
             builder.ToTable("AportesSindicato");
 
-            // PK (IDENTITY)
+            // 🔑 Clave primaria
             builder.HasKey(a => a.IdAporteSindicato);
+
             builder.Property(a => a.IdAporteSindicato)
                    .HasColumnName("idAporteSindicato")
                    .ValueGeneratedOnAdd()
                    .UseIdentityColumn();
 
-            // Campos básicos
+            // 📌 Campos obligatorios
             builder.Property(a => a.IdProyecto)
                    .HasColumnName("idProyecto")
                    .IsRequired();
@@ -40,7 +36,7 @@ namespace Infraestructure.Configurations
                    .HasColumnType("decimal(12,2)")
                    .IsRequired();
 
-            // Fechas
+            // 📅 Fechas
             builder.Property(a => a.FechaVencimiento)
                    .HasColumnName("fechaVencimiento")
                    .HasColumnType("date")
@@ -49,22 +45,19 @@ namespace Infraestructure.Configurations
             builder.Property(a => a.FechaPago)
                    .HasColumnName("fechaPago")
                    .HasColumnType("date")
-                   .IsRequired(false); // ← pon .IsRequired() si en BD es NOT NULL
+                   .IsRequired(false); // puede ser nulo
 
             builder.Property(a => a.FechaCreacion)
                    .HasColumnName("fechaCreacion")
                    .HasColumnType("datetime2")
                    .IsRequired();
-            // Si en BD tienes DEFAULT (sysdatetime()), añade también:
-            // .HasDefaultValueSql("sysdatetime()")
-            // .ValueGeneratedOnAdd();
 
-            // Otros
+            // ⚙️ Estado — sin valor por defecto
             builder.Property(a => a.Estado)
                    .HasColumnName("estado")
-                   .HasDefaultValue(1)
-                   .IsRequired();
+                   .IsRequired(); // sin .HasDefaultValue()
 
+            // 📝 Otros campos
             builder.Property(a => a.Observacion)
                    .HasColumnName("observacion")
                    .HasMaxLength(200)
@@ -75,11 +68,11 @@ namespace Infraestructure.Configurations
                    .HasMaxLength(50)
                    .IsUnicode(false); // varchar(50)
 
-
-            // Relaciones
-            builder.HasOne(tp => tp.Proyecto)
-                   .WithMany(t => t.AportesSindicato)
-                   .HasForeignKey(tp => tp.IdProyecto);
+            // 🔗 Relación con Proyecto
+            builder.HasOne(a => a.Proyecto)
+                   .WithMany(p => p.AportesSindicato)
+                   .HasForeignKey(a => a.IdProyecto)
+                   .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

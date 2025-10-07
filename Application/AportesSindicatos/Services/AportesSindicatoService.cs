@@ -1,10 +1,8 @@
 ﻿using Application.AportesSindicatos.Dto;
 using Application.AportesSindicatos.Services.Interfaces;
 using Application.Exceptions;
-using Application.TrabajadorProyectos.Dto;
 using AutoMapper;
 using Domain;
-using Infraestructure.Repositories;
 using Infraestructure.Repositories.Interfaces;
 
 namespace Application.AportesSindicatos.Servicess
@@ -12,18 +10,20 @@ namespace Application.AportesSindicatos.Servicess
     public class AportesSindicatoService : IAportesSindicatoServices
     {
         private readonly IAportesSindicatoRepositorio _aportesSindicatoRepositorio;
-
+        private readonly IProyectoRepositorio _projectRepositorio;
         private readonly IMapper _mapper;
 
         public AportesSindicatoService(
             IAportesSindicatoRepositorio aportesSindicatoRepositorio,
-
+            IProyectoRepositorio ProjectRepositorio,
             IMapper mapper)
         {
             _aportesSindicatoRepositorio = aportesSindicatoRepositorio;
-
+            _projectRepositorio = ProjectRepositorio;
             _mapper = mapper;
         }
+
+
 
         public async Task<PaginadoResponse<AportesSindicatoDto>> BusquedaPaginado(PaginationRequest dto)
         {
@@ -37,9 +37,15 @@ namespace Application.AportesSindicatos.Servicess
 
         public async Task<OperationResult<AportesSindicatoDto>> CreateAsync(AportesSindicatoSaveDto saveDto)
         {
+
+            var project = await _projectRepositorio.FindByIdAsync(saveDto.IdProyecto);
+
+            if (project == null) throw new NotFoundCoreException("Registro no encontrado con ese Id de proyecto");
+
             var aportesSindicato = _mapper.Map<AportesSindicato>(saveDto);
 
             aportesSindicato.FechaCreacion = DateTime.Now;
+            aportesSindicato.Estado = 0;
 
             await _aportesSindicatoRepositorio.SaveAsync(aportesSindicato);
 
