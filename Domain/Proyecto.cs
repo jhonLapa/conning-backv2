@@ -26,5 +26,7 @@ namespace Domain
 
         [JsonIgnore]
         public ICollection<ProyectoEncargado> proyectoEncargados { get; set; } = new List<ProyectoEncargado>();
+        [JsonIgnore]
+        public ICollection<AportesSindicato> AportesSindicato { get; set; } = new List<AportesSindicato>();
     }
 }
