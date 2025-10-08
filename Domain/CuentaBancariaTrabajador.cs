@@ -8,7 +8,7 @@
         public string NumeroCuenta { get; set; }
         public string TipoCuenta { get; set; }
         public string Moneda { get; set; }
-        public bool Principal { get; set; }
+        public int Principal { get; set; }
         public DateTime FechaInicio { get; set; }
         public DateTime? FechaFin { get; set; }
         public int Estado { get; set; }

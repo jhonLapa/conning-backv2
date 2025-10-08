@@ -13,6 +13,16 @@ namespace Infraestructure.Configurations
 
             builder.Property(tp => tp.UsuarioCreacion)
                    .HasMaxLength(100);
+            // Fechas
+            builder.Property(p => p.FechaInicio)
+                   .HasColumnType("date") 
+                   .IsRequired();
+            builder.Property(p => p.FechaFin)
+                   .HasColumnType("date")
+                   .IsRequired();
+
+            builder.Property(tc => tc.Estado)
+               .HasDefaultValue(1);
 
             // Relaciones
             builder.HasOne(tp => tp.Trabajador)

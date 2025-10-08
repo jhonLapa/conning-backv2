@@ -1,4 +1,5 @@
 ﻿
+using Application.CuentasBancariasTrabajador.Dtos;
 using Application.Exceptions;
 using Application.Mantenedores.Dtos.TiposComprobantes;
 using Application.Mantenedores.Dtos.TiposDocumento;
@@ -15,10 +16,12 @@ namespace Application.Mantenedores.Services
     {
         private readonly ITrabajadorRepositorio _trabajadorRepositorio;
         private readonly IMapper _mapper;
+        private readonly ICuentaBancariaTrabajadorRepositorio _cuentaBancariaTrabajadorRepositorio;
 
-        public TrabajadorService(ITrabajadorRepositorio TrabajadorRepositorio, IMapper mapper)
+        public TrabajadorService(ITrabajadorRepositorio trabajadorRepositorio, ICuentaBancariaTrabajadorRepositorio cuentaBancariaTrabajadorRepositorio, IMapper mapper)
         {
-            _trabajadorRepositorio = TrabajadorRepositorio;
+            _trabajadorRepositorio = trabajadorRepositorio;
+            _cuentaBancariaTrabajadorRepositorio = cuentaBancariaTrabajadorRepositorio;
             _mapper = mapper;
         }
 
@@ -110,5 +113,37 @@ namespace Application.Mantenedores.Services
 
             return _mapper.Map<IReadOnlyList<TrabajadorSelectDto>>(response);
         }
+
+        public async Task<OperationResult<TrabajadorDto>> CreateWithAccountsAsync(TrabajadorWithAccountsSaveDto dto)
+        {
+            // Mapear y crear el trabajador
+            var trabajador = _mapper.Map<Trabajador>(dto.Trabajador);
+            trabajador.FechaCreacion = DateTime.Now;
+            trabajador.Estado = 1;
+
+            await _trabajadorRepositorio.SaveAsync(trabajador);
+
+            // Si vienen cuentas bancarias
+            if (dto.Cuentas != null && dto.Cuentas.Any())
+            {
+                foreach (var cuentaDto in dto.Cuentas)
+                {
+                    var cuenta = _mapper.Map<CuentaBancariaTrabajador>(cuentaDto);
+                    cuenta.IdTrabajador = trabajador.IdTrabajador;
+                    cuenta.FechaCreacion = DateTime.Now;
+                    cuenta.Estado = 1;
+
+                    await _cuentaBancariaTrabajadorRepositorio.SaveAsync(cuenta);
+                }
+            }
+
+            return new OperationResult<TrabajadorDto>
+            {
+                Data = _mapper.Map<TrabajadorDto>(trabajador),
+                Message = "Trabajador y cuentas creados con éxito",
+                Success = true
+            };
+        }
+
     }
 }

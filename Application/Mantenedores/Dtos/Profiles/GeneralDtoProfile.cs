@@ -81,11 +81,16 @@ namespace Application.Mantenedores.Dtos.Profiles
             CreateMap<Proveedor, ProveedorSaveDto>().ReverseMap();
             CreateMap<Proveedor, ProveedorSelectDto>().ReverseMap();
 
-
-            // Grupo Trabajador
+            // ==============================
+            // 🔹 GRUPO: Trabajador
+            // ==============================
             CreateMap<Trabajador, TrabajadorDto>().ReverseMap();
             CreateMap<Trabajador, TrabajadorSaveDto>().ReverseMap();
             CreateMap<Trabajador, TrabajadorSelectDto>().ReverseMap();
+
+            CreateMap<TrabajadorWithAccountsSaveDto, Trabajador>().ReverseMap();
+            CreateMap<CuentaBancoSaveDto, CuentaBancariaTrabajador>().ReverseMap();
+            CreateMap<CuentaBancariaTrabajador, CuentaBancoDto>().ReverseMap();
         }
     }
 }
