@@ -15,7 +15,7 @@ namespace Infraestructure.Configurations
                    .HasMaxLength(250);
 
             builder.Property(m => m.TipoMovimiento)
-                   .HasMaxLength(100)
+                   .HasMaxLength(20)
                    .IsRequired();
 
             builder.Property(m => m.CuentaBancaria)
