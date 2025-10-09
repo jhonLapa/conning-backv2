@@ -14,5 +14,7 @@
         // Relaciones
         public Trabajador Trabajador { get; set; }
         public Proyecto Proyecto { get; set; }
+        public ICollection<DetallePlanilla> Detalles { get; set; } = new List<DetallePlanilla>();
+
     }
 }

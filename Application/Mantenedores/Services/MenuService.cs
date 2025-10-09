@@ -45,14 +45,14 @@ namespace Application.Mantenedores.Services
         {
             var menu = await _menuRepositorio.FindByIdAsync(id) ?? throw new NotFoundCoreException("Registro no encontrado con ese Id");
 
-            menu.State = menu.State == true ? false : true;
+            menu.State = menu.State == 1 ? 0 : 1;
 
             await _menuRepositorio.SaveAsync(menu);
 
             return new OperationResult<MenuDto>()
             {
                 Data = _mapper.Map<MenuDto>(menu),
-                Message = menu.State == true
+                Message = menu.State == 1
                 ? "Activado con éxito"
                             : "Desactivado con éxito",
                 Success = true
