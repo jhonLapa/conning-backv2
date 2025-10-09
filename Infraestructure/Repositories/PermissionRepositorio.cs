@@ -6,17 +6,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infraestructure.Repositories
 {
-    public class MenuRepositorio : CrudCoreRespository<Menu, int>, IMenuRepositorio
+    public class PermissionRespositorio : CrudCoreRespository<Permission, int>, IPermissionRepositorio
     {
-        private readonly ApplicationDbContext _dbContext;
-        public MenuRepositorio(ApplicationDbContext context) : base(context)
-        {
-            _dbContext = context;
-        }
+        private readonly ApplicationDbContext _context;
+        public PermissionRespositorio(ApplicationDbContext context) : base(context) => _context = context;
 
-        public async Task<PaginadoResponse<Menu>> BusquedaPaginado(PaginationRequest dto)
+        public async Task<PaginadoResponse<Permission>> BusquedaPaginado(PaginationRequest dto)
         {
-            var contex = _context.Set<Menu>().AsQueryable();
+
+            var contex = _context.Set<Permission>()
+              .Include(c => c.Menu)
+              .AsQueryable();
+
 
             if (!string.IsNullOrWhiteSpace(dto.Sort))
             {
@@ -28,10 +29,10 @@ namespace Infraestructure.Repositories
                 contex = column switch
                 {
                     "name" => order == "desc" ? contex.OrderByDescending(p => p.Name) : contex.OrderBy(p => p.Name),
-                    "descripcion" => order == "desc" ? contex.OrderByDescending(p => p.Icon) : contex.OrderBy(p => p.Icon),
-                    "url" => order == "desc" ? contex.OrderByDescending(p => p.Url) : contex.OrderBy(p => p.Url),
+                    "description" => order == "desc" ? contex.OrderByDescending(p => p.Description) : contex.OrderBy(p => p.Description),
                     "status" => order == "desc" ? contex.OrderByDescending(p => p.State) : contex.OrderBy(p => p.State),
                     "createAt" => order == "desc" ? contex.OrderByDescending(p => p.AuditCreateDate) : contex.OrderBy(p => p.AuditCreateDate),
+                    _ => contex
                 };
 
             }
@@ -51,7 +52,7 @@ namespace Infraestructure.Repositories
                         if (value == "activo") contex = contex.Where(p => p.State == 1);
                         if (value == "inactivo") contex = contex.Where(p => p.State == 0);
                     }
-                    else if (id == "nombre") contex = contex.Where(p => p.Name.Contains(value));
+                    else if (id == "name") contex = contex.Where(p => p.Name.Contains(value));
 
                 }
             }
@@ -71,18 +72,47 @@ namespace Infraestructure.Repositories
             };
 
 
-            PaginadoResponse<Menu> response = new(data, meta);
+            PaginadoResponse<Permission> response = new(data, meta);
 
             return response;
         }
 
-        public async Task<IReadOnlyList<Menu>> SelectActivo()
+
+        public async Task<IReadOnlyList<Permission>> SelectActivo()
         {
-            return await _context.Set<Menu>()
+            return await _context.Set<Permission>()
                                  .AsNoTracking()
                                  .Where(a => a.State == 1)
                                  .ToListAsync();
         }
 
+        public async override Task<Permission?> FindByIdAsync(int id)
+        {
+            return await _context.Set<Permission>()
+                                 .AsSplitQuery() // 👈 evita el warning MultipleCollectionInclude
+                                 .Include(c => c.Menu)
+                                 .FirstOrDefaultAsync(x => x.PermissionId == id);
+        }
+
+
+
+        public async override Task<IReadOnlyList<Permission>> FindAllAsync()
+        {
+            return await _context.Set<Permission>()
+                                 .AsNoTracking()
+                                 .AsSplitQuery() // 👈 importante aquí también
+                                 .Include(c => c.Menu)
+                                 .ToListAsync();
+        }
+
+        public async Task<List<Permission>> FindByMenuIdAsync(int menuId)
+        {
+            return await _context.Set<Permission>()
+                .AsNoTracking()
+                .AsSplitQuery() // evita el warning MultipleCollectionInclude
+                .Include(v => v.Menu)
+                .Where(v => v.MenuId == menuId)
+                .ToListAsync();
+        }
     }
 }

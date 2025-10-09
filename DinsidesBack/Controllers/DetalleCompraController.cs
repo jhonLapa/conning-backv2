@@ -1,8 +1,5 @@
 ﻿using Application.DetalleCompras.Dto;
-using Application.DetalleCompras.Dto;
-using Application.DetalleCompras.Dto;
 using Application.DetalleCompras.Services.Interfaces;
-using Application.DetalleCompras.Dto;
 using Domain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
