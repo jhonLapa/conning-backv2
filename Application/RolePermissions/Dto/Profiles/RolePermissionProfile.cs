@@ -1,12 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.RolePermissions.Dto;
+using AutoMapper;
 
-namespace Application.RolePermissions.Dto.Profiles
+namespace Application.RolePermissions.Dtos.Profiles
 {
-    internal class RolePermissionProfile
+    public class RolePermissionProfile : Profile
     {
+        public RolePermissionProfile()
+        {
+            // UserRol
+            CreateMap<Domain.RolePermission, RolePermissionDto>().ReverseMap();
+            CreateMap<Domain.RolePermission, RolePermissionSaveDto>().ReverseMap();
+            CreateMap<RolePermissionSaveDto, Domain.RolePermission>()
+                .ForMember(dest => dest.RoleId, opt => opt.Ignore())
+                .ForMember(dest => dest.PermissionId, opt => opt.Ignore());
+        }
     }
 }

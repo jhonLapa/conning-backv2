@@ -7,9 +7,9 @@ namespace Application.RolePermissions.Dto
 
         public int RoleId { get; set; }
         public int PermissionId { get; set; }
-        public int Estado { get; set; }
-        public DateTime FechaCreacion { get; set; }   // 👈 Agregar esto
-        public string? UsuarioCreacion { get; set; }
+        public char State { get; set; }
+        public DateTime AuditCreateDate { get; set; }
+        public string? AuditCreateUser { get; set; }
 
         // 🔗 Relaciones (solo lo que necesitas mostrar)
         public Permission Permissions { get; set; } = null!;
