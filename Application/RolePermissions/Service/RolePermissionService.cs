@@ -61,8 +61,6 @@ namespace Application.RolePermissions.Services
 
             await _rolePermissionRepositorio.AttachUnchangedAsync(rolePermission.RoleId, rolePermission.PermissionId);
 
-            // 5. Guardar solo la nueva relación RolePermission.
-            // El repositorio insertará la nueva fila RolePermission.
             await _rolePermissionRepositorio.SaveAsync(rolePermission);
             return new OperationResult<RolePermissionDto>()
             {
@@ -128,20 +126,17 @@ namespace Application.RolePermissions.Services
 
         public async Task<RolePermissionDto> FindByIdAsync(int roleId, int permissionId)
         {
-            // Usamos los dos IDs para el repositorio
             var response = await _rolePermissionRepositorio.FindByIdAsync(roleId, permissionId);
             return _mapper.Map<RolePermissionDto>(response);
         }
 
         public async Task<OperationResult<RolePermissionDto>> EditAsync(int roleId, int permissionId, RolePermissionSaveDto saveDto)
         {
-            // Usamos los dos IDs para el repositorio
             var rolePermission = await _rolePermissionRepositorio.FindByIdAsync(roleId, permissionId);
 
             if (rolePermission == null) throw new NotFoundCoreException($"Registro no encontrado para Rol {roleId} y Permiso {permissionId}");
 
             _mapper.Map(saveDto, rolePermission);
-            // TODO: (Opcional) Agregar lógica para AuditUpdateDate y AuditUpdateUser
 
             await _rolePermissionRepositorio.SaveAsync(rolePermission);
 
@@ -154,12 +149,10 @@ namespace Application.RolePermissions.Services
 
         public async Task<OperationResult<RolePermissionDto>> DisabledAsync(int roleId, int permissionId)
         {
-            // Usamos los dos IDs para el repositorio
             var rolePermission = await _rolePermissionRepositorio.FindByIdAsync(roleId, permissionId);
 
             if (rolePermission == null) throw new NotFoundCoreException($"Registro no encontrado para Rol {roleId} y Permiso {permissionId}");
 
-            // TODO: Implementar lógica de deshabilitación (ej: rolePermission.State = 'I')
 
             return new OperationResult<RolePermissionDto>()
             {

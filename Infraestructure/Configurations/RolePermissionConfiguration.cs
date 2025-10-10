@@ -13,8 +13,7 @@ namespace Infraestructure.Configurations
             builder.HasKey(rp => new { rp.RoleId, rp.PermissionId });
 
             builder.Property(rp => rp.State)
-                   .HasColumnType("char(1)") 
-                   .IsRequired();
+                   .HasDefaultValue(1);
 
             builder.Property(rp => rp.AuditCreateDate)
                    .IsRequired(); 

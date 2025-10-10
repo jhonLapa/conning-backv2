@@ -30,7 +30,6 @@ namespace DinsidesBack.Controllers
         [AllowAnonymous]
         public async Task<Results<NotFound<OperationResult<RolePermissionDto>>, Ok<OperationResult<RolePermissionDto>>>> Get(int roleId, int permissionId)
         {
-            // Ahora llama al servicio con ambos IDs
             var response = await _rolePermissionService.FindByIdAsync(roleId, permissionId);
 
             if (response == null)
@@ -64,7 +63,6 @@ namespace DinsidesBack.Controllers
         [AllowAnonymous]
         public async Task<Results<BadRequest, Ok<OperationResult<RolePermissionDto>>>> Put(int roleId, int permissionId, [FromBody] RolePermissionSaveDto request)
         {
-            // Ahora llama al servicio con ambos IDs
             var response = await _rolePermissionService.EditAsync(roleId, permissionId, request);
 
             if (response != null) return TypedResults.Ok(response);
@@ -126,7 +124,6 @@ namespace DinsidesBack.Controllers
         [AllowAnonymous]
         public async Task<Results<BadRequest, Ok<OperationResult<RolePermissionDto>>>> Delete(int roleId, int permissionId)
         {
-            // Ahora llama al servicio con ambos IDs
             var response = await _rolePermissionService.DisabledAsync(roleId, permissionId);
 
             if (response != null) return TypedResults.Ok(response);

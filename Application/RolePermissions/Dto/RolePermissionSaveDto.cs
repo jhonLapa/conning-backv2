@@ -4,6 +4,6 @@
     {
         public int PermissionId { get; set; }
         public int RoleId { get; set; }
-        public char State { get; set; }
+        public int State { get; set; }
     }
 }   

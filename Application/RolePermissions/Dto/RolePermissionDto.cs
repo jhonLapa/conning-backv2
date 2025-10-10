@@ -7,7 +7,7 @@ namespace Application.RolePermissions.Dto
 
         public int RoleId { get; set; }
         public int PermissionId { get; set; }
-        public char State { get; set; }
+        public int State { get; set; }
         public DateTime AuditCreateDate { get; set; }
         public string? AuditCreateUser { get; set; }
 

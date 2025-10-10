@@ -10,9 +10,11 @@ namespace Application.RolePermissions.Dtos.Profiles
             // UserRol
             CreateMap<Domain.RolePermission, RolePermissionDto>().ReverseMap();
             CreateMap<Domain.RolePermission, RolePermissionSaveDto>().ReverseMap();
-            CreateMap<RolePermissionSaveDto, Domain.RolePermission>()
+            CreateMap<Domain.RolePermission, RolePermissionSaveDto >()
                 .ForMember(dest => dest.RoleId, opt => opt.Ignore())
                 .ForMember(dest => dest.PermissionId, opt => opt.Ignore());
+            CreateMap<Domain.RolePermission, RolePermissionSelectDto>();
+            
         }
     }
 }
