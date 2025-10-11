@@ -34,7 +34,7 @@ namespace Infraestructure.Configurations
 
             builder.Property(a => a.Tipo)
                 .HasColumnName("tipo")
-                .HasColumnType("char(1)")
+                .HasColumnType("varchar(20)")   // 👈 permite texto completo
                 .IsRequired();
 
             builder.Property(a => a.HorasTrabajadas)

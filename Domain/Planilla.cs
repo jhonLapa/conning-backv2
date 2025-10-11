@@ -20,5 +20,9 @@ namespace Domain
 
         [JsonIgnore]
         public ICollection<AportesPlanilla> AportesPlanilla { get; set; } = new List<AportesPlanilla>();
+
+        [JsonIgnore]
+        public ICollection<DetallePlanilla> Detalles { get; set; } = new List<DetallePlanilla>();
+
     }
 }
