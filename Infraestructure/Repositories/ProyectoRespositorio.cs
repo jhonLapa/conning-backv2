@@ -84,7 +84,7 @@ namespace Infraestructure.Repositories
         {
             var response = await _context.Set<Proyecto>()
                 .Include(x => x.Cliente)
-                .FirstOrDefaultAsync(x => x.IdCliente == id);
+                .FirstOrDefaultAsync(x => x.IdProyecto == id);
 
             return response;
         }
