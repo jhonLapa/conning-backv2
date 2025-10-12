@@ -6,8 +6,11 @@ namespace Application.Usuarios.Dto.Profiles
 {
     public class UserProfile : Profile
     {
-        public UserProfile() { 
-        
+        public UserProfile() {
+
+            CreateMap<UserRoleSaveDto, User>();
+            CreateMap<UserRoleSaveDto, User>()
+            .ForMember(dest => dest.UserId, opt => opt.Ignore());
             CreateMap<User , UserDto>().ReverseMap();
             CreateMap<User , UserSaveDto>().ReverseMap();
             CreateMap<User , UserView>().ReverseMap();
