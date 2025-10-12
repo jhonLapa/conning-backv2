@@ -6,11 +6,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infraestructure.Repositories
 {
-    public class UsuarioRepository : CrudCoreRespository<User, int>, IUsuarioRepositorio
+    public class UsuarioRepositorio : CrudCoreRespository<User, int>, IUsuarioRepositorio
     {
         private readonly ApplicationDbContext _context;
 
-        public UsuarioRepository(ApplicationDbContext context) : base(context)
+        public UsuarioRepositorio(ApplicationDbContext context) : base(context)
         {
             _context = context;
         }
@@ -28,7 +28,8 @@ namespace Infraestructure.Repositories
 
                 contex = column switch
                 {
-                    "name" => order == "desc" ? contex.OrderByDescending(p => p.FirstName) : contex.OrderBy(p => p.FirstName),
+                    "firstName" => order == "desc" ? contex.OrderByDescending(p => p.FirstName) : contex.OrderBy(p => p.FirstName),
+                    "lastName" => order == "desc" ? contex.OrderByDescending(p => p.LastName) : contex.OrderBy(p => p.LastName),
                     "status" => order == "desc" ? contex.OrderByDescending(p => p.State) : contex.OrderBy(p => p.State),
                     "createAt" => order == "desc" ? contex.OrderByDescending(p => p.AuditCreateDate) : contex.OrderBy(p => p.AuditCreateDate),
                 };
@@ -50,8 +51,9 @@ namespace Infraestructure.Repositories
                         if (value == "activo") contex = contex.Where(p => p.State == true);
                         if (value == "inactivo") contex = contex.Where(p => p.State == false);
                     }
-                    else if (id == "nombre") contex = contex.Where(p => p.FirstName.Contains(value));
-
+                    else if (id == "firstName") contex = contex.Where(p => p.FirstName.Contains(value));
+                    else if (id == "lastName") contex = contex.Where(p => p.LastName.Contains(value));
+                    else if (id == "email") contex = contex.Where(p => p.Email.Contains(value));
                 }
             }
 

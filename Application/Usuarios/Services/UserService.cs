@@ -86,12 +86,12 @@ namespace Application.Usuarios.Services
                 throw new NotImplementedException();
             }
 
-            usuario.State= false;
+            usuario.State= !usuario.State;
             usuario.AuditUpdateUser = 1;
             usuario.AuditUpdateDate= DateTime.Now;
 
             await _usuarioRepositorio.SaveAsync(usuario);
-
+            string action = usuario.State ? "activado" : "desactivado";
             return new OperationResult<UserDto>()
             {
                 Success = true,
@@ -104,7 +104,6 @@ namespace Application.Usuarios.Services
         {
             User user = await _usuarioRepositorio.FindByIdAsync(id) ?? throw new NotFoundCoreException("Usuario no Registrado con ese id");
             
-            user.State = true;
             user.AuditUpdateDate = DateTime.Now;
             user.Password = user.Password;
 

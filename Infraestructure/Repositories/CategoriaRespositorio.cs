@@ -23,7 +23,6 @@ namespace Infraestructure.Repositories
                 contex = column switch
                 {
                     "name" => order == "desc" ? contex.OrderByDescending(p => p.Nombre) : contex.OrderBy(p => p.Nombre),
-                    "code" => order == "desc" ? contex.OrderByDescending(p => p.Nombre) : contex.OrderBy(p => p.Nombre),
                     "status" => order == "desc" ? contex.OrderByDescending(p => p.Estado) : contex.OrderBy(p => p.Estado),
                     "createAt" => order == "desc" ? contex.OrderByDescending(p => p.FechaCreacion) : contex.OrderBy(p => p.FechaCreacion),
                 };
@@ -45,7 +44,7 @@ namespace Infraestructure.Repositories
                         if (value == "activo") contex = contex.Where(p => p.Estado == 1);
                         if (value == "inactivo") contex = contex.Where(p => p.Estado == 0);
                     }
-                    else if (id == "nombre") contex = contex.Where(p => p.Nombre.Contains(value));
+                    else if (id == "name") contex = contex.Where(p => p.Nombre.Contains(value));
 
                 }
             }
