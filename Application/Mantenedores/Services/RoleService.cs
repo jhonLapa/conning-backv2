@@ -29,7 +29,17 @@ namespace Application.Mantenedores.Services
 
         public async Task<OperationResult<RolDto>> CreateAsync(RolSaveDto saveDto)
         {
+            // 🚫 Validar duplicado por nombre
+            var existe = await _rolRepositorio.ExistsAsync(d =>
+                d.Name.ToLower() == saveDto.Name.ToLower());
+
+            if (existe)
+                throw new NotFoundCoreException("Ya existe otro dato con el mismo nombre.");
+
             var rol = _mapper.Map<Rol>(saveDto);
+            rol.AuditCreateDate = DateTime.Now;
+            rol.AuditCreateUser = 1;
+            rol.State = true;
 
             await _rolRepositorio.SaveAsync(rol);
 
@@ -44,6 +54,7 @@ namespace Application.Mantenedores.Services
         public async Task<OperationResult<RolDto>> DisabledAsync(int id)
         {
             var rol = await _rolRepositorio.FindByIdAsync(id) ?? throw new NotFoundCoreException("Registro no encontrado con ese Id");
+            rol.AuditDeleteDate = DateTime.Now;
 
             rol.State = rol.State == true ? false : true;
 
@@ -63,9 +74,17 @@ namespace Application.Mantenedores.Services
         public async Task<OperationResult<RolDto>> EditAsync(int id, RolSaveDto saveDto)
         {
             var rol = await _rolRepositorio.FindByIdAsync(id);
-
             if (rol == null) throw new NotFoundCoreException("Registro no encontrado con ese id");
 
+
+            // 🚫 Validar duplicado de nombre (excluyendo el mismo ID)
+            var existeDuplicado = await _rolRepositorio.ExistsAsync(d =>
+                d.Name.ToLower() == saveDto.Name.ToLower(), id);
+
+            if (existeDuplicado)
+                throw new NotFoundCoreException("Ya existe otro dato con el mismo nombre.");
+
+            rol.AuditUpdateDate = DateTime.Now;
             _mapper.Map(saveDto, rol);
 
             await _rolRepositorio.SaveAsync(rol);
