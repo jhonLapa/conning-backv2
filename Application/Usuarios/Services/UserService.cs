@@ -103,7 +103,12 @@ namespace Application.Usuarios.Services
         public async Task<OperationResult<UserDto>> EditAsync(int id, UserRoleSaveDto saveDto)
         {
             User user = await _usuarioRepositorio.FindByIdAsync(id) ?? throw new NotFoundCoreException("Usuario no Registrado con ese id");
-            
+            _mapper.Map(saveDto, user);
+            if (!string.IsNullOrWhiteSpace(saveDto.Password))
+            {
+                // Se asume que saveDto.Password trae la nueva contraseña en texto plano.
+                user.Password = _securityService.HashPassword(user.Email, saveDto.Password);
+            }
             user.AuditUpdateDate = DateTime.Now;
             user.Password = user.Password;
 
