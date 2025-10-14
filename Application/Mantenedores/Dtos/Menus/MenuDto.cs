@@ -7,7 +7,7 @@
         public string Icon { get; set; }
         public string Url { get; set; }
         public int? FatherId { get; set; }
-        public bool? State { get; set; }
+        public int? State { get; set; }
         public int Position { get; set; }
 
     }

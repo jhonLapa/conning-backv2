@@ -3,6 +3,7 @@ using Application.Mantenedores.Dtos.Proveedores;
 using Application.Mantenedores.Services.Interfaces;
 using AutoMapper;
 using Domain;
+using Infraestructure.Repositories;
 using Infraestructure.Repositories.Interfaces;
 
 namespace Application.Mantenedores.Services
@@ -29,6 +30,14 @@ namespace Application.Mantenedores.Services
 
         public async Task<OperationResult<ProveedorDto>> CreateAsync(ProveedorSaveDto saveDto)
         {
+
+            // 🚫 Validar duplicado por nombre
+            var existe = await _proveedorRepositorio.ExistsAsync(d =>
+                d.NombreCompleto.ToLower() == saveDto.NombreCompleto.ToLower());
+
+            if (existe)
+                throw new NotFoundCoreException("Ya existe otro dato con el mismo nombre.");
+
             var proveedor = _mapper.Map<Proveedor>(saveDto);
             proveedor.FechaCreacion = DateTime.Now;
             proveedor.Estado = 1;
@@ -68,6 +77,13 @@ namespace Application.Mantenedores.Services
             var proveedor = await _proveedorRepositorio.FindByIdAsync(id);
 
             if (proveedor == null) throw new NotFoundCoreException("Registro no encontrado con ese id");
+
+            // 🚫 Validar duplicado de nombre (excluyendo el mismo ID)
+            var existeDuplicado = await _proveedorRepositorio.ExistsAsync(d =>
+                d.NombreCompleto.ToLower() == saveDto.NombreCompleto.ToLower(), id);
+
+            if (existeDuplicado)
+                throw new NotFoundCoreException("Ya existe otro dato con el mismo nombre.");
 
             proveedor.FechaModificacion = DateTime.Now;
 

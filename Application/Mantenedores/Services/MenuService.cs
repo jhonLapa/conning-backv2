@@ -3,6 +3,7 @@ using Application.Mantenedores.Dtos.Menus;
 using Application.Mantenedores.Services.Interfaces;
 using AutoMapper;
 using Domain;
+using Infraestructure.Repositories;
 using Infraestructure.Repositories.Interfaces;
 
 namespace Application.Mantenedores.Services
@@ -29,7 +30,18 @@ namespace Application.Mantenedores.Services
 
         public async Task<OperationResult<MenuDto>> CreateAsync(MenuSaveDto saveDto)
         {
+            // 🚫 Validar duplicado por nombre
+            var existe = await _menuRepositorio.ExistsAsync(d =>
+                d.Name.ToLower() == saveDto.Name.ToLower());
+
+            if (existe)
+                throw new NotFoundCoreException("Ya existe otro dato con el mismo nombre.");
+
+
             var menu = _mapper.Map<Menu>(saveDto);
+            menu.AuditCreateDate = DateTime.Now;
+            menu.AuditCreateUser = 1;
+            menu.State = 1;
 
             await _menuRepositorio.SaveAsync(menu);
 
@@ -66,6 +78,14 @@ namespace Application.Mantenedores.Services
 
             if (menu == null) throw new NotFoundCoreException("Registro no encontrado con ese id");
 
+            // 🚫 Validar duplicado de nombre (excluyendo el mismo ID)
+            var existeDuplicado = await _menuRepositorio.ExistsAsync(d =>
+                d.Name.ToLower() == saveDto.Name.ToLower(), id);
+
+            if (existeDuplicado)
+                throw new NotFoundCoreException("Ya existe otro dato con el mismo nombre.");
+
+            menu.AuditUpdateDate = DateTime.Now;
             _mapper.Map(saveDto, menu);
 
             await _menuRepositorio.SaveAsync(menu);
