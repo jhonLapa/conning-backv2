@@ -106,7 +106,7 @@ namespace DinsidesBack.Controllers
         [AllowAnonymous]
         public async Task<Results<BadRequest, Ok<OperationResult<TrabajadorDto>>>> PostWithAccounts([FromBody] TrabajadorWithAccountsSaveDto request)
         {
-            var response = await _trabajadorService.CreateWithAccountsAsync(request);
+            var response = await _trabajadorService.CreateOrUpdateWithAccountsAsync(request);
             if (response != null) return TypedResults.Ok(response);
             return TypedResults.BadRequest();
         }
