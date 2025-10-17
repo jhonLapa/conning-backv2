@@ -127,13 +127,13 @@ namespace Application.Mantenedores.Services
 
         public async Task<OperationResult<TrabajadorDto>> CreateOrUpdateWithAccountsAsync(TrabajadorWithAccountsSaveDto dto)
         {
-            var idTrabajador = dto.Trabajador.IdTrabajador;
+            var idTrabajador = dto.IdTrabajador;
             Trabajador trabajador;
 
             if (idTrabajador == 0)
             {
                 // 🟢 Crear nuevo trabajador
-                trabajador = _mapper.Map<Trabajador>(dto.Trabajador);
+                trabajador = _mapper.Map<Trabajador>(dto);
                 trabajador.FechaCreacion = DateTime.Now;
                 trabajador.Estado = 1;
 
@@ -154,7 +154,7 @@ namespace Application.Mantenedores.Services
                 }
 
                 // Mapear los nuevos datos al existente
-                _mapper.Map(dto.Trabajador, trabajador);
+                _mapper.Map(dto, trabajador);
                 trabajador.FechaModificacion = DateTime.Now;
 
                 await _trabajadorRepositorio.SaveAsync(trabajador);
@@ -191,6 +191,57 @@ namespace Application.Mantenedores.Services
             };
         }
 
+
+        public async Task<OperationResult<TrabajadorDto>> CreateWithAccountsAsync(TrabajadorWithAccountsSaveDto dto)
+        {
+            if (dto == null)
+            {
+                throw new NotFoundCoreException("Datos de trabajador principal incompletos o faltantes.");
+            }
+
+            var trabajador = _mapper.Map<Trabajador>(dto);
+
+            trabajador.FechaCreacion = DateTime.Now;
+            trabajador.Estado = 1;
+
+            trabajador.UsuarioCreacion = "system";
+            trabajador.FechaModificacion = null;
+            trabajador.UsuarioModificacion = null;
+            trabajador.Email = dto.Email ?? "sincorreo@example.com";
+            trabajador.Telefono = dto.Telefono ?? "000000000";
+            trabajador.Direccion = dto.Direccion ?? "Sin dirección";
+            trabajador.Sexo = dto.Sexo ?? "M";
+            trabajador.EstadoCivil = dto.EstadoCivil ?? "S";
+            trabajador.TipoDocumentoId = dto.IdTipoDocumento;
+            trabajador.FechaCreacion = DateTime.Now;
+
+            if (trabajador.TipoDocumentoId == 0 || trabajador.IdCategoria == 0 || trabajador.IdRegimen == 0)
+            {
+                throw new NotFoundCoreException("Los campos Tipo Documento, Categoría y Régimen son obligatorios.");
+            }
+
+            await _trabajadorRepositorio.SaveAsync(trabajador);
+
+            if (dto.Cuentas != null && dto.Cuentas.Any())
+            {
+                foreach (var cuentaDto in dto.Cuentas)
+                {
+                    var cuenta = _mapper.Map<CuentaBancariaTrabajador>(cuentaDto);
+                    cuenta.IdTrabajador = trabajador.IdTrabajador;
+                    cuenta.FechaCreacion = DateTime.Now;
+                    cuenta.Estado = 1;
+
+                    await _cuentaBancariaTrabajadorRepositorio.SaveAsync(cuenta);
+                }
+            }
+
+            return new OperationResult<TrabajadorDto>
+            {
+                Data = _mapper.Map<TrabajadorDto>(trabajador),
+                Message = "Trabajador y cuentas creados con éxito",
+                Success = true
+            };
+        }
 
     }
 }
