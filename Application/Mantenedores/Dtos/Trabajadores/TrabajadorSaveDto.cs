@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Application.Mantenedores.Dtos.Trabajadores
+﻿namespace Application.Mantenedores.Dtos.Trabajadores
 {
     public class TrabajadorSaveDto
     {
+        public int IdTrabajador { get; set; }
         public int IdCategoria { get; set; }
         public int IdRegimen { get; set; }
         public int IdTipoDocumento { get; set; }

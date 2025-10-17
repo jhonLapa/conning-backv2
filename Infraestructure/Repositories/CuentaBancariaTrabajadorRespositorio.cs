@@ -22,6 +22,27 @@ namespace Infraestructure.Repositories
 
             return response;
         }
+
+        public async Task DeleteByCuentaTrabajadorIdAsync(int id)
+        {
+            var detalles = await _context.Set<CuentaBancariaTrabajador>()
+                                         .Where(d => d.IdTrabajador == id)
+                                         .ToListAsync();
+
+            if (detalles.Any())
+            {
+                _context.Set<CuentaBancariaTrabajador>().RemoveRange(detalles);
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        public async Task<IEnumerable<CuentaBancariaTrabajador>> GetByTrabajadorIdAsync(int idTrabajador)
+        {
+            return await _context.Set<CuentaBancariaTrabajador>()
+                .Where(x => x.IdTrabajador == idTrabajador)
+                .ToListAsync();
+        }
+
         public async Task DeleteAsync(int id)
         {
             var entityToDelete = await _context.Set<CuentaBancariaTrabajador>().FindAsync(id);

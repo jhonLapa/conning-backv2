@@ -125,36 +125,49 @@ namespace Application.Mantenedores.Services
             return _mapper.Map<IReadOnlyList<TrabajadorSelectDto>>(response);
         }
 
-        public async Task<OperationResult<TrabajadorDto>> CreateWithAccountsAsync(TrabajadorWithAccountsSaveDto dto)
+        public async Task<OperationResult<TrabajadorDto>> CreateOrUpdateWithAccountsAsync(TrabajadorWithAccountsSaveDto dto)
         {
-            if (dto == null)
+            var idTrabajador = dto.Trabajador.IdTrabajador;
+            Trabajador trabajador;
+
+            if (idTrabajador == 0)
             {
-                throw new NotFoundCoreException("Datos de trabajador principal incompletos o faltantes.");
+                // 🟢 Crear nuevo trabajador
+                trabajador = _mapper.Map<Trabajador>(dto.Trabajador);
+                trabajador.FechaCreacion = DateTime.Now;
+                trabajador.Estado = 1;
+
+                await _trabajadorRepositorio.SaveAsync(trabajador);
+            }
+            else
+            {
+                // 🟡 Actualizar trabajador existente
+                trabajador = await _trabajadorRepositorio.FindByIdAsync(idTrabajador);
+                if (trabajador == null)
+                {
+                    return new OperationResult<TrabajadorDto>
+                    {
+                        Success = false,
+                        Message = "El trabajador no existe.",
+                        Data = null
+                    };
+                }
+
+                // Mapear los nuevos datos al existente
+                _mapper.Map(dto.Trabajador, trabajador);
+                trabajador.FechaModificacion = DateTime.Now;
+
+                await _trabajadorRepositorio.SaveAsync(trabajador);
+
+                // 🔴 Eliminar cuentas existentes antes de recrearlas
+                var cuentasExistentes = await _cuentaBancariaTrabajadorRepositorio
+                    .GetByTrabajadorIdAsync(idTrabajador);
+
+                foreach (var cuenta in cuentasExistentes)
+                    await _cuentaBancariaTrabajadorRepositorio.DeleteByCuentaTrabajadorIdAsync(cuenta.IdTrabajador);
             }
 
-            var trabajador = _mapper.Map<Trabajador>(dto);
-
-            trabajador.FechaCreacion = DateTime.Now;
-            trabajador.Estado = 1;
-
-            trabajador.UsuarioCreacion = "system"; 
-            trabajador.FechaModificacion = null;
-            trabajador.UsuarioModificacion = null;
-            trabajador.Email = dto.Email ?? "sincorreo@example.com";
-            trabajador.Telefono = dto.Telefono ?? "000000000";
-            trabajador.Direccion = dto.Direccion ?? "Sin dirección";
-            trabajador.Sexo = dto.Sexo ?? "M"; 
-            trabajador.EstadoCivil = dto.EstadoCivil ?? "S";
-            trabajador.TipoDocumentoId = dto.IdTipoDocumento;
-            trabajador.FechaCreacion = DateTime.Now;
-
-            if (trabajador.TipoDocumentoId == 0 || trabajador.IdCategoria == 0 || trabajador.IdRegimen == 0)
-            {
-                throw new NotFoundCoreException("Los campos Tipo Documento, Categoría y Régimen son obligatorios.");
-            }
-
-            await _trabajadorRepositorio.SaveAsync(trabajador);
-
+            // 🔵 Crear cuentas nuevas
             if (dto.Cuentas != null && dto.Cuentas.Any())
             {
                 foreach (var cuentaDto in dto.Cuentas)
@@ -171,10 +184,13 @@ namespace Application.Mantenedores.Services
             return new OperationResult<TrabajadorDto>
             {
                 Data = _mapper.Map<TrabajadorDto>(trabajador),
-                Message = "Trabajador y cuentas creados con éxito",
+                Message = idTrabajador == 0
+                    ? "Trabajador y cuentas creados con éxito"
+                    : "Trabajador y cuentas actualizados con éxito",
                 Success = true
             };
         }
+
 
     }
 }
