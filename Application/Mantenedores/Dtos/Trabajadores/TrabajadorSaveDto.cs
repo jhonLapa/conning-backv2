@@ -10,7 +10,7 @@ namespace Application.Mantenedores.Dtos.Trabajadores
     {
         public int IdCategoria { get; set; }
         public int IdRegimen { get; set; }
-        public int TipoDocumentoId { get; set; }
+        public int IdTipoDocumento { get; set; }
         public string NumeroDocumento { get; set; }
         public string ApellidosNombres { get; set; }
         public DateTime FechaNacimiento { get; set; }

@@ -3,11 +3,6 @@ using Infraestructure.Contexts;
 using Infraestructure.Core.Repositories;
 using Infraestructure.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Infraestructure.Repositories
 {
@@ -21,11 +16,29 @@ namespace Infraestructure.Repositories
 
         public override async Task<IReadOnlyList<CuentaBancariaTrabajador>> FindAllAsync()
         {
-            var response = await _context.Set<CuentaBancariaTrabajador>().
-                Include(e => e.Banco).
-                ToListAsync();
+            var response = await _context.Set<CuentaBancariaTrabajador>() // 🚨 Usar Set<T>()
+                .Include(e => e.Banco)
+                .ToListAsync();
 
             return response;
+        }
+        public async Task DeleteAsync(int id)
+        {
+            var entityToDelete = await _context.Set<CuentaBancariaTrabajador>().FindAsync(id);
+
+            if (entityToDelete != null)
+            {
+                _context.Set<CuentaBancariaTrabajador>().Remove(entityToDelete);
+
+                await _context.SaveChangesAsync();
+            }
+        }
+        public async Task<IReadOnlyList<CuentaBancariaTrabajador>> FindByTrabajadorIdAsync(int idTrabajador)
+        {
+            // 🚨 CORRECCIÓN: Usar _context.Set<T>() en lugar de la propiedad DbSet
+            return await _context.Set<CuentaBancariaTrabajador>()
+                                 .Where(c => c.IdTrabajador == idTrabajador)
+                                 .ToListAsync();
         }
     }
 }

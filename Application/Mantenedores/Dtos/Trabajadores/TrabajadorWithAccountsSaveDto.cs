@@ -2,12 +2,28 @@
 {
     public class TrabajadorWithAccountsSaveDto
     {
-        public TrabajadorSaveDto Trabajador { get; set; } = null!;
+        //DATOS TRABAJADOR
+        public int IdTrabajador { get; set; }
+        public int IdCategoria { get; set; }
+        public int IdRegimen { get; set; }
+        public int IdTipoDocumento { get; set; }
+        public string NumeroDocumento { get; set; }
+        public string ApellidosNombres { get; set; }
+        public DateTime FechaNacimiento { get; set; }
+        public string Telefono { get; set; }
+        public string Email { get; set; }
+        public string Sexo { get; set; }
+        public string EstadoCivil { get; set; }
+        public string Direccion { get; set; }
+        public int AsignacionFamiliar { get; set; }
+        public int Hijos { get; set; }
         public ICollection<CuentaBancoSaveDto> Cuentas { get; set; } = new List<CuentaBancoSaveDto>();
     }
 
     public class CuentaBancoSaveDto
     {
+        public int IdCuentaBanco { get; set; }
+        public int IdTrabajador { get; set; }
         public int IdBanco { get; set; }
         public string NumeroCuenta { get; set; } = null!;
         public string? Cci { get; set; }

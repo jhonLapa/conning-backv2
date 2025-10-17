@@ -1,13 +1,8 @@
-﻿
-using Application.CuentasBancariasTrabajador.Dtos;
-using Application.Exceptions;
-using Application.Mantenedores.Dtos.TiposComprobantes;
-using Application.Mantenedores.Dtos.TiposDocumento;
+﻿using Application.Exceptions;
 using Application.Mantenedores.Dtos.Trabajadores;
 using Application.Mantenedores.Services.Interfaces;
 using AutoMapper;
 using Domain;
-using Infraestructure.Repositories;
 using Infraestructure.Repositories.Interfaces;
 
 namespace Application.Mantenedores.Services
@@ -36,8 +31,24 @@ namespace Application.Mantenedores.Services
         public async Task<OperationResult<TrabajadorDto>> CreateAsync(TrabajadorSaveDto saveDto)
         {
             var trabajador = _mapper.Map<Trabajador>(saveDto);
+
             trabajador.FechaCreacion = DateTime.Now;
             trabajador.Estado = 1;
+
+            trabajador.UsuarioCreacion = "system";
+            trabajador.FechaModificacion = null;
+            trabajador.UsuarioModificacion = null;
+
+            trabajador.Email = saveDto.Email ?? "sincorreo@example.com";
+            trabajador.Telefono = saveDto.Telefono ?? "000000000";
+            trabajador.Direccion = saveDto.Direccion ?? "Sin dirección";
+
+
+            if (trabajador.TipoDocumentoId == 0 || trabajador.IdCategoria == 0 || trabajador.IdRegimen == 0)
+            {
+                throw new NotFoundCoreException("Los campos Tipo Documento, Categoría y Régimen son obligatorios.");
+            }
+
 
             await _trabajadorRepositorio.SaveAsync(trabajador);
 
@@ -116,14 +127,34 @@ namespace Application.Mantenedores.Services
 
         public async Task<OperationResult<TrabajadorDto>> CreateWithAccountsAsync(TrabajadorWithAccountsSaveDto dto)
         {
-            // Mapear y crear el trabajador
-            var trabajador = _mapper.Map<Trabajador>(dto.Trabajador);
+            if (dto == null)
+            {
+                throw new NotFoundCoreException("Datos de trabajador principal incompletos o faltantes.");
+            }
+
+            var trabajador = _mapper.Map<Trabajador>(dto);
+
             trabajador.FechaCreacion = DateTime.Now;
             trabajador.Estado = 1;
 
+            trabajador.UsuarioCreacion = "system"; 
+            trabajador.FechaModificacion = null;
+            trabajador.UsuarioModificacion = null;
+            trabajador.Email = dto.Email ?? "sincorreo@example.com";
+            trabajador.Telefono = dto.Telefono ?? "000000000";
+            trabajador.Direccion = dto.Direccion ?? "Sin dirección";
+            trabajador.Sexo = dto.Sexo ?? "M"; 
+            trabajador.EstadoCivil = dto.EstadoCivil ?? "S";
+            trabajador.TipoDocumentoId = dto.IdTipoDocumento;
+            trabajador.FechaCreacion = DateTime.Now;
+
+            if (trabajador.TipoDocumentoId == 0 || trabajador.IdCategoria == 0 || trabajador.IdRegimen == 0)
+            {
+                throw new NotFoundCoreException("Los campos Tipo Documento, Categoría y Régimen son obligatorios.");
+            }
+
             await _trabajadorRepositorio.SaveAsync(trabajador);
 
-            // Si vienen cuentas bancarias
             if (dto.Cuentas != null && dto.Cuentas.Any())
             {
                 foreach (var cuentaDto in dto.Cuentas)

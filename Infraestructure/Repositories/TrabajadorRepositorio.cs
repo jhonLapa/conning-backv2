@@ -19,8 +19,8 @@ namespace Infraestructure.Repositories
         public async Task<PaginadoResponse<Trabajador>> BusquedaPaginado(PaginationRequest dto)
         {
             var contex = _context.Set<Trabajador>()
-                        //.Include(t => t.Categoria)
-                        //.Include(t => t.Regimen)
+                        .Include(t => t.Categoria)
+                        .Include(t => t.Regimen)
                         .Include(t => t.TipoDocumento)
                         .AsQueryable();
 
