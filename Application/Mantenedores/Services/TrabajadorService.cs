@@ -31,8 +31,24 @@ namespace Application.Mantenedores.Services
         public async Task<OperationResult<TrabajadorDto>> CreateAsync(TrabajadorSaveDto saveDto)
         {
             var trabajador = _mapper.Map<Trabajador>(saveDto);
+
             trabajador.FechaCreacion = DateTime.Now;
             trabajador.Estado = 1;
+
+            trabajador.UsuarioCreacion = "system";
+            trabajador.FechaModificacion = null;
+            trabajador.UsuarioModificacion = null;
+
+            trabajador.Email = saveDto.Email ?? "sincorreo@example.com";
+            trabajador.Telefono = saveDto.Telefono ?? "000000000";
+            trabajador.Direccion = saveDto.Direccion ?? "Sin dirección";
+
+
+            if (trabajador.TipoDocumentoId == 0 || trabajador.IdCategoria == 0 || trabajador.IdRegimen == 0)
+            {
+                throw new NotFoundCoreException("Los campos Tipo Documento, Categoría y Régimen son obligatorios.");
+            }
+
 
             await _trabajadorRepositorio.SaveAsync(trabajador);
 
@@ -111,15 +127,35 @@ namespace Application.Mantenedores.Services
 
         public async Task<OperationResult<TrabajadorDto>> CreateOrUpdateWithAccountsAsync(TrabajadorWithAccountsSaveDto dto)
         {
-            var idTrabajador = dto.Trabajador.IdTrabajador;
+            var idTrabajador = dto.IdTrabajador;
+
+            // 🧩 Validar existencia antes de crear o actualizar
+            bool existe = await _trabajadorRepositorio.ExistsAsync(
+                       x => x.NumeroDocumento == dto.NumeroDocumento
+                         && x.TipoDocumentoId == dto.IdTipoDocumento
+                         && x.ApellidosNombres == dto.ApellidosNombres,
+                       idTrabajador == 0 ? (int?)null : idTrabajador // 👈 conversión explícita
+                   );
+
+            if (existe)
+            {
+                return new OperationResult<TrabajadorDto>
+                {
+                    Success = false,
+                    Message = "Ya existe un trabajador con el mismo documento y nombre.",
+                    Data = null
+                };
+            }
+
             Trabajador trabajador;
 
             if (idTrabajador == 0)
             {
                 // 🟢 Crear nuevo trabajador
-                trabajador = _mapper.Map<Trabajador>(dto.Trabajador);
+                trabajador = _mapper.Map<Trabajador>(dto);
                 trabajador.FechaCreacion = DateTime.Now;
                 trabajador.Estado = 1;
+                trabajador.TipoDocumentoId = dto.IdTipoDocumento;
 
                 await _trabajadorRepositorio.SaveAsync(trabajador);
             }
@@ -138,8 +174,9 @@ namespace Application.Mantenedores.Services
                 }
 
                 // Mapear los nuevos datos al existente
-                _mapper.Map(dto.Trabajador, trabajador);
+                _mapper.Map(dto, trabajador);
                 trabajador.FechaModificacion = DateTime.Now;
+                trabajador.TipoDocumentoId = dto.IdTipoDocumento;
 
                 await _trabajadorRepositorio.SaveAsync(trabajador);
 

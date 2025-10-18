@@ -29,9 +29,9 @@ namespace Infraestructure.Repositories
 
                 contex = column switch
                 {
-                    "name" => order == "desc" ? contex.OrderByDescending(p => p.rol) : contex.OrderBy(p => p.rol),
+                    "name" => order == "desc" ? contex.OrderByDescending(p => p.Rol) : contex.OrderBy(p => p.Rol),
                     "status" => order == "desc" ? contex.OrderByDescending(p => p.Estado) : contex.OrderBy(p => p.Estado),
-                    "createAt" => order == "desc" ? contex.OrderByDescending(p => p.fechaInicio) : contex.OrderBy(p => p.fechaInicio),
+                    "createAt" => order == "desc" ? contex.OrderByDescending(p => p.FechaInicio) : contex.OrderBy(p => p.FechaInicio),
                 };
 
             }
@@ -51,7 +51,7 @@ namespace Infraestructure.Repositories
                         if (value == "activo") contex = contex.Where(p => p.Estado == 1);
                         if (value == "inactivo") contex = contex.Where(p => p.Estado == 0);
                     }
-                    else if (id == "name") contex = contex.Where(p => p.rol.Contains(value));
+                    else if (id == "name") contex = contex.Where(p => p.Rol.Contains(value));
 
                 }
             }
@@ -105,6 +105,10 @@ namespace Infraestructure.Repositories
                                  .Include(c => c.Proyecto)
                                  .ToListAsync();
         }
-
+        public async Task<ProyectoEncargado?> FindByProyectoAsync(int idProyecto)
+        {
+            return await _context.Set<ProyectoEncargado>()
+                .FirstOrDefaultAsync(x => x.IdProyecto == idProyecto);
+        }
     }
 }

@@ -1,10 +1,8 @@
 ﻿using Application.Exceptions;
-using Application.Mantenedores.Dtos.TiposComprobantes;
 using Application.ProyectoEncargados.Dto;
 using Application.ProyectoEncargados.Services.Interfaces;
 using AutoMapper;
 using Domain;
-using Infraestructure.Repositories;
 using Infraestructure.Repositories.Interfaces;
 
 namespace Application.ProyectoEncargados.Servicess
@@ -39,7 +37,7 @@ namespace Application.ProyectoEncargados.Servicess
         {
             var proyectoEncargado = _mapper.Map<ProyectoEncargado>(saveDto);
 
-            proyectoEncargado.fechaInicio = DateTime.Now;
+            proyectoEncargado.FechaInicio = DateTime.Now;
 
             await _proyectoEncargadoRepositorio.SaveAsync(proyectoEncargado);
 

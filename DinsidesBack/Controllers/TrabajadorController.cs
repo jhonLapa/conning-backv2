@@ -111,7 +111,5 @@ namespace DinsidesBack.Controllers
             return TypedResults.BadRequest();
         }
 
-
-
     }
 }

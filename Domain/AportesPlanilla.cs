@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Domain
@@ -15,8 +16,11 @@ namespace Domain
         public DateTime FechaVencimiento { get; set; }
         public DateTime FechaPago { get; set; }
         public int Estado { get; set; }
+        public int IdProyecto { get; set; }
 
         // 🔗 Relaciones
         public Planilla Planilla { get; set; } = null!;
+        [JsonIgnore]
+        public Proyecto? Proyecto { get; set; }
     }
 }

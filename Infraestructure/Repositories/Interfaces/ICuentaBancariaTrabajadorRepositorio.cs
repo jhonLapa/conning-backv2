@@ -8,5 +8,7 @@ namespace Infraestructure.Repositories.Interfaces
         Task DeleteByCuentaTrabajadorIdAsync(int id);
         Task<IEnumerable<CuentaBancariaTrabajador>> GetByTrabajadorIdAsync(int idTrabajador);
 
+        Task DeleteAsync(int id);
+        Task<IReadOnlyList<CuentaBancariaTrabajador>> FindByTrabajadorIdAsync(int idTrabajador);
     }
 }

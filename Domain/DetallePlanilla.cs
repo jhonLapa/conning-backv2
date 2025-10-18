@@ -15,6 +15,8 @@ namespace Domain
         public decimal TotalMensual { get; set; }
         public decimal TotalHoras { get; set; }
         public DateTime FechaCreacion { get; set; }
+        public string? UsuarioCreacion { get; set; }
+        public int TotalDescuentos { get; set; }
 
         // Relaciones
         [JsonIgnore] // 👈 rompe el loop

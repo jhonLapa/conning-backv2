@@ -51,6 +51,12 @@ namespace Infraestructure.Configurations
                    .WithMany(p => p.AportesPlanilla)
                    .HasForeignKey(a => a.IdPlanilla)
                    .OnDelete(DeleteBehavior.Restrict);
+
+            // Relaciones
+            builder.HasOne(p => p.Proyecto)
+                   .WithMany(p => p.AportesPlanilla)
+                   .HasForeignKey(p => p.IdProyecto)
+                   .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
