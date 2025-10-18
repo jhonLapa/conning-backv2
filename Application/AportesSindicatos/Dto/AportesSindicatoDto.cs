@@ -21,7 +21,6 @@ namespace Application.AportesSindicatos.Dto
         public DateTime FechaCreacion { get; set; }
         public string? UsuarioCreacion { get; set; }
 
-        // 🔗 Relaciones
-        public Proyecto Proyecto { get; set; } = null!;
+        
     }
 }

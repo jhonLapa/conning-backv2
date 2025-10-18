@@ -14,5 +14,7 @@ namespace Application.DetallePlanillas.Dto
         public int SegundaQuincena { get; set; }
         public decimal TotalMensual { get; set; }
         public int TotalHoras { get; set; }
+        public int TotalDescuentos { get; set; }
+
     }
 }

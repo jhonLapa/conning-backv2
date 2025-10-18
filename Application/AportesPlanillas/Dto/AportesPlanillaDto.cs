@@ -16,6 +16,7 @@ namespace Application.AportesPlanillas.Dto
         public DateTime FechaVencimiento { get; set; }
         public DateTime FechaPago { get; set; }
         public int Estado { get; set; }
+        public int IdProyecto { get; set; }
 
         // 🔗 Relaciones
         public Planilla Planilla { get; set; } = null!;

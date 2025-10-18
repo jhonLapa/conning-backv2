@@ -23,6 +23,8 @@ namespace Domain
         [JsonIgnore]
         public ICollection<TrabajadorProyecto> TrabajadoresProyectos { get; set; } = new List<TrabajadorProyecto>();
         public ICollection<Planilla> Planillas { get; set; } = new List<Planilla>(); // 👈 nueva relación
+        [JsonIgnore]
+        public ICollection<AportesPlanilla> AportesPlanilla { get; set; } = new List<AportesPlanilla>();
 
         [JsonIgnore]
         public ICollection<ProyectoEncargado> proyectoEncargados { get; set; } = new List<ProyectoEncargado>();

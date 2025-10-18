@@ -1,5 +1,4 @@
-﻿using Application.Mantenedores.Dtos.Proyectos;
-using Application.Mantenedores.Dtos.Trabajadores;
+﻿using Application.Mantenedores.Dtos.Trabajadores;
 
 namespace Application.TrabajadorProyectos.Dto
 {
@@ -16,6 +15,5 @@ namespace Application.TrabajadorProyectos.Dto
 
         // Relaciones
         public TrabajadorDto Trabajador { get; set; }
-        public ProyectoDto Proyecto { get; set; }
     }
 }

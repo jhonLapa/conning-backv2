@@ -106,5 +106,11 @@ namespace Infraestructure.Repositories
                                  .ToListAsync();
         }
 
+        public async Task<TrabajadorProyecto?> FindByProyectoYTrabajadorAsync(int idProyecto, int idTrabajador)
+        {
+            return await _context.Set<TrabajadorProyecto>()
+                .FirstOrDefaultAsync(x => x.IdProyecto == idProyecto && x.IdTrabajador == idTrabajador);
+        }
+
     }
 }
