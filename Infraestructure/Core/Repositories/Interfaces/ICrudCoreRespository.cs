@@ -7,7 +7,7 @@ namespace Infraestructure.Core.Repositories.Interfaces
         Task<IReadOnlyList<T>> FindAllAsync();
         Task<T?> FindByIdAsync(ID id);
         Task<T> SaveAsync(T entity);
-        Task<bool> ExistsAsync(Expression<Func<T, bool>> predicate, ID? excludeId = default);
+        Task<bool> ExistsAsync(Expression<Func<T, bool>> predicate, int? excludeId = null);
         Task<string> GenerarCodigoAsync(string prefijo, int longitud = 4);
     }
 }

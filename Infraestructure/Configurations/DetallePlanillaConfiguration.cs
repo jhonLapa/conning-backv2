@@ -10,29 +10,32 @@ public class DetallePlanillaConfiguration : IEntityTypeConfiguration<DetallePlan
         builder.HasKey(dv => dv.IdDetallePlanilla);
 
         builder.Property(dv => dv.DiasTrabajados)
-               .HasMaxLength(10);
+               .HasColumnType("int");
 
-        builder.Property(dv => dv.HorasTrabajadas)           // 👈 aquí
-               .HasMaxLength(10);
+        builder.Property(dv => dv.HorasTrabajadas)
+               .HasColumnType("int");
 
+        // ✅ Corregido: ahora usa HasPrecision
         builder.Property(dv => dv.PrimeraQuincena)
-               .HasMaxLength(10);
+               .HasPrecision(12, 2);
 
         builder.Property(dv => dv.SegundaQuincena)
-               .HasMaxLength(10);
+               .HasPrecision(12, 2);
 
         builder.Property(dv => dv.TotalMensual)
-               .HasMaxLength(10);
+               .HasPrecision(12, 2);
 
         builder.Property(dv => dv.TotalHoras)
-               .HasMaxLength(10);
+               .HasPrecision(12, 2);
 
-        builder.Property(v => v.FechaCreacion)
-        .HasColumnType("datetime2") 
-        .IsRequired();
+        builder.Property(dv => dv.FechaCreacion)
+               .HasColumnType("datetime2")
+               .IsRequired();
 
+        builder.Property(dv => dv.UsuarioCreacion)
+               .HasMaxLength(50);
 
-        //Relaciones
+        // Relaciones
         builder.HasOne(dp => dp.Planilla)
                .WithMany(p => p.Detalles)
                .HasForeignKey(dp => dp.IdPlanilla);

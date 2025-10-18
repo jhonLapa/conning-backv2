@@ -10,10 +10,10 @@ namespace Application.DetallePlanillas.Dto
         public int Cantidad { get; set; }
         public int DiasTrabajados { get; set; }
         public int HorasTrabajadas { get; set; }
-        public int PrimeraQuincena { get; set; }
-        public int SegundaQuincena { get; set; }
+        public decimal PrimeraQuincena { get; set; }
+        public decimal SegundaQuincena { get; set; }
         public decimal TotalMensual { get; set; }
-        public int TotalHoras { get; set; }
+        public decimal TotalHoras { get; set; }
         public int TotalDescuentos { get; set; }
 
     }

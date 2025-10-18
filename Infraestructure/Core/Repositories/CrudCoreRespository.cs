@@ -44,21 +44,22 @@ namespace Infraestructure.Core.Repositories
             return entity;
         }
 
-        public async Task<bool> ExistsAsync(Expression<Func<T, bool>> predicate, ID? excludeId = default)
+        public async Task<bool> ExistsAsync(Expression<Func<T, bool>> predicate, int? excludeId = null)
         {
             var query = _context.Set<T>().AsQueryable();
 
-            if (excludeId != null)
+            if (excludeId.HasValue)
             {
                 var entityType = _context.Model.FindEntityType(typeof(T));
                 var keyName = entityType?.FindPrimaryKey()?.Properties.FirstOrDefault()?.Name;
 
                 if (!string.IsNullOrEmpty(keyName))
-                    query = query.Where(e => !EF.Property<ID>(e, keyName)!.Equals(excludeId));
+                    query = query.Where(e => !EF.Property<int>(e, keyName).Equals(excludeId.Value));
             }
 
             return await query.AnyAsync(predicate);
         }
+
 
         public async Task<string> GenerarCodigoAsync(string prefijo, int longitud = 4)
         {

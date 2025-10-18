@@ -22,8 +22,6 @@
 
     public class CuentaBancoSaveDto
     {
-        public int IdCuentaBanco { get; set; }
-        public int IdTrabajador { get; set; }
         public int IdBanco { get; set; }
         public string NumeroCuenta { get; set; } = null!;
         public string? Cci { get; set; }
@@ -31,6 +29,11 @@
         public string Moneda { get; set; } = null!;
         public int Principal { get; set; }
         public DateTime? FechaInicio { get; set; }
-        public DateTime? FechaFin { get; set; }
+        private DateTime? _fechaFin;
+        public string? FechaFin
+        {
+            get => _fechaFin?.ToString("yyyy-MM-dd");
+            set => _fechaFin = string.IsNullOrWhiteSpace(value) ? null : DateTime.Parse(value);
+        }
     }
 }
