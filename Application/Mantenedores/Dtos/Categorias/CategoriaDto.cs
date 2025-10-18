@@ -1,4 +1,7 @@
-﻿namespace Application.Mantenedores.Dtos.Categorias
+﻿using Application.DetalleVentas.Dto;
+using Domain;
+
+namespace Application.Mantenedores.Dtos.Categorias
 {
     public class CategoriaDto
     {
@@ -9,5 +12,8 @@
         public string? UsuarioCreacion { get; set; }
         public DateTime? FechaModificacion { get; set; }
         public string? UsuarioModificacion { get; set; }
+
+        public List<ConceptosCategoria> ConceptosCategoria { get; set; } = new();
+
     }
 }

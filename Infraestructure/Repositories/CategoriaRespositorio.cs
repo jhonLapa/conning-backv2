@@ -11,7 +11,9 @@ namespace Infraestructure.Repositories
 
         public async Task<PaginadoResponse<Categoria>> BusquedaPaginado(PaginationRequest dto)
         {
-            var contex = _context.Set<Categoria>().AsQueryable();
+            var contex = _context.Set<Categoria>()
+                .Include(c => c.ConceptosCategoria)
+                .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(dto.Sort))
             {
@@ -74,6 +76,25 @@ namespace Infraestructure.Repositories
             return await _context.Set<Categoria>()
                                  .AsNoTracking()
                                  .Where(a => a.Estado == 1)
+                                 .ToListAsync();
+        }
+
+        public async override Task<Categoria?> FindByIdAsync(int id)
+        {
+            return await _context.Set<Categoria>()
+                                 .AsSplitQuery() // 👈 evita el warning MultipleCollectionInclude
+                                 .Include(c => c.ConceptosCategoria)
+                                 .FirstOrDefaultAsync(x => x.IdCategoria == id);
+        }
+
+
+
+        public async override Task<IReadOnlyList<Categoria>> FindAllAsync()
+        {
+            return await _context.Set<Categoria>()
+                                 .AsNoTracking()
+                                 .AsSplitQuery() // 👈 importante aquí también
+                                 .Include(c => c.ConceptosCategoria)
                                  .ToListAsync();
         }
 
