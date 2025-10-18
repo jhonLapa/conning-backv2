@@ -7,5 +7,6 @@ namespace Infraestructure.Repositories.Interfaces
     {
         Task<PaginadoResponse<ProyectoEncargado>> BusquedaPaginado(PaginationRequest dto);
         Task<IReadOnlyList<ProyectoEncargado>> SelectActivo();
+        Task<ProyectoEncargado?> FindByProyectoAsync(int idProyecto);
     }
 }

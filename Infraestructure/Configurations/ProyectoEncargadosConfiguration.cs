@@ -17,14 +17,14 @@ namespace Infraestructure.Configurations
 
             builder.HasKey(v => v.IdProyectoEncargado);
 
-            builder.Property(v => v.rol)
+            builder.Property(v => v.Rol)
                    .HasMaxLength(50)
                    .IsRequired();
             // Fechas
-            builder.Property(p => p.fechaInicio)
+            builder.Property(p => p.FechaInicio)
                    .HasColumnType("date")   // en tu tabla es DATE
                    .IsRequired();
-            builder.Property(p => p.fechaFin)
+            builder.Property(p => p.FechaFin)
                    .HasColumnType("date")   // en tu tabla es DATE
                    .IsRequired();
 

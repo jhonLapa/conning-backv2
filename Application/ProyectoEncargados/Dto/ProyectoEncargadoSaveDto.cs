@@ -10,9 +10,9 @@ namespace Application.ProyectoEncargados.Dto
     {
         public int IdProyecto { get; set; }
         public int IdTrabajador { get; set; }
-        public string rol { get; set; }
-        public DateTime fechaInicio { get; set; }
-        public DateTime fechaFin { get; set; }
+        public string Rol { get; set; }
+        public DateTime FechaInicio { get; set; }
+        public DateTime FechaFin { get; set; }
         
     }
 }

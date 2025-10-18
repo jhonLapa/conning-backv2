@@ -35,6 +35,13 @@ namespace Application.Mantenedores.Dtos.Profiles
             CreateMap<Proyecto, ProyectoSaveDto>().ReverseMap();
             CreateMap<Proyecto, ProyectoSelectDto>().ReverseMap();
 
+            CreateMap<Proyecto, ProyectoCreateDto>().ReverseMap();
+
+            // 🧩 Relaciones secundarias
+            CreateMap<TrabajadorProyecto, TrabajadorProyectoCreateDto>().ReverseMap();
+            CreateMap<AportesSindicato, SindicatoDto>().ReverseMap();
+            CreateMap<ProyectoEncargado, ProyectoEncargadoDto>().ReverseMap();
+
             //Rol 
             CreateMap<Rol , RolDto>().ReverseMap();
             CreateMap<Rol , RolSaveDto>().ReverseMap();

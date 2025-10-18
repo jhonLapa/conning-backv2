@@ -8,12 +8,11 @@ namespace Application.ProyectoEncargados.Dto
         public int IdProyecto { get; set; }
         public int IdTrabajador { get; set; }
         public string rol { get; set; }
-        public DateTime fechaInicio { get; set; }
-        public DateTime fechaFin { get; set; }
+        public DateTime FechaInicio { get; set; }
+        public DateTime FechaFin { get; set; }
         public int Estado { get; set; }
 
         // 🔗 Relaciones
         public Trabajador Trabajador { get; set; } = null!;
-        public Proyecto Proyecto { get; set; } = null!;
     }
 }

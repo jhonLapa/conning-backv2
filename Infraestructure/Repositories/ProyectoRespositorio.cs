@@ -82,11 +82,12 @@ namespace Infraestructure.Repositories
 
         public async override Task<Proyecto?> FindByIdAsync(int id)
         {
-            var response = await _context.Set<Proyecto>()
+            return await _context.Set<Proyecto>()
                 .Include(x => x.Cliente)
+                .Include(x => x.TrabajadoresProyectos).ThenInclude(t => t.Trabajador)
+                .Include(x => x.AportesSindicato)
+                .Include(x => x.proyectoEncargados).ThenInclude(t => t.Trabajador)
                 .FirstOrDefaultAsync(x => x.IdProyecto == id);
-
-            return response;
         }
 
 

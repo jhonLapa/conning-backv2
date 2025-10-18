@@ -8,5 +8,6 @@ namespace Application.Mantenedores.Services.Interfaces
     {
         Task<PaginadoResponse<ProyectoDto>> BusquedaPaginado(PaginationRequest dto);
         Task<IReadOnlyList<ProyectoSelectDto>> SelectActivo();
+        Task<OperationResult<ProyectoDto>> CreateProyectoCompletoAsync(ProyectoFormDataDto dto);
     }
 }
