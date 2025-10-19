@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace Domain
 {
@@ -14,8 +15,13 @@ namespace Domain
         public int Estado { get; set; }               
         public DateTime FechaCreacion { get; set; }   
         public string? UsuarioCreacion { get; set; } 
-        public string? FrecuenciaPago { get; set; } 
-        public string? PeriodoTexto { get; set; }
+        public string? FrecuenciaPago { get; set; }
+
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public string? PeriodoTexto { get; private set; }
+        public decimal TotalHoras { get; set; }
+        public decimal TotalGeneral { get; set; }
+
 
         [JsonIgnore]
         public Proyecto? Proyecto { get; set; }

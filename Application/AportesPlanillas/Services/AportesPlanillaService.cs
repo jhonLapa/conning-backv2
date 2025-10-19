@@ -1,10 +1,8 @@
 ﻿using Application.AportesPlanillas.Dto;
 using Application.AportesPlanillas.Services.Interfaces;
-using Application.AportesSindicatos.Dto;
 using Application.Exceptions;
 using AutoMapper;
 using Domain;
-using Infraestructure.Repositories;
 using Infraestructure.Repositories.Interfaces;
 
 namespace Application.AportesPlanillas.Servicess

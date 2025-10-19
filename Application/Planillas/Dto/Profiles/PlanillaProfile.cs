@@ -1,8 +1,7 @@
-﻿using Application.Planillas.Dto;
-using Application.AportesPlanillas.Dto;
+﻿using Application.AportesPlanillas.Dto;
 using Application.DetallePlanillas.Dto;
-using Application.Asistencias.Dto;
-using Application.Mantenedores.Dtos.Proyectos;
+using Application.Mantenedores.Dtos.Planillas; // DTOs de creación
+using Application.Planillas.Dto;
 using AutoMapper;
 using Domain;
 
@@ -13,7 +12,7 @@ namespace Application.Planillas.Dtos.Profiles
         public PlanillaProfile()
         {
             // ===========================================
-            // 🔹 PLANILLA
+            // 🔹 PLANILLA - Lectura
             // ===========================================
             CreateMap<Planilla, PlanillaDto>()
                 .ForMember(dest => dest.Proyecto, opt => opt.MapFrom(src => src.Proyecto))
@@ -21,44 +20,64 @@ namespace Application.Planillas.Dtos.Profiles
                 .ForMember(dest => dest.Detalles, opt => opt.MapFrom(src => src.Detalles))
                 .ReverseMap();
 
-            CreateMap<Planilla, PlanillaSaveDto>().ReverseMap();
+            // ===========================================
+            // 🔹 PLANILLA - Creación
+            // ===========================================
+            CreateMap<PlanillaCreateDto, Planilla>()
+                .ForMember(dest => dest.IdPlanilla, opt => opt.MapFrom(src => src.IdPlanilla))
+                .ForMember(dest => dest.IdProyecto, opt => opt.MapFrom(src => src.IdProyecto))
+                .ForMember(dest => dest.Mes, opt => opt.MapFrom(src => src.Mes))
+                .ForMember(dest => dest.Anio, opt => opt.MapFrom(src => src.Anio))
+                .ForMember(dest => dest.PeriodoInicio, opt => opt.MapFrom(src => src.PeriodoInicio))
+                .ForMember(dest => dest.PeriodoFin, opt => opt.MapFrom(src => src.PeriodoFin))
+                .ForMember(dest => dest.FechaPago, opt => opt.MapFrom(src => src.FechaPago))
+                .ForMember(dest => dest.UsuarioCreacion, opt => opt.MapFrom(src => src.UsuarioCreacion))
+                .ForMember(dest => dest.FrecuenciaPago, opt => opt.MapFrom(src => src.FrecuenciaPago))
+                .ForMember(dest => dest.TotalHoras, opt => opt.MapFrom(src => src.TotalHoras))
+                .ForMember(dest => dest.TotalGeneral, opt => opt.MapFrom(src => src.TotalGeneral))
+                .ReverseMap();
 
             // ===========================================
-            // 🔹 APORTE PLANILLA
+            // 🔹 DETALLE PLANILLA - Creación
             // ===========================================
-            CreateMap<AportesPlanilla, AportesPlanillaDto>()
+            CreateMap<DetallePlanillaCreateDto, DetallePlanilla>()
+                .ForMember(dest => dest.IdDetallePlanilla, opt => opt.MapFrom(src => src.IdDetallePlanilla))
+                .ForMember(dest => dest.IdPlanilla, opt => opt.MapFrom(src => src.IdPlanilla))
+                .ForMember(dest => dest.IdTrabajadorProyecto, opt => opt.MapFrom(src => src.IdTrabajadorProyecto))
+                .ForMember(dest => dest.DiasTrabajados, opt => opt.MapFrom(src => src.DiasTrabajados))
+                .ForMember(dest => dest.HorasTrabajadas, opt => opt.MapFrom(src => src.HorasTrabajadas))
+                .ForMember(dest => dest.TotalMonto, opt => opt.MapFrom(src => src.TotalMonto))
+                .ForMember(dest => dest.TotalHoras, opt => opt.MapFrom(src => src.TotalHoras))
+                .ForMember(dest => dest.TotalDescuentos, opt => opt.MapFrom(src => src.TotalDescuentos))
+                .ForMember(dest => dest.UsuarioCreacion, opt => opt.MapFrom(src => src.UsuarioCreacion))
+                .ReverseMap();
+
+            // ===========================================
+            // 🔹 APORTES PLANILLA - Creación
+            // ===========================================
+            CreateMap<AportePlanillaDto, AportesPlanilla>()
                 .ForMember(dest => dest.IdAportePlanilla, opt => opt.MapFrom(src => src.IdAportePlanilla))
+                .ForMember(dest => dest.IdPlanilla, opt => opt.MapFrom(src => src.IdPlanilla))
                 .ForMember(dest => dest.TipoAporte, opt => opt.MapFrom(src => src.TipoAporte))
                 .ForMember(dest => dest.Monto, opt => opt.MapFrom(src => src.Monto))
                 .ForMember(dest => dest.FechaVencimiento, opt => opt.MapFrom(src => src.FechaVencimiento))
                 .ForMember(dest => dest.FechaPago, opt => opt.MapFrom(src => src.FechaPago))
-                .ForMember(dest => dest.Estado, opt => opt.MapFrom(src => src.Estado))
                 .ReverseMap();
 
             // ===========================================
-            // 🔹 DETALLE PLANILLA
+            // 🔹 DETALLE PLANILLA - Lectura
             // ===========================================
-            CreateMap<DetallePlanilla, DetallePlanillaDto>()
-                .ForMember(dest => dest.IdDetallePlanilla, opt => opt.MapFrom(src => src.IdDetallePlanilla))
-                .ForMember(dest => dest.IdTrabajadorProyecto, opt => opt.MapFrom(src => src.IdTrabajadorProyecto))
-                .ForMember(dest => dest.DiasTrabajados, opt => opt.MapFrom(src => src.DiasTrabajados))
-                .ForMember(dest => dest.HorasTrabajadas, opt => opt.MapFrom(src => src.HorasTrabajadas))
-                .ForMember(dest => dest.TotalHoras, opt => opt.MapFrom(src => src.TotalHoras))
-                .ForMember(dest => dest.TotalDescuentos, opt => opt.MapFrom(src => src.TotalDescuentos))
-                .ForMember(dest => dest.Asistencias, opt => opt.MapFrom(src => src.Asistencias))
-                .ReverseMap();
+            CreateMap<DetallePlanilla, DetallePlanillaDto>().ReverseMap();
 
             // ===========================================
-            // 🔹 ASISTENCIAS
+            // 🔹 APORTES PLANILLA - Lectura
             // ===========================================
-            CreateMap<Asistencia, AsistenciaDto>()
-                .ForMember(dest => dest.IdAsistencia, opt => opt.MapFrom(src => src.IdAsistencia))
-                .ForMember(dest => dest.IdDetallePlanilla, opt => opt.MapFrom(src => src.IdDetallePlanilla))
-                .ForMember(dest => dest.Fecha, opt => opt.MapFrom(src => src.Fecha))
-                .ForMember(dest => dest.Tipo, opt => opt.MapFrom(src => src.Tipo))
-                .ForMember(dest => dest.HorasTrabajadas, opt => opt.MapFrom(src => src.HorasTrabajadas))
-                .ForMember(dest => dest.Observacion, opt => opt.MapFrom(src => src.Observacion))
-                .ReverseMap();
+            CreateMap<AportesPlanilla, AportesPlanillaDto>().ReverseMap();
+
+            // ===========================================
+            // 🔹 PLANILLA SAVE (usado en PUT)
+            // ===========================================
+            CreateMap<Planilla, PlanillaSaveDto>().ReverseMap();
 
             // ===========================================
             // 🔹 PROYECTO

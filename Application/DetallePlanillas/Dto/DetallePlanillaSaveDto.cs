@@ -1,20 +1,15 @@
-﻿using Domain;
-
-namespace Application.DetallePlanillas.Dto
+﻿namespace Application.DetallePlanillas.Dto
 {
     public class DetallePlanillaSaveDto
     {
 
         public int IdPlanilla { get; set; }
-        public int IdTrabajadorProyecto { get; set; }
-        public int Cantidad { get; set; }
+        public int? IdTrabajadorProyecto { get; set; } // antes int
+        public decimal? TotalDescuentos { get; set; } // antes int
         public int DiasTrabajados { get; set; }
         public int HorasTrabajadas { get; set; }
-        public decimal PrimeraQuincena { get; set; }
-        public decimal SegundaQuincena { get; set; }
-        public decimal TotalMensual { get; set; }
+        public decimal TotalMonto { get; set; }
         public decimal TotalHoras { get; set; }
-        public int TotalDescuentos { get; set; }
 
     }
 }

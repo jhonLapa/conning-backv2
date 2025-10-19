@@ -1,4 +1,5 @@
-﻿using Application.Planillas.Dto;
+﻿using Application.Mantenedores.Dtos.Planillas;
+using Application.Planillas.Dto;
 using Application.Planillas.Services.Interfaces;
 using Domain;
 using Microsoft.AspNetCore.Authorization;
@@ -94,6 +95,22 @@ namespace DinsidesBack.Controllers
 
             return TypedResults.BadRequest();
 
+        }
+
+
+        [HttpPost("RegistroCompleto")]
+        [AllowAnonymous]
+        public async Task<Results<BadRequest, Ok<OperationResult<PlanillaDto>>>> PostCompleta([FromBody] PlanillaFormDataDto request)
+        {
+            if (request == null)
+            {
+                return TypedResults.BadRequest();
+            }
+
+            var response = await _planillaService.CreatePlanillaCompletaAsync(request);
+            if (response != null) return TypedResults.Ok(response);
+
+            return TypedResults.Ok(response);
         }
 
 

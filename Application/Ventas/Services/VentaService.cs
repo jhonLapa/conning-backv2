@@ -3,6 +3,7 @@ using Application.Ventas.Dto;
 using Application.Ventas.Services.Interfaces;
 using AutoMapper;
 using Domain;
+using Infraestructure.Repositories;
 using Infraestructure.Repositories.Interfaces;
 
 namespace Application.Ventas.Servicess
@@ -55,17 +56,29 @@ namespace Application.Ventas.Servicess
 
         }
 
+
         public async Task<OperationResult<VentaDto>> DisabledAsync(int id)
         {
-            var venta = await _ventaRepositorio.FindByIdAsync(id);
-            if (venta == null) throw new NotFoundCoreException("Registro no encontrado con el id");
+            var proyectoEncargado = await _ventaRepositorio.FindByIdAsync(id);
+
+            if (proyectoEncargado == null) throw new NotFoundCoreException("Registro no encontrado con ese Id");
+
+            proyectoEncargado.Estado = proyectoEncargado.Estado == 1 ? 0 : 1;
+
+
+            await _ventaRepositorio.SaveAsync(proyectoEncargado);
 
             return new OperationResult<VentaDto>()
             {
-                Data = _mapper.Map<VentaDto>(venta),
-                Message = "Se ha Desactivado",
+                Data = _mapper.Map<VentaDto>(proyectoEncargado),
+                Message = proyectoEncargado.Estado == 1
+                ? "Activado con éxito"
+                            : "Desactivado con éxito",
+                Success = true
             };
+
         }
+
 
         public async Task<OperationResult<VentaDto>> EditAsync(int id, VentaSaveDto saveDto)
         {

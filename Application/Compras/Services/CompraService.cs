@@ -1,8 +1,10 @@
 ﻿using Application.Compras.Dto;
 using Application.Compras.Services.Interfaces;
 using Application.Exceptions;
+using Application.Ventas.Dto;
 using AutoMapper;
 using Domain;
+using Infraestructure.Repositories;
 using Infraestructure.Repositories.Interfaces;
 
 namespace Application.Compras.Services
@@ -54,17 +56,30 @@ namespace Application.Compras.Services
             };
         }
 
+
+
         public async Task<OperationResult<CompraDto>> DisabledAsync(int id)
         {
-            var compra = await _compraRepositorio.FindByIdAsync(id);
-            if (compra == null) throw new NotFoundCoreException("Registro no encontrado con el id");
+            var proyectoEncargado = await _compraRepositorio.FindByIdAsync(id);
+
+            if (proyectoEncargado == null) throw new NotFoundCoreException("Registro no encontrado con ese Id");
+
+            proyectoEncargado.Estado = proyectoEncargado.Estado == 1 ? 0 : 1;
+
+
+            await _compraRepositorio.SaveAsync(proyectoEncargado);
 
             return new OperationResult<CompraDto>()
             {
-                Data = _mapper.Map<CompraDto>(compra),
-                Message = "Se ha Desactivado",
+                Data = _mapper.Map<CompraDto>(proyectoEncargado),
+                Message = proyectoEncargado.Estado == 1
+                ? "Activado con éxito"
+                            : "Desactivado con éxito",
+                Success = true
             };
+
         }
+
 
         public async Task<OperationResult<CompraDto>> EditAsync(int id, CompraSaveDto saveDto)
         {

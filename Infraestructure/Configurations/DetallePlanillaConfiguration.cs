@@ -22,19 +22,8 @@ public class DetallePlanillaConfiguration : IEntityTypeConfiguration<DetallePlan
                .HasColumnType("int")
                .IsRequired();
 
-        // 🔹 Propiedades decimales
-        builder.Property(dv => dv.PrimeraQuincena)
-               .HasColumnName("primeraQuincena")
-               .HasPrecision(12, 2)
-               .HasDefaultValue(0);
-
-        builder.Property(dv => dv.SegundaQuincena)
-               .HasColumnName("segundaQuincena")
-               .HasPrecision(12, 2)
-               .HasDefaultValue(0);
-
-        builder.Property(dv => dv.TotalMensual)
-               .HasColumnName("totalMensual")
+        builder.Property(dv => dv.TotalMonto)
+               .HasColumnName("totalMonto")
                .HasPrecision(12, 2)
                .HasDefaultValue(0);
 
