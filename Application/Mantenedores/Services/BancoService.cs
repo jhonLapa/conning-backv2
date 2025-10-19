@@ -29,6 +29,13 @@ namespace Application.Mantenedores.Services
         }
         public async Task<OperationResult<BancoDto>> CreateAsync(BancoSaveDto saveDto)
         {
+            //Validar duplicado por nombre
+            var existe = await _bankRepositorio.ExistsAsync(d =>
+                d.Nombre.ToLower() == saveDto.Nombre.ToLower());
+
+            if (existe)
+                throw new NotFoundCoreException("Ya existe otro dato con el mismo nombre.");
+
             var bank = _mapper.Map<Banco>(saveDto);
             bank.FechaCreacion = DateTime.Now;
             bank.Estado = 1;
@@ -70,6 +77,13 @@ namespace Application.Mantenedores.Services
             var bank = await _bankRepositorio.FindByIdAsync(id);
 
             if (bank == null) throw new NotFoundCoreException("Registro no encontrado con ese id");
+
+            //Validar duplicado de nombre (excluyendo el mismo ID)
+            var existeDuplicado = await _bankRepositorio.ExistsAsync(d =>
+                d.Nombre.ToLower() == saveDto.Nombre.ToLower(), id);
+
+            if (existeDuplicado)
+                throw new NotFoundCoreException("Ya existe otro dato con el mismo nombre.");
 
             bank.FechaModificacion = DateTime.Now;
 

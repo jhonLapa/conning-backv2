@@ -4,6 +4,7 @@ using Application.Mantenedores.Dtos.Categorias;
 using Application.Mantenedores.Services.Interfaces;
 using AutoMapper;
 using Domain;
+using Infraestructure.Repositories;
 using Infraestructure.Repositories.Interfaces;
 
 namespace Application.Mantenedores.Services
@@ -31,6 +32,14 @@ namespace Application.Mantenedores.Services
 
         public async Task<OperationResult<CategoriaDto>> CreateAsync(CategoriaSaveDto saveDto)
         {
+
+            //Validar duplicado por nombre
+            var existe = await _categoryRepositorio.ExistsAsync(d =>
+                d.Nombre.ToLower() == saveDto.Nombre.ToLower());
+
+            if (existe)
+                throw new NotFoundCoreException("Ya existe otro dato con el mismo nombre.");
+
             var Category = _mapper.Map<Categoria>(saveDto);
             Category.FechaCreacion = DateTime.Now;
             Category.Estado = 1;
@@ -71,6 +80,13 @@ namespace Application.Mantenedores.Services
         {
             var Category = await _categoryRepositorio.FindByIdAsync(id);
             if (Category == null) throw new NotFoundCoreException("No se encontro Registro con es Id");
+
+            //Validar duplicado de nombre (excluyendo el mismo ID)
+            var existeDuplicado = await _categoryRepositorio.ExistsAsync(d =>
+                d.Nombre.ToLower() == saveDto.Nombre.ToLower(), id);
+
+            if (existeDuplicado)
+                throw new NotFoundCoreException("Ya existe otro dato con el mismo nombre.");
 
             Category.FechaModificacion = DateTime.Now;
 

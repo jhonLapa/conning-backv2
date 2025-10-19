@@ -31,14 +31,14 @@ namespace Application.Mantenedores.Services
 
         public async Task<OperationResult<TipoDocumentoDto>> CreateAsync(TipoDocumentoSaveDto saveDto)
         {
-            // 🚫 Validar duplicado por nombre
+
             var existe = await _documentoRepositorio.ExistsAsync(d =>
                 d.Nombre.ToLower() == saveDto.Nombre.ToLower());
 
             if (existe)
                 throw new NotFoundCoreException("Ya existe un Tipo de Documento con el mismo nombre.");
 
-            // ⚙️ Generar código automáticamente con prefijo "D"
+            //Generar código automáticamente con prefijo "D"
             var codigoGenerado = await _documentoRepositorio.GenerarCodigoAsync("D");
 
             var documento = new TipoDocumento
@@ -87,7 +87,6 @@ namespace Application.Mantenedores.Services
             if (documento == null)
                 throw new NotFoundCoreException("Documento no encontrado con ese id.");
 
-            // 🚫 Validar duplicado de nombre (excluyendo el mismo ID)
             var existeDuplicado = await _documentoRepositorio.ExistsAsync(d =>
                 d.Nombre.ToLower() == saveDto.Nombre.ToLower(), id);
 

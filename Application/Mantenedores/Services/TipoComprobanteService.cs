@@ -28,6 +28,12 @@ namespace Application.Mantenedores.Services
         }
         public async Task<OperationResult<TipoComprobanteDto>> CreateAsync(TipoComprobanteSaveDto saveDto)
         {
+            var existe = await _tipoComprobanteRepositorio.ExistsAsync(d =>
+                d.Nombre.ToLower() == saveDto.Nombre.ToLower());
+
+            if (existe)
+                throw new NotFoundCoreException("Ya existe otro dato con el mismo nombre.");
+
             var tipoComprobante = _mapper.Map<TipoComprobante>(saveDto);
             tipoComprobante.FechaCreacion = DateTime.Now;
             tipoComprobante.Estado = 1;
@@ -70,6 +76,11 @@ namespace Application.Mantenedores.Services
 
             if (tipoComprobante == null) throw new NotFoundCoreException("Registro no encontrado con ese id");
 
+            var existeDuplicado = await _tipoComprobanteRepositorio.ExistsAsync(d =>
+                d.Nombre.ToLower() == saveDto.Nombre.ToLower(), id);
+
+            if (existeDuplicado)
+                throw new NotFoundCoreException("Ya existe otro dato con el mismo nombre.");
 
             _mapper.Map(saveDto, tipoComprobante);
 
