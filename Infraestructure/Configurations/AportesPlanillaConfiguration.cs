@@ -10,9 +10,9 @@ namespace Infraestructure.Configurations
         {
             builder.ToTable("AportesPlanilla");
             // PK
-            builder.HasKey(a => a.IdAportesPlanilla);
+            builder.HasKey(a => a.IdAportePlanilla);
 
-            builder.Property(a => a.IdAportesPlanilla)
+            builder.Property(a => a.IdAportePlanilla)
                    .HasColumnName("idAportePlanilla")
                    .ValueGeneratedOnAdd()
                    .UseIdentityColumn();
@@ -52,11 +52,8 @@ namespace Infraestructure.Configurations
                    .HasForeignKey(a => a.IdPlanilla)
                    .OnDelete(DeleteBehavior.Restrict);
 
-            // Relaciones
-            builder.HasOne(p => p.Proyecto)
-                   .WithMany(p => p.AportesPlanilla)
-                   .HasForeignKey(p => p.IdProyecto)
-                   .OnDelete(DeleteBehavior.Restrict);
+
+
         }
     }
 }

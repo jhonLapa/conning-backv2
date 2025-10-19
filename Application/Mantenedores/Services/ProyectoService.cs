@@ -184,6 +184,11 @@ namespace Application.Mantenedores.Services
                         else
                         {
                             // 🔁 Solo cambio de estado
+
+
+                            existente.IdTrabajador = t.IdTrabajador;
+                            existente.FechaInicio = DateTime.Parse(t.FechaInicio);
+                            existente.FechaFin = DateTime.Parse(t.FechaFin);
                             existente.Estado = t.Estado;
                             await _trabajadorProyectoRepositorio.SaveAsync(existente);
                         }

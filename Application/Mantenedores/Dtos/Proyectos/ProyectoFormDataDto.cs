@@ -24,9 +24,16 @@
     {
         public int IdTrabajador { get; set; }
         public string FechaInicio { get; set; } = string.Empty;
-        public string FechaFin { get; set; } = string.Empty;
         public int Estado { get; set; }
         public string UsuarioCreacion { get; set; } = string.Empty;
+
+        private DateTime? _fechaFin;
+        public string? FechaFin
+        {
+            get => _fechaFin?.ToString("yyyy-MM-dd");
+            set => _fechaFin = string.IsNullOrWhiteSpace(value) ? null : DateTime.Parse(value);
+        }
+
     }
 
     public class SindicatoDto

@@ -1,4 +1,5 @@
-﻿using Application.Mantenedores.Dtos.Proyectos;
+﻿using Application.AportesPlanillas.Dto;
+using Application.DetallePlanillas.Dto;
 
 namespace Application.Planillas.Dto
 {
@@ -17,5 +18,10 @@ namespace Application.Planillas.Dto
         public string? FrecuenciaPago { get; set; }
         public string? PeriodoTexto { get; set; }
         public ProyectoDto? Proyecto { get; set; }
+ 
+        public ICollection<AportesPlanillaDto> AportesPlanilla { get; set; } = new List<AportesPlanillaDto>();
+
+        public ICollection<DetallePlanillaDto> Detalles { get; set; } = new List<DetallePlanillaDto>();
+
     }
 }

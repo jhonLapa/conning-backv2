@@ -1,7 +1,4 @@
-﻿
-
-
-using Domain;
+﻿using Domain;
 using Infraestructure.Contexts;
 using Infraestructure.Core.Repositories;
 using Infraestructure.Repositories.Interfaces;
@@ -9,41 +6,44 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infraestructure.Repositories
 {
-    public class PlanillaRespositorio : CrudCoreRespository<Planilla, int>, IPlanillaRepositorio
+    public class PlanillaRepositorio : CrudCoreRespository<Planilla, int>, IPlanillaRepositorio
     {
         private readonly ApplicationDbContext _context;
-        public PlanillaRespositorio(ApplicationDbContext context) : base(context) => _context = context;
 
+        public PlanillaRepositorio(ApplicationDbContext context) : base(context)
+        {
+            _context = context;
+        }
+
+        // ==========================================================
+        // 🔹 BÚSQUEDA PAGINADA
+        // ==========================================================
         public async Task<PaginadoResponse<Planilla>> BusquedaPaginado(PaginationRequest dto)
         {
-            var context = _context.Set<Planilla>()
-                .Include(p => p.Proyecto) // opcional si necesitas mostrar datos del proyecto
+            var query = _context.Set<Planilla>()
+                .Include(p => p.Proyecto)
                 .AsQueryable();
 
-            // ======================
-            // 🔹 Ordenamiento dinámico
-            // ======================
+            // Ordenamiento dinámico
             if (!string.IsNullOrWhiteSpace(dto.Sort))
             {
-                var parts = dto.Sort.Split('.');
-                var column = parts.Length > 0 ? parts[0] : string.Empty;
-                var order = parts.Length > 1 ? parts[1] : "asc";
+                var parts = dto.Sort.Split('.', 2);
+                var column = parts.ElementAtOrDefault(0) ?? "createAt";
+                var order = parts.ElementAtOrDefault(1) ?? "asc";
 
-                context = column switch
+                query = column switch
                 {
-                    "idPlanilla" => order == "desc" ? context.OrderByDescending(p => p.IdPlanilla) : context.OrderBy(p => p.IdPlanilla),
-                    "idProyecto" => order == "desc" ? context.OrderByDescending(p => p.IdProyecto) : context.OrderBy(p => p.IdProyecto),
-                    "mes" => order == "desc" ? context.OrderByDescending(p => p.Mes) : context.OrderBy(p => p.Mes),
-                    "anio" => order == "desc" ? context.OrderByDescending(p => p.Anio) : context.OrderBy(p => p.Anio),
-                    "estado" => order == "desc" ? context.OrderByDescending(p => p.Estado) : context.OrderBy(p => p.Estado),
-                    "createAt" => order == "desc" ? context.OrderByDescending(p => p.FechaCreacion) : context.OrderBy(p => p.FechaCreacion),
-                    _ => context.OrderByDescending(p => p.FechaCreacion) // por defecto
+                    "idPlanilla" => order == "desc" ? query.OrderByDescending(p => p.IdPlanilla) : query.OrderBy(p => p.IdPlanilla),
+                    "idProyecto" => order == "desc" ? query.OrderByDescending(p => p.IdProyecto) : query.OrderBy(p => p.IdProyecto),
+                    "mes" => order == "desc" ? query.OrderByDescending(p => p.Mes) : query.OrderBy(p => p.Mes),
+                    "anio" => order == "desc" ? query.OrderByDescending(p => p.Anio) : query.OrderBy(p => p.Anio),
+                    "estado" => order == "desc" ? query.OrderByDescending(p => p.Estado) : query.OrderBy(p => p.Estado),
+                    "createAt" => order == "desc" ? query.OrderByDescending(p => p.FechaCreacion) : query.OrderBy(p => p.FechaCreacion),
+                    _ => query.OrderByDescending(p => p.FechaCreacion)
                 };
             }
 
-            // ======================
-            // 🔹 Filtros dinámicos
-            // ======================
+            // Filtros dinámicos
             if (dto.Filters != null && dto.Filters.Length > 0)
             {
                 foreach (var filter in dto.Filters)
@@ -58,38 +58,36 @@ namespace Infraestructure.Repositories
                     {
                         case "status":
                             if (value.Equals("activo", StringComparison.OrdinalIgnoreCase))
-                                context = context.Where(p => p.Estado == 1);
+                                query = query.Where(p => p.Estado == 1);
                             else if (value.Equals("inactivo", StringComparison.OrdinalIgnoreCase))
-                                context = context.Where(p => p.Estado == 0);
+                                query = query.Where(p => p.Estado == 0);
                             break;
 
                         case "idProyecto":
                             if (int.TryParse(value, out int idProyecto))
-                                context = context.Where(p => p.IdProyecto == idProyecto);
+                                query = query.Where(p => p.IdProyecto == idProyecto);
                             break;
 
                         case "anio":
                             if (int.TryParse(value, out int anio))
-                                context = context.Where(p => p.Anio == anio);
+                                query = query.Where(p => p.Anio == anio);
                             break;
 
                         case "mes":
                             if (int.TryParse(value, out int mes))
-                                context = context.Where(p => p.Mes == mes);
+                                query = query.Where(p => p.Mes == mes);
                             break;
                     }
                 }
             }
 
-            // ======================
-            // 🔹 Paginación
-            // ======================
+            // Paginación
             var take = dto.Take ?? 5;
             var page = dto.Page ?? 1;
             var skip = (page - 1) * take;
 
-            var total = await context.CountAsync();
-            var data = await context.Skip(skip).Take(take).ToListAsync();
+            var total = await query.CountAsync();
+            var data = await query.Skip(skip).Take(take).ToListAsync();
 
             var meta = new Meta
             {
@@ -101,26 +99,36 @@ namespace Infraestructure.Repositories
             return new PaginadoResponse<Planilla>(data, meta);
         }
 
+        // ==========================================================
+        // 🔹 DETALLE COMPLETO DE UNA PLANILLA
+        // ==========================================================
         public async override Task<Planilla?> FindByIdAsync(int id)
         {
-            var response = await _context.Set<Planilla>()
-                .Include(x => x.Proyecto)
-                    .ThenInclude(p => p.Cliente) // cliente del proyecto
-                .FirstOrDefaultAsync(x => x.IdPlanilla == id);
-
-            return response;
+            return await _context.Set<Planilla>()
+                .AsSplitQuery() // ✅ evita el warning MultipleCollectionIncludeWarning
+                .Include(p => p.Proyecto)
+                    .ThenInclude(proy => proy.Cliente)
+                .Include(p => p.AportesPlanilla)
+                .Include(p => p.Detalles)
+                    .ThenInclude(d => d.TrabajadorProyecto)
+                .Include(p => p.Detalles)
+                    .ThenInclude(d => d.Asistencias)
+                .FirstOrDefaultAsync(p => p.IdPlanilla == id);
         }
 
+        // ==========================================================
+        // 🔹 OBTENER TODAS LAS PLANILLAS
+        // ==========================================================
         public async override Task<IReadOnlyList<Planilla>> FindAllAsync()
         {
             return await _context.Set<Planilla>()
+                .AsSplitQuery() // ✅ mejora rendimiento y evita duplicados
+                .AsNoTracking()
                 .Include(x => x.Proyecto)
                     .ThenInclude(p => p.Cliente)
-                .AsNoTracking()
+                .Include(x => x.AportesPlanilla)
+                .Include(x => x.Detalles)
                 .ToListAsync();
         }
-
-
     }
 }
-

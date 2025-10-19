@@ -1,11 +1,4 @@
-﻿using Domain;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Application.AportesPlanillas.Dto
+﻿namespace Application.AportesPlanillas.Dto
 {
     public class AportesPlanillaSaveDto
     {
@@ -15,7 +8,5 @@ namespace Application.AportesPlanillas.Dto
         public DateTime FechaVencimiento { get; set; }
         public DateTime FechaPago { get; set; }
         public int Estado { get; set; }
-        public int IdProyecto { get; set; }
-
     }
 }

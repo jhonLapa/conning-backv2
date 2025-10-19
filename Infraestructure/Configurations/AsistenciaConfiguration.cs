@@ -1,11 +1,6 @@
 ﻿using Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Infraestructure.Configurations
 {
@@ -15,10 +10,10 @@ namespace Infraestructure.Configurations
         {
             builder.ToTable("Asistencias");
 
-            // Clave primaria
+            // 🔹 Clave primaria
             builder.HasKey(a => a.IdAsistencia);
 
-            // Propiedades
+            // 🔹 Propiedades
             builder.Property(a => a.IdAsistencia)
                 .HasColumnName("idAsistencia")
                 .IsRequired();
@@ -34,7 +29,7 @@ namespace Infraestructure.Configurations
 
             builder.Property(a => a.Tipo)
                 .HasColumnName("tipo")
-                .HasColumnType("varchar(20)")   // 👈 permite texto completo
+                .HasColumnType("varchar(20)")
                 .IsRequired();
 
             builder.Property(a => a.HorasTrabajadas)
@@ -45,7 +40,7 @@ namespace Infraestructure.Configurations
             builder.Property(a => a.Observacion)
                 .HasColumnName("observacion")
                 .HasColumnType("varchar(200)")
-                .IsRequired();
+                .IsRequired(false); // ✅ ahora puede ser NULL (tu modelo lo permite)
 
             builder.Property(a => a.FechaCreacion)
                 .HasColumnName("fechaCreacion")
@@ -56,7 +51,15 @@ namespace Infraestructure.Configurations
             builder.Property(a => a.UsuarioCreacion)
                 .HasColumnName("usuarioCreacion")
                 .HasColumnType("varchar(50)")
-                .IsRequired();
+                .IsRequired(false); // ✅ también puede ser NULL si no siempre se asigna
+
+            // =====================================================
+            // 🔹 RELACIONES (N:1 con DetallePlanilla)
+            // =====================================================
+            builder.HasOne(a => a.DetallePlanilla)
+                   .WithMany(d => d.Asistencias)
+                   .HasForeignKey(a => a.IdDetallePlanilla)
+                   .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

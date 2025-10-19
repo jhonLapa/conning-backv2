@@ -88,8 +88,7 @@ namespace Infraestructure.Repositories
         {
             return await _context.Set<AportesPlanilla>()
                                  .AsSplitQuery() // 👈 evita el warning MultipleCollectionInclude
-                                 .Include(c => c.Planilla)
-                                 .FirstOrDefaultAsync(x => x.IdAportesPlanilla == id);
+                                 .FirstOrDefaultAsync(x => x.IdAportePlanilla == id);
         }
 
 
