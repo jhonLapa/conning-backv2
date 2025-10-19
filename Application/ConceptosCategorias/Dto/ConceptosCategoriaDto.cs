@@ -1,11 +1,4 @@
-﻿using Domain;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Application.ConceptosCategorias.Dto
+﻿namespace Application.ConceptosCategorias.Dto
 {
     public class ConceptosCategoriaDto
     {
@@ -19,7 +12,5 @@ namespace Application.ConceptosCategorias.Dto
         public DateTime? FechaCambioEstado { get; set; }
         public string? UsuarioCambioEstado { get; set; }
 
-        // Relaciones
-        public Categoria Categoria { get; set; } = null!;
     }
 }

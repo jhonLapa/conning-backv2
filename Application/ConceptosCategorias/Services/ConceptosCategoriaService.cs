@@ -1,10 +1,8 @@
-﻿using Application.AportesSindicatos.Dto;
-using Application.ConceptosCategorias.Dto;
+﻿using Application.ConceptosCategorias.Dto;
 using Application.ConceptosCategorias.Services.Interfaces;
 using Application.Exceptions;
 using AutoMapper;
 using Domain;
-using Infraestructure.Repositories;
 using Infraestructure.Repositories.Interfaces;
 
 namespace Application.ConceptosCategorias.Servicess
@@ -40,6 +38,8 @@ namespace Application.ConceptosCategorias.Servicess
             var conceptosCategoria = _mapper.Map<ConceptosCategoria>(saveDto);
 
             conceptosCategoria.FechaCreacion = DateTime.Now;
+            conceptosCategoria.Estado =1;
+            conceptosCategoria.UsuarioCreacion = "Admin";
 
             await _conceptosCategoriaRepositorio.SaveAsync(conceptosCategoria);
 
@@ -79,6 +79,8 @@ namespace Application.ConceptosCategorias.Servicess
 
             if (conceptosCategoria == null) throw new NotFoundCoreException("Registro no encontrado con el id");
 
+
+            conceptosCategoria.UsuarioCreacion = "Admin";
 
             _mapper.Map(saveDto, conceptosCategoria);
 
