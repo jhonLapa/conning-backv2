@@ -7,7 +7,7 @@
         public int IdTrabajador { get; set; }
         public string Rol {  get; set; }
         public DateTime FechaInicio { get; set; }
-        public DateTime FechaFin {  get; set; }
+        public DateTime? FechaFin { get; set; }
         public int Estado {  get; set; }
 
         // 🔗 Relaciones

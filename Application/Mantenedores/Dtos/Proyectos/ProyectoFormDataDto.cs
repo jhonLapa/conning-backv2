@@ -14,8 +14,8 @@
         public int IdCliente { get; set; }
         public string Nombre { get; set; } = string.Empty;
         public string Descripcion { get; set; } = string.Empty;
-        public string FechaInicio { get; set; } = string.Empty;
-        public string FechaFin { get; set; } = string.Empty;
+        public DateTime FechaInicio { get; set; }  
+        public DateTime FechaFin { get; set; }  
         public string FrecuenciaPago { get; set; } = string.Empty;
         public string UsuarioCreacion { get; set; } = string.Empty;
     }
@@ -23,16 +23,11 @@
     public class TrabajadorProyectoCreateDto
     {
         public int IdTrabajador { get; set; }
-        public string FechaInicio { get; set; } = string.Empty;
+        public DateTime FechaInicio { get; set; }  
         public int Estado { get; set; }
         public string UsuarioCreacion { get; set; } = string.Empty;
+        public DateTime? FechaFin { get; set; }
 
-        private DateTime? _fechaFin;
-        public string? FechaFin
-        {
-            get => _fechaFin?.ToString("yyyy-MM-dd");
-            set => _fechaFin = string.IsNullOrWhiteSpace(value) ? null : DateTime.Parse(value);
-        }
 
     }
 
@@ -41,8 +36,7 @@
         public int Mes { get; set; }
         public int Anio { get; set; }
         public decimal Monto { get; set; }
-        public string FechaPago { get; set; } = string.Empty;
-        public int Estado { get; set; }
+        public DateTime FechaPago { get; set; } 
         public string UsuarioCreacion { get; set; } = string.Empty;
     }
 
@@ -50,9 +44,8 @@
     {
         public int IdTrabajador { get; set; }
         public string Rol { get; set; } = string.Empty;
-        public string FechaInicio { get; set; } = string.Empty;
-        public string FechaFin { get; set; } = string.Empty;
-        public int Estado { get; set; }
+        public DateTime FechaInicio { get; set; }
+        public DateTime? FechaFin { get; set; }
     }
 
 }

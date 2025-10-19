@@ -22,5 +22,5 @@ public class ProyectoDto
     public ClienteDto Cliente { get; set; } = null!;
     public List<TrabajadorProyectoDto> Trabajadores { get; set; } = new();
     public List<AportesSindicatoDto> AportesSindicato { get; set; } = new();
-    public List<ProyectoEncargadoDto> Encargados { get; set; } = new();
+    public List<ProyectoEncargadoDto> ProyectoEncargado { get; set; } = new();
 }
