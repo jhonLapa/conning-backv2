@@ -31,10 +31,18 @@ namespace Application.Mantenedores.Dtos.Profiles
             CreateMap<Banco, BancoSelectDto>().ReverseMap();
 
             //Proyecto
-            CreateMap<Proyecto, ProyectoDto>().ReverseMap();
+            // ======================================================
+            // 🧩 PROYECTO (con relaciones)
+            // ======================================================
+            CreateMap<Proyecto, ProyectoDto>()
+                .ForMember(dest => dest.Trabajadores, opt => opt.MapFrom(src => src.TrabajadoresProyectos))
+                .ForMember(dest => dest.ProyectoEncargado, opt => opt.MapFrom(src => src.proyectoEncargados))
+                .ForMember(dest => dest.AportesSindicato, opt => opt.MapFrom(src => src.AportesSindicato))
+                .ForMember(dest => dest.Cliente, opt => opt.MapFrom(src => src.Cliente))
+                .ReverseMap();
+
             CreateMap<Proyecto, ProyectoSaveDto>().ReverseMap();
             CreateMap<Proyecto, ProyectoSelectDto>().ReverseMap();
-
             CreateMap<Proyecto, ProyectoCreateDto>().ReverseMap();
 
             // 🧩 Relaciones secundarias

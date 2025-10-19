@@ -112,5 +112,18 @@ namespace Infraestructure.Repositories
                 .FirstOrDefaultAsync(x => x.IdProyecto == idProyecto && x.IdTrabajador == idTrabajador);
         }
 
+        public async Task DeleteByProyectoIdAsync(int idProyecto)
+        {
+            var registros = await _context.Set<TrabajadorProyecto>()
+                .Where(x => x.IdProyecto == idProyecto)
+                .ToListAsync();
+
+            if (registros.Any())
+            {
+                _context.Set<TrabajadorProyecto>().RemoveRange(registros);
+                await _context.SaveChangesAsync();
+            }
+        }
+
     }
 }

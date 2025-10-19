@@ -82,12 +82,25 @@ namespace Infraestructure.Repositories
 
         public async override Task<Proyecto?> FindByIdAsync(int id)
         {
-            return await _context.Set<Proyecto>()
+            var proyecto = await _context.Set<Proyecto>()
                 .Include(x => x.Cliente)
-                .Include(x => x.TrabajadoresProyectos).ThenInclude(t => t.Trabajador)
+                .Include(x => x.TrabajadoresProyectos)
+                    .ThenInclude(t => t.Trabajador)
                 .Include(x => x.AportesSindicato)
-                .Include(x => x.proyectoEncargados).ThenInclude(t => t.Trabajador)
+                .Include(x => x.proyectoEncargados)
+                    .ThenInclude(t => t.Trabajador)
                 .FirstOrDefaultAsync(x => x.IdProyecto == id);
+
+            if (proyecto != null && proyecto.proyectoEncargados.Any())
+            {
+                // 🔹 Dejar solo el último encargado según la fecha más reciente
+                proyecto.proyectoEncargados = proyecto.proyectoEncargados
+                    .OrderByDescending(e => e.FechaInicio)
+                    .Take(1)
+                    .ToList();
+            }
+
+            return proyecto;
         }
 
 

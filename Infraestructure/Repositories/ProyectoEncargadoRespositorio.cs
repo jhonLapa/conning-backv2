@@ -110,5 +110,26 @@ namespace Infraestructure.Repositories
             return await _context.Set<ProyectoEncargado>()
                 .FirstOrDefaultAsync(x => x.IdProyecto == idProyecto);
         }
+
+        public async Task DeleteByProyectoIdAsync(int idProyecto)
+        {
+            var registros = await _context.Set<ProyectoEncargado>()
+                .Where(x => x.IdProyecto == idProyecto)
+                .ToListAsync();
+
+            if (registros.Any())
+            {
+                _context.Set<ProyectoEncargado>().RemoveRange(registros);
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        public async Task<ProyectoEncargado?> FindLastByProyectoAsync(int idProyecto)
+        {
+            return await _context.Set<ProyectoEncargado>()
+                .Where(e => e.IdProyecto == idProyecto)
+                .OrderByDescending(e => e.IdProyectoEncargado) // o FechaInicio si prefieres
+                .FirstOrDefaultAsync();
+        }
     }
 }

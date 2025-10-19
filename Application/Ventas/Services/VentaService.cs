@@ -157,7 +157,7 @@ namespace Application.Ventas.Servicess
             if (saveDto.IdVenta == 0)
             {
                 venta = _mapper.Map<Venta>(saveDto);
-                venta.FechaEmision = saveDto.FechaEmision ?? DateTime.Now;
+                venta.FechaEmision = saveDto.FechaEmision  ;
                 venta.FechaCreacion = DateTime.Now;
                 venta.UsuarioCreacion = saveDto.UsuarioCreacion;
 
