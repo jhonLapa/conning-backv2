@@ -29,6 +29,13 @@ namespace Application.Mantenedores.Services
 
         public async Task<OperationResult<ClienteDto>> CreateAsync(ClienteSaveDto saveDto)
         {
+            //Validar duplicado por nombre
+            var existe = await _clienteRepositorio.ExistsAsync(d =>
+                d.NombreCompleto.ToLower() == saveDto.NombreCompleto.ToLower());
+
+            if (existe)
+                throw new NotFoundCoreException("Ya existe otro dato con el mismo nombre.");
+
             var cliente = _mapper.Map<Cliente>(saveDto);
             cliente.FechaCreacion = DateTime.Now;
             cliente.Estado = 1;
@@ -68,6 +75,13 @@ namespace Application.Mantenedores.Services
             var cliente = await _clienteRepositorio.FindByIdAsync(id);
 
             if (cliente == null) throw new NotFoundCoreException("Registro no encontrado con ese id");
+
+            //Validar duplicado de nombre (excluyendo el mismo ID)
+            var existeDuplicado = await _clienteRepositorio.ExistsAsync(d =>
+                d.NombreCompleto.ToLower() == saveDto.NombreCompleto.ToLower(), id);
+
+            if (existeDuplicado)
+                throw new NotFoundCoreException("Ya existe otro dato con el mismo nombre.");
 
             cliente.FechaModificacion = DateTime.Now;
 

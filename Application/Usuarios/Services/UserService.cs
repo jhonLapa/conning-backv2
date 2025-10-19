@@ -40,6 +40,12 @@ namespace Application.Usuarios.Services
 
         public async Task<OperationResult<UserDto>> CreateAsync(UserRoleSaveDto saveDto)
         {
+            var existe = await _usuarioRepositorio.ExistsAsync(d =>
+                d.FirstName.ToLower() == saveDto.FirstName.ToLower());
+
+            if (existe)
+                throw new NotFoundCoreException("Ya existe otro dato con el mismo nombre.");
+
             var user = _mapper.Map<User>(saveDto.UserId);
 
             var email = await _usuarioRepositorio.FindByEmailAsync(user.Email);
@@ -109,6 +115,13 @@ namespace Application.Usuarios.Services
                 // Se asume que saveDto.Password trae la nueva contraseña en texto plano.
                 user.Password = _securityService.HashPassword(user.Email, saveDto.Password);
             }
+
+            var existeDuplicado = await _usuarioRepositorio.ExistsAsync(d =>
+                d.FirstName.ToLower() == saveDto.FirstName.ToLower(), id);
+
+            if (existeDuplicado)
+                throw new NotFoundCoreException("Ya existe otro dato con el mismo nombre.");
+
             user.AuditUpdateDate = DateTime.Now;
             user.Password = user.Password;
 

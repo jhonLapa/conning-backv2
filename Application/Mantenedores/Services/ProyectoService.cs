@@ -40,6 +40,12 @@ namespace Application.Mantenedores.Services
 
         public async Task<OperationResult<ProyectoDto>> CreateAsync(ProyectoSaveDto saveDto)
         {
+            var existe = await _projectRepositorio.ExistsAsync(d =>
+                d.Nombre.ToLower() == saveDto.Nombre.ToLower());
+
+            if (existe)
+                throw new NotFoundCoreException("Ya existe otro dato con el mismo nombre.");
+
             var project = _mapper.Map<Proyecto>(saveDto);
             project.FechaCreacion = DateTime.Now;
             project.Estado = 1;
@@ -79,6 +85,12 @@ namespace Application.Mantenedores.Services
             var project = await _projectRepositorio.FindByIdAsync(id);
 
             if (project == null) throw new NotFoundCoreException("Registro no encontrado con ese id");
+
+            var existeDuplicado = await _projectRepositorio.ExistsAsync(d =>
+                d.Nombre.ToLower() == saveDto.Nombre.ToLower(), id);
+
+            if (existeDuplicado)
+                throw new NotFoundCoreException("Ya existe otro dato con el mismo nombre.");
 
             project.FechaModificacion = DateTime.Now;
 
