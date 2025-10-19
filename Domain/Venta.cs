@@ -38,10 +38,12 @@
 
         public DateTime? FechaModificacion { get; set; }
         public string? UsuarioModificacion { get; set; }
+        public int IdProyecto { get; set; }
 
         // 🔗 Relaciones
         public Cliente Cliente { get; set; } = null!;
         public TipoComprobante TipoComprobante { get; set; } = null!;
+        public Proyecto Proyecto { get; set; } = null!;
         public ICollection<DetalleVenta> Detalles { get; set; }
         public ICollection<PagoVentaCredito> PagosCredito { get; set; }
     }

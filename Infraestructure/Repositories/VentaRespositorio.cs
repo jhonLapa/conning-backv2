@@ -18,6 +18,7 @@ namespace Infraestructure.Repositories
             var contex = _context.Set<Venta>()
               .Include(c => c.Cliente)
               .Include(c => c.TipoComprobante)
+              .Include(c => c.Proyecto)
               .AsQueryable();
 
 
@@ -94,6 +95,7 @@ namespace Infraestructure.Repositories
                                  .Include(c => c.TipoComprobante)
                                  .Include(c => c.Detalles)
                                  .Include(c => c.PagosCredito)
+                                 .Include(c => c.Proyecto)
                                  .FirstOrDefaultAsync(x => x.IdVenta == id);
         }
 
@@ -108,6 +110,7 @@ namespace Infraestructure.Repositories
                                  .Include(c => c.TipoComprobante)
                                  .Include(c => c.Detalles)
                                  .Include(c => c.PagosCredito)
+                                 .Include(c => c.Proyecto)
                                  .ToListAsync();
         }
 
@@ -120,6 +123,7 @@ namespace Infraestructure.Repositories
                 .Include(v => v.TipoComprobante)
                 .Include(v => v.Detalles)
                 .Include(v => v.PagosCredito)
+                .Include(c => c.Proyecto)
                 .Where(v => v.IdCliente == clienteId)
                 .ToListAsync();
         }

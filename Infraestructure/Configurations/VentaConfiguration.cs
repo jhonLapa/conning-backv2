@@ -85,6 +85,10 @@ namespace Infraestructure.Configurations
             builder.HasOne(v => v.TipoComprobante)
                    .WithMany(tc => tc.Ventas)
                    .HasForeignKey(v => v.IdTipoComprobante);
+
+            builder.HasOne(v => v.Proyecto)
+                   .WithMany(pc => pc.Ventas)
+                   .HasForeignKey(v => v.IdProyecto);
         }
     }
 }

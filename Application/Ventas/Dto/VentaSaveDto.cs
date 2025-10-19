@@ -30,6 +30,7 @@
         public decimal DetraccionPorcentaje { get; set; }
         public decimal DetraccionMonto { get; set; }
         public string? CuentaDetraccion { get; set; }
+        public int IdProyecto { get; set; }
 
     }
 }

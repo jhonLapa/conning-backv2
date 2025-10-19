@@ -43,10 +43,13 @@ namespace Application.Ventas.Dto
 
         public DateTime? FechaModificacion { get; set; }
         public string? UsuarioModificacion { get; set; }
+        public int IdProyecto { get; set; }
 
         // 🔗 Relaciones (solo lo que necesitas mostrar)
         public ClienteDto Cliente { get; set; } = null!;
         public TipoComprobanteDto TipoComprobante { get; set; } = null!;
+
+        public Proyecto Proyecto { get; set; } = null!;
 
         // 🔗 Nuevos
         public List<DetalleVentaDto> Detalles { get; set; } = new();
