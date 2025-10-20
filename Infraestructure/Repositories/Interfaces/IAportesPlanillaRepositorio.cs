@@ -7,5 +7,6 @@ namespace Infraestructure.Repositories.Interfaces
     {
         Task<PaginadoResponse<AportesPlanilla>> BusquedaPaginado(PaginationRequest dto);
         Task<IReadOnlyList<AportesPlanilla>> SelectActivo();
+        Task DeleteRangeAsync(int id);
     }
 }

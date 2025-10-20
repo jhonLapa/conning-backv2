@@ -1,8 +1,10 @@
-﻿using Application.Empresas.Dto;
+﻿using Application.Compras.Dto;
+using Application.Empresas.Dto;
 using Application.Empresas.Services.Interfaces;
 using Application.Exceptions;
 using AutoMapper;
 using Domain;
+using Infraestructure.Repositories;
 using Infraestructure.Repositories.Interfaces;
 
 namespace Application.Empresas.Services
@@ -18,6 +20,14 @@ namespace Application.Empresas.Services
             _mapper = mapper;
         }
 
+        public async Task<PaginadoResponse<EmpresaDto>> BusquedaPaginado(PaginationRequest dto)
+        {
+            var response = await _empresaRepositorio.BusquedaPaginado(dto);
+
+            var data = _mapper.Map<ICollection<EmpresaDto>>(response.Data);
+
+            return new PaginadoResponse<EmpresaDto>(data, response.Meta);
+        }
         public async Task<OperationResult<EmpresaDto>> CreateAsync(EmpresaSaveDto saveDto)
         {
             var empresa = _mapper.Map<Empresa>(saveDto);

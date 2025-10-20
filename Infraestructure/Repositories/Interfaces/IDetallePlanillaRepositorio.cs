@@ -9,5 +9,6 @@ namespace Infraestructure.Repositories.Interfaces
         Task<List<DetallePlanilla>> ObtenerPorPlanillaAsync(int idPlanilla);
         Task<List<DetallePlanilla>> ObtenerPorTrabajadorProyectoAsync(int idTrabajadorProyecto);
         Task<IReadOnlyList<DetallePlanilla>> SelectActivo();
+        Task DeleteRangeAsync(int id);
     }
 }

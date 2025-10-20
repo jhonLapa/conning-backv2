@@ -30,7 +30,7 @@ namespace Application.Compras.Dto
         public decimal OtrosCargos { get; set; }
         public decimal OtrosTributos { get; set; }
         public decimal MontoRedondeo { get; set; }
-        public decimal ImproteTotal { get; set; }
+        public decimal ImporteTotal { get; set; }
 
         public int Estado { get; set; }
         public DateTime FechaCreacion { get; set; }

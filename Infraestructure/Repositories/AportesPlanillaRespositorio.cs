@@ -91,6 +91,18 @@ namespace Infraestructure.Repositories
                                  .FirstOrDefaultAsync(x => x.IdAportePlanilla == id);
         }
 
+        public async Task DeleteRangeAsync(int id)
+        {
+            var detalles = await _context.Set<AportesPlanilla>()
+                                         .Where(d => d.IdPlanilla == id)
+                                         .ToListAsync();
+
+            if (detalles.Any())
+            {
+                _context.Set<AportesPlanilla>().RemoveRange(detalles);
+                await _context.SaveChangesAsync();
+            }
+        }
 
 
         public async override Task<IReadOnlyList<AportesPlanilla>> FindAllAsync()

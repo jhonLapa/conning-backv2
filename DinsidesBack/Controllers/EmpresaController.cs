@@ -1,4 +1,5 @@
-﻿using Application.Empresas.Dto;
+﻿using Application.DetalleCompras.Dto;
+using Application.Empresas.Dto;
 using Application.Empresas.Services.Interfaces;
 using Application.Mantenedores.Dtos.TiposComprobantes;
 using Domain;
@@ -73,6 +74,17 @@ namespace DinsidesBack.Controllers
 
             return TypedResults.BadRequest();
 
+        }
+
+        [HttpGet("BusquedaPaginado")]
+        [AllowAnonymous]
+        public async Task<Results<BadRequest, Ok<PaginadoResponse<EmpresaDto>>>> BusquedaPaginado([FromQuery] PaginationRequest dto)
+        {
+            var response = await _empresaService.BusquedaPaginado(dto);
+
+            if (response != null) return TypedResults.Ok(response);
+
+            return TypedResults.BadRequest();
         }
 
     }

@@ -4,7 +4,6 @@ using Application.Planillas.Dto;
 using Application.Planillas.Services.Interfaces;
 using AutoMapper;
 using Domain;
-using Infraestructure.Repositories;
 using Infraestructure.Repositories.Interfaces;
 
 namespace Application.Planillas.Services
@@ -96,28 +95,48 @@ namespace Application.Planillas.Services
 
             return _mapper.Map<PlanillaDto>(response);
         }
-
         public async Task<OperationResult<PlanillaDto>> CreatePlanillaCompletaAsync(PlanillaFormDataDto dto)
         {
             try
             {
                 // 1️⃣ Crear o actualizar PLANILLA
                 var planilla = _mapper.Map<Planilla>(dto.Planilla);
-                planilla.FechaCreacion = planilla.FechaCreacion == default ? DateTime.Now : planilla.FechaCreacion;
-                planilla.UsuarioCreacion ??= "system";
-                await _planillaRepositorio.SaveAsync(planilla);
 
-                // 2️⃣ DETALLE PLANILLA
+                if (planilla.IdPlanilla > 0)
+                {
+                    // Si existe, actualizar
+                    var existente = await _planillaRepositorio.FindByIdAsync(planilla.IdPlanilla);
+                    if (existente == null)
+                        return new OperationResult<PlanillaDto> { Success = false, Message = "Planilla no encontrada." };
+
+                    _mapper.Map(dto.Planilla, existente);
+                    await _planillaRepositorio.SaveAsync(existente);
+
+                    // 🧹 Eliminar detalles y aportes anteriores
+                    await _detallePlanillaRepositorio.DeleteRangeAsync(planilla.IdPlanilla);
+                    await _aportesPlanillaRepositorio.DeleteRangeAsync(planilla.IdPlanilla);
+
+                    planilla = existente;
+                }
+                else
+                {
+                    // Nueva planilla
+                    planilla.FechaCreacion = DateTime.Now;
+                    planilla.UsuarioCreacion ??= "system";
+                    await _planillaRepositorio.SaveAsync(planilla);
+                }
+
+                // 2️⃣ Insertar nuevos DETALLES
                 foreach (var detalleDto in dto.Detalle)
                 {
                     var detalle = _mapper.Map<DetallePlanilla>(detalleDto);
                     detalle.IdPlanilla = planilla.IdPlanilla;
-                    detalle.FechaCreacion = detalle.FechaCreacion == default ? DateTime.Now : detalle.FechaCreacion;
+                    detalle.FechaCreacion = DateTime.Now;
                     detalle.UsuarioCreacion ??= planilla.UsuarioCreacion;
                     await _detallePlanillaRepositorio.SaveAsync(detalle);
                 }
 
-                // 3️⃣ APORTES PLANILLA
+                // 3️⃣ Insertar nuevos APORTES
                 foreach (var aporteDto in dto.Aportes)
                 {
                     var aporte = _mapper.Map<AportesPlanilla>(aporteDto);
@@ -125,12 +144,11 @@ namespace Application.Planillas.Services
                     await _aportesPlanillaRepositorio.SaveAsync(aporte);
                 }
 
-
                 var resultDto = _mapper.Map<PlanillaDto>(planilla);
                 return new OperationResult<PlanillaDto>
                 {
                     Success = true,
-                    Message = "Planilla registrada correctamente.",
+                    Message = planilla.IdPlanilla > 0 ? "Planilla actualizada correctamente." : "Planilla registrada correctamente.",
                     Data = resultDto
                 };
             }
@@ -143,8 +161,6 @@ namespace Application.Planillas.Services
                 };
             }
         }
-
-
 
 
     }
