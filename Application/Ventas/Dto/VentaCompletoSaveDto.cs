@@ -1,4 +1,6 @@
-﻿namespace Application.Ventas.Dto
+﻿using Domain.Entities;
+
+namespace Application.Ventas.Dto
 {
     public class VentaCompletoSaveDto
     {
@@ -14,16 +16,19 @@
 
         public decimal SubTotal { get; set; }
         public decimal Descuentos { get; set; }
-        public decimal ValorVenta { get; set; }
+        public decimal ValorPago { get; set; }
         public decimal Igv { get; set; }
         public decimal ImporteTotal { get; set; }
         public string? UsuarioCreacion { get; set; }
         public string? UsuarioModificacion { get; set; }
+        public int IdProyecto { get; set; }
+        public int Estado { get; set; }
 
 
         // Relacionados
         public List<DetallesVentaSaveDto> Detalles { get; set; } = new();
-        public List<PagosVentaCreditoSaveDto>? PagosCredito { get; set; } // solo si es crédito
+        public List<PagosVentaCreditoSaveDto>? PagosCredito { get; set; } 
+        public List<DepositosVentaSaveDto>? DepositosVenta { get; set; }
     }
 
     public class DetallesVentaSaveDto
@@ -39,5 +44,11 @@
     {
         public DateTime? FechaVencimiento { get; set; }
         public decimal MontoCuota { get; set; }
+    }
+
+    public class DepositosVentaSaveDto
+    {
+        public DateTime FechaDeposito { get; set; }
+        public decimal Monto { get; set; }
     }
 }

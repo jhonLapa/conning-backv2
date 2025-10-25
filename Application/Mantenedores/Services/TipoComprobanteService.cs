@@ -1,5 +1,6 @@
 ﻿using Application.Exceptions;
 using Application.Mantenedores.Dtos.TiposComprobantes;
+using Application.Mantenedores.Dtos.TiposDocumento;
 using Application.Mantenedores.Services.Interfaces;
 using AutoMapper;
 using Domain;
@@ -33,10 +34,13 @@ namespace Application.Mantenedores.Services
 
             if (existe)
                 throw new NotFoundCoreException("Ya existe otro dato con el mismo nombre.");
+            var codigoGenerado = await _tipoComprobanteRepositorio.GenerarCodigoAsync("C");
+
 
             var tipoComprobante = _mapper.Map<TipoComprobante>(saveDto);
             tipoComprobante.FechaCreacion = DateTime.Now;
             tipoComprobante.Estado = 1;
+            tipoComprobante.Codigo = codigoGenerado;
 
             await _tipoComprobanteRepositorio.SaveAsync(tipoComprobante);
 
@@ -47,6 +51,10 @@ namespace Application.Mantenedores.Services
                 Success = true
             };
         }
+
+
+
+   
 
         public async Task<OperationResult<TipoComprobanteDto>> DisabledAsync(int id)
         {

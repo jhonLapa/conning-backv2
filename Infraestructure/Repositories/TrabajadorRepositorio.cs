@@ -85,6 +85,7 @@ namespace Infraestructure.Repositories
         {
             return await _context.Set<Trabajador>()
                                  .AsNoTracking()
+                        .Include(t => t.Categoria)
                                  .Where(a => a.Estado == 1)
                                  .ToListAsync();
         }

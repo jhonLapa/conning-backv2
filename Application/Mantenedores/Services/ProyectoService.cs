@@ -3,7 +3,9 @@ using Application.Mantenedores.Dtos.Proyectos;
 using Application.Mantenedores.Services.Interfaces;
 using AutoMapper;
 using Domain;
+using Infraestructure.Repositories;
 using Infraestructure.Repositories.Interfaces;
+using System;
 using System.Globalization;
 
 namespace Application.Mantenedores.Services
@@ -69,6 +71,7 @@ namespace Application.Mantenedores.Services
 
             project.Estado = project.Estado == 1 ? 0 : 1;
             project.FechaModificacion = DateTime.Now;
+            await _projectRepositorio.SaveAsync(project);
 
             return new OperationResult<ProyectoDto>()
             {
@@ -136,6 +139,7 @@ namespace Application.Mantenedores.Services
         {
             try
             {
+                dto.Proyecto.IdProyecto ??= 0;
                 Proyecto proyecto;
 
                 // ---------------------------------------------------------
@@ -150,7 +154,7 @@ namespace Application.Mantenedores.Services
                 }
                 else
                 {
-                    proyecto = await _projectRepositorio.FindByIdAsync(dto.Proyecto.IdProyecto);
+                    proyecto = await _projectRepositorio.FindByIdAsync(dto.Proyecto.IdProyecto.Value);
                     if (proyecto == null)
                         return new OperationResult<ProyectoDto> { Success = false, Message = "Proyecto no encontrado." };
 

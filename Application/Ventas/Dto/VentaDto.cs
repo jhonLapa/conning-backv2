@@ -3,6 +3,7 @@ using Application.Mantenedores.Dtos.Clientes;
 using Application.Mantenedores.Dtos.TiposComprobantes;
 using Application.PagoVentaCreditos.Dto;
 using Domain;
+using Domain.Entities;
 
 namespace Application.Ventas.Dto
 {
@@ -17,6 +18,7 @@ namespace Application.Ventas.Dto
         public string? FormaPago { get; set; }
         public string TipoMoneda { get; set; } = null!;
         public string? Observacion { get; set; }
+        public decimal ValorPago { get; set; }
 
         // Totales
         public decimal SubTotal { get; set; }
@@ -54,6 +56,7 @@ namespace Application.Ventas.Dto
         // 🔗 Nuevos
         public List<DetalleVentaDto> Detalles { get; set; } = new();
         public List<PagoVentaCreditoDto> PagosCredito { get; set; } = new();
+        public List<DepositoVenta> DepositosVenta { get; set; } = new();
 
     }
 }

@@ -19,6 +19,7 @@ namespace Domain
         public string UsuarioCreacion { get; set; }
         public DateTime? FechaCambioEstado { get; set; }
         public string? UsuarioCambioEstado { get; set; }
+        public string TipoConcepto { get; set; }
 
         // Relaciones
         public Categoria Categoria { get; set; } = null!;

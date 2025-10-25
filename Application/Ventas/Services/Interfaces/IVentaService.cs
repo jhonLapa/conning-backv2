@@ -7,7 +7,7 @@ namespace Application.Ventas.Services.Interfaces
     public interface IVentaServices : ICrudCoreService<VentaDto, VentaSaveDto, int>
     {
         Task<IReadOnlyList<VentaSelectDto>> SelectActivo();
-        Task<PaginadoResponse<VentaDto>> BusquedaPaginado(PaginationRequest dto);
+        Task<PaginadoResponse<VentaDto>> BusquedaPaginado(PaginationRequest dto, bool descargarTodo = false);
         Task<OperationResult<List<VentaDto>>> FindByClienteIdAsync(int clienteId);
 
         Task<OperationResult<VentaDto>> CreateWithDetailsAsync(VentaCompletoSaveDto saveDto);

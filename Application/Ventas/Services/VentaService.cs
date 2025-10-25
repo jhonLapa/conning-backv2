@@ -30,9 +30,9 @@ namespace Application.Ventas.Servicess
             _mapper = mapper;
         }
 
-        public async Task<PaginadoResponse<VentaDto>> BusquedaPaginado(PaginationRequest dto)
+        public async Task<PaginadoResponse<VentaDto>> BusquedaPaginado(PaginationRequest dto, bool descargarTodo = false)
         {
-            var response = await _ventaRepositorio.BusquedaPaginado(dto);
+            var response = await _ventaRepositorio.BusquedaPaginado(dto, descargarTodo);
 
             var data = _mapper.Map<ICollection<VentaDto>>(response.Data);
 
@@ -196,11 +196,13 @@ namespace Application.Ventas.Servicess
                 venta.Observacion = saveDto.Observacion;
                 venta.SubTotal = saveDto.SubTotal;
                 venta.Descuentos = saveDto.Descuentos;
-                venta.ValorVenta = saveDto.ValorVenta;
+                venta.ValorPago = saveDto.ValorPago;
                 venta.Igv = saveDto.Igv;
                 venta.ImporteTotal = saveDto.ImporteTotal;
                 venta.FechaModificacion = DateTime.Now;
                 venta.UsuarioModificacion = saveDto.UsuarioModificacion;
+                venta.IdProyecto = saveDto.IdProyecto;
+                venta.Estado = saveDto.Estado;
 
                 await _ventaRepositorio.SaveAsync(venta);
 

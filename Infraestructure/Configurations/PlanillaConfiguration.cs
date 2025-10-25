@@ -33,16 +33,9 @@ namespace Infraestructure.Configurations
                 .HasColumnType("datetime2(3)")
                 .IsRequired();
 
-
-
             // 🔹 Propiedades decimales
             builder.Property(dv => dv.TotalGeneral)
                    .HasColumnName("totalGeneral")
-                   .HasPrecision(12, 2)
-                   .HasDefaultValue(0);
-
-            builder.Property(dv => dv.TotalHoras)
-                   .HasColumnName("totalHoras")
                    .HasPrecision(12, 2)
                    .HasDefaultValue(0);
 

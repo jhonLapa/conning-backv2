@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace Domain
 {
@@ -19,6 +17,11 @@ namespace Domain
 
         public DateTime FechaCreacion { get; set; }
         public string? UsuarioCreacion { get; set; }
+
+
+        public decimal? Horas60 { get; set; }
+        public decimal? Horas100 { get; set; }
+        public decimal? Indemnizacion { get; set; }
 
         // ==================================================
         // 🔹 Relaciones

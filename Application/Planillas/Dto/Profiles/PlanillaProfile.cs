@@ -33,7 +33,6 @@ namespace Application.Planillas.Dtos.Profiles
                 .ForMember(dest => dest.FechaPago, opt => opt.MapFrom(src => src.FechaPago))
                 .ForMember(dest => dest.UsuarioCreacion, opt => opt.MapFrom(src => src.UsuarioCreacion))
                 .ForMember(dest => dest.FrecuenciaPago, opt => opt.MapFrom(src => src.FrecuenciaPago))
-                .ForMember(dest => dest.TotalHoras, opt => opt.MapFrom(src => src.TotalHoras))
                 .ForMember(dest => dest.TotalGeneral, opt => opt.MapFrom(src => src.TotalGeneral))
                 .ReverseMap();
 
@@ -41,8 +40,6 @@ namespace Application.Planillas.Dtos.Profiles
             // 🔹 DETALLE PLANILLA - Creación
             // ===========================================
             CreateMap<DetallePlanillaCreateDto, DetallePlanilla>()
-                .ForMember(dest => dest.IdDetallePlanilla, opt => opt.MapFrom(src => src.IdDetallePlanilla))
-                .ForMember(dest => dest.IdPlanilla, opt => opt.MapFrom(src => src.IdPlanilla))
                 .ForMember(dest => dest.IdTrabajadorProyecto, opt => opt.MapFrom(src => src.IdTrabajadorProyecto))
                 .ForMember(dest => dest.DiasTrabajados, opt => opt.MapFrom(src => src.DiasTrabajados))
                 .ForMember(dest => dest.HorasTrabajadas, opt => opt.MapFrom(src => src.HorasTrabajadas))
@@ -56,8 +53,6 @@ namespace Application.Planillas.Dtos.Profiles
             // 🔹 APORTES PLANILLA - Creación
             // ===========================================
             CreateMap<AportePlanillaDto, AportesPlanilla>()
-                .ForMember(dest => dest.IdAportePlanilla, opt => opt.MapFrom(src => src.IdAportePlanilla))
-                .ForMember(dest => dest.IdPlanilla, opt => opt.MapFrom(src => src.IdPlanilla))
                 .ForMember(dest => dest.TipoAporte, opt => opt.MapFrom(src => src.TipoAporte))
                 .ForMember(dest => dest.Monto, opt => opt.MapFrom(src => src.Monto))
                 .ForMember(dest => dest.FechaVencimiento, opt => opt.MapFrom(src => src.FechaVencimiento))

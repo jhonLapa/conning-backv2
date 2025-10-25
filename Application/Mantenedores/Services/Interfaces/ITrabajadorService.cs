@@ -8,6 +8,7 @@ namespace Application.Mantenedores.Services.Interfaces
     {
         Task<PaginadoResponse<TrabajadorDto>> BusquedaPaginado(PaginationRequest dto);
         Task<IReadOnlyList<TrabajadorSelectDto>> SelectActivo();
-         Task<OperationResult<TrabajadorDto>> CreateOrUpdateWithAccountsAsync(TrabajadorWithAccountsSaveDto dto);
+        Task<OperationResult<TrabajadorDto>> CreateOrUpdateWithAccountsAsync(TrabajadorWithAccountsSaveDto dto);
+        Task<OperationResult<object>> GetDetallePlanillaAsync(int id);
     }
 }

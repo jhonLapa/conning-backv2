@@ -3,7 +3,9 @@ using Application.Mantenedores.Dtos.Trabajadores;
 using Application.Mantenedores.Services.Interfaces;
 using AutoMapper;
 using Domain;
+using Infraestructure.Contexts;
 using Infraestructure.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Mantenedores.Services
 {
@@ -12,12 +14,15 @@ namespace Application.Mantenedores.Services
         private readonly ITrabajadorRepositorio _trabajadorRepositorio;
         private readonly IMapper _mapper;
         private readonly ICuentaBancariaTrabajadorRepositorio _cuentaBancariaTrabajadorRepositorio;
+        private readonly ApplicationDbContext _context;
 
-        public TrabajadorService(ITrabajadorRepositorio trabajadorRepositorio, ICuentaBancariaTrabajadorRepositorio cuentaBancariaTrabajadorRepositorio, IMapper mapper)
+        public TrabajadorService(ITrabajadorRepositorio trabajadorRepositorio, ICuentaBancariaTrabajadorRepositorio cuentaBancariaTrabajadorRepositorio, IMapper mapper, ApplicationDbContext context)
         {
             _trabajadorRepositorio = trabajadorRepositorio;
             _cuentaBancariaTrabajadorRepositorio = cuentaBancariaTrabajadorRepositorio;
             _mapper = mapper;
+            _context = context;
+
         }
 
         public async Task<PaginadoResponse<TrabajadorDto>> BusquedaPaginado(PaginationRequest dto)
@@ -128,8 +133,6 @@ namespace Application.Mantenedores.Services
         public async Task<OperationResult<TrabajadorDto>> CreateOrUpdateWithAccountsAsync(TrabajadorWithAccountsSaveDto dto)
         {
             var idTrabajador = dto.IdTrabajador;
-
-            // 🧩 Validar existencia antes de crear o actualizar
             bool existe = await _trabajadorRepositorio.ExistsAsync(
                        x => x.NumeroDocumento == dto.NumeroDocumento
                          && x.TipoDocumentoId == dto.IdTipoDocumento
@@ -151,7 +154,6 @@ namespace Application.Mantenedores.Services
 
             if (idTrabajador == 0)
             {
-                // 🟢 Crear nuevo trabajador
                 trabajador = _mapper.Map<Trabajador>(dto);
                 trabajador.FechaCreacion = DateTime.Now;
                 trabajador.Estado = 1;
@@ -210,6 +212,80 @@ namespace Application.Mantenedores.Services
                     : "Trabajador y cuentas actualizados con éxito",
                 Success = true
             };
+        }
+
+
+        // ======================================================
+        // 🔹 Obtener detalle de planilla de un trabajador
+        // ======================================================
+        public async Task<OperationResult<object>> GetDetallePlanillaAsync(int id)
+        {
+            try
+            {
+                var trabajador = await _context.Set<Trabajador>()
+                    .Include(t => t.Categoria)
+                        .ThenInclude(c => c.ConceptosCategoria)
+                    .Include(t => t.Regimen)
+                    .FirstOrDefaultAsync(t => t.IdTrabajador == id);
+
+                if (trabajador == null)
+                    throw new NotFoundCoreException("No se encontró el trabajador con ese ID.");
+
+                var response = new
+                {
+                    idTrabajador = trabajador.IdTrabajador,
+                    apellidosNombres = trabajador.ApellidosNombres,
+                    categoria = new
+                    {
+                        idCategoria = trabajador.Categoria?.IdCategoria,
+                        nombre = trabajador.Categoria?.Nombre
+                    },
+                    regimen = trabajador.Regimen == null ? null : new
+                    {
+                        idRegimen = trabajador.Regimen.IdRegimen,
+                        nombre = trabajador.Regimen.Nombre,
+                        tipo = trabajador.Regimen.Tipo,
+                        comision = trabajador.Regimen.Comision,
+                        prima = trabajador.Regimen.Prima,
+                        aporte = trabajador.Regimen.Aporte,
+                        total = trabajador.Regimen.Total,
+                        tope = trabajador.Regimen.Tope
+                    },
+                    conceptos = trabajador.Categoria?.ConceptosCategoria?
+                        .Where(c => c.Estado == 1)
+                        .Select(c => new
+                        {
+                            idConcepto = c.IdConcepto,
+                            nombreConcepto = c.NombreConcepto,
+                            valor = c.Valor,
+                            tipoConcepto = c.TipoConcepto
+                        })
+                        .ToList()
+                };
+
+                return new OperationResult<object>
+                {
+                    Success = true,
+                    Message = "Detalle del trabajador obtenido correctamente.",
+                    Data = response
+                };
+            }
+            catch (NotFoundCoreException ex)
+            {
+                return new OperationResult<object>
+                {
+                    Success = false,
+                    Message = ex.Message,
+                };
+            }
+            catch (Exception ex)
+            {
+                return new OperationResult<object>
+                {
+                    Success = false,
+                    Message = "Error al obtener el detalle del trabajador.",
+                };
+            }
         }
 
 

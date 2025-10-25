@@ -19,7 +19,6 @@ namespace Domain
 
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public string? PeriodoTexto { get; private set; }
-        public decimal TotalHoras { get; set; }
         public decimal TotalGeneral { get; set; }
 
 

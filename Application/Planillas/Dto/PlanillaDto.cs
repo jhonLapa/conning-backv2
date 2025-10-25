@@ -17,7 +17,6 @@ namespace Application.Planillas.Dto
         public string? UsuarioCreacion { get; set; }
         public string? FrecuenciaPago { get; set; }
         public string? PeriodoTexto { get; set; }
-        public decimal TotalHoras { get; set; }
         public decimal TotalGeneral { get; set; }
         public ProyectoDto? Proyecto { get; set; }
  

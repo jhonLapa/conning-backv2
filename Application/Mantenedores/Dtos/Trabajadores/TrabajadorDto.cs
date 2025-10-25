@@ -45,13 +45,12 @@ namespace Application.Mantenedores.Dtos.Trabajadores
         public string? Cci { get; set; }
         public string TipoCuenta { get; set; } = null!;
         public string Moneda { get; set; } = null!;
-        public bool Principal { get; set; }
+        public int Principal { get; set; }
         public DateTime? FechaInicio { get; set; }
         public DateTime? FechaFin { get; set; }
         public int Estado { get; set; }
         public DateTime FechaCreacion { get; set; }
 
-        // Opcional: incluir información del banco
         public BancoDto? Banco { get; set; }
     }
 }

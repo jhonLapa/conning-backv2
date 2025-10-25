@@ -37,9 +37,9 @@ namespace Application.Dashboard.Services
                 .Where(m => m.Estado == 1 && m.TipoMovimiento == "EGRESO")
                 .SumAsync(m => (decimal?)m.Monto) ?? 0;
 
-            // 📊 Ventas mensuales (últimos 6 meses)
+            // 📊 Ventas mensuales (últimos 6 meses, solo activas)
             var ventasMensuales = await _context.Set<Venta>()
-                .Where(v => v.FechaEmision >= DateTime.Now.AddMonths(-6))
+                .Where(v => v.Estado == 1 && v.FechaEmision >= DateTime.Now.AddMonths(-6))
                 .GroupBy(v => v.FechaEmision.Value.Month)
                 .Select(g => new ResumenMensualDto
                 {
@@ -48,9 +48,9 @@ namespace Application.Dashboard.Services
                 })
                 .ToListAsync();
 
-            // 📊 Compras mensuales (últimos 6 meses)
+            // 📊 Compras mensuales (últimos 6 meses, solo activas)
             var comprasMensuales = await _context.Set<Compra>()
-                .Where(c => c.FechaEmision >= DateTime.Now.AddMonths(-6))
+                .Where(c => c.Estado == 1 && c.FechaEmision >= DateTime.Now.AddMonths(-6))
                 .GroupBy(c => c.FechaEmision.Value.Month)
                 .Select(g => new ResumenMensualDto
                 {
@@ -59,9 +59,9 @@ namespace Application.Dashboard.Services
                 })
                 .ToListAsync();
 
-            // 📊 Planillas mensuales
+            // 📊 Planillas mensuales (solo activas)
             var planillasMensuales = await _context.Set<Planilla>()
-                .Where(p => p.FechaCreacion >= DateTime.Now.AddMonths(-6))
+                .Where(p => p.Estado == 1 && p.FechaCreacion >= DateTime.Now.AddMonths(-6))
                 .GroupBy(p => p.FechaCreacion.Month)
                 .Select(g => new ResumenMensualDto
                 {
@@ -75,10 +75,12 @@ namespace Application.Dashboard.Services
                 .CountAsync(p => p.Estado == 1);
 
             var totalGeneral = (totalVentas + totalIngresos) - (totalCompras + totalPlanillas + totalEgresos);
-            // 💸 Últimos movimientos combinados
+
+            // 💸 Últimos movimientos combinados (solo Estado = 1)
             var ultimosMovimientos = new List<MovimientoDto>();
 
             var ventas = await _context.Set<Venta>()
+                .Where(v => v.Estado == 1)
                 .OrderByDescending(v => v.FechaEmision)
                 .Take(5)
                 .Select(v => new MovimientoDto
@@ -91,6 +93,7 @@ namespace Application.Dashboard.Services
                 .ToListAsync();
 
             var compras = await _context.Set<Compra>()
+                .Where(c => c.Estado == 1)
                 .OrderByDescending(c => c.FechaEmision)
                 .Take(5)
                 .Select(c => new MovimientoDto
@@ -103,6 +106,7 @@ namespace Application.Dashboard.Services
                 .ToListAsync();
 
             var planillas = await _context.Set<Planilla>()
+                .Where(p => p.Estado == 1)
                 .OrderByDescending(p => p.FechaCreacion)
                 .Take(5)
                 .Select(p => new MovimientoDto
@@ -137,7 +141,6 @@ namespace Application.Dashboard.Services
                 .Take(10)
                 .ToList();
 
-            // 🧩 Resultado final
             return new DashboardDto
             {
                 TotalVentas = totalVentas,
@@ -153,5 +156,8 @@ namespace Application.Dashboard.Services
                 TotalEgresos = totalEgresos
             };
         }
+
+
+
     }
 }

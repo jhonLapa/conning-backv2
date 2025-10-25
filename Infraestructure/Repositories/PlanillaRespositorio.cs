@@ -3,6 +3,7 @@ using Infraestructure.Contexts;
 using Infraestructure.Core.Repositories;
 using Infraestructure.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
 
 namespace Infraestructure.Repositories
 {
@@ -35,9 +36,10 @@ namespace Infraestructure.Repositories
                 {
                     "idPlanilla" => order == "desc" ? query.OrderByDescending(p => p.IdPlanilla) : query.OrderBy(p => p.IdPlanilla),
                     "idProyecto" => order == "desc" ? query.OrderByDescending(p => p.IdProyecto) : query.OrderBy(p => p.IdProyecto),
+                    "proyecto" => order == "desc" ? query.OrderByDescending(p => p.Proyecto.Nombre) : query.OrderBy(p => p.Proyecto.Nombre),
                     "mes" => order == "desc" ? query.OrderByDescending(p => p.Mes) : query.OrderBy(p => p.Mes),
                     "anio" => order == "desc" ? query.OrderByDescending(p => p.Anio) : query.OrderBy(p => p.Anio),
-                    "estado" => order == "desc" ? query.OrderByDescending(p => p.Estado) : query.OrderBy(p => p.Estado),
+                    "status" => order == "desc" ? query.OrderByDescending(p => p.Estado) : query.OrderBy(p => p.Estado),
                     "createAt" => order == "desc" ? query.OrderByDescending(p => p.FechaCreacion) : query.OrderBy(p => p.FechaCreacion),
                     _ => query.OrderByDescending(p => p.FechaCreacion)
                 };
@@ -53,6 +55,7 @@ namespace Infraestructure.Repositories
 
                     var key = parts[0];
                     var value = parts[1].Trim();
+                    var val = value.ToLower().Replace("-", "").Trim(); // elimina guiones para comparar
 
                     switch (key)
                     {
@@ -67,6 +70,12 @@ namespace Infraestructure.Repositories
                             if (int.TryParse(value, out int idProyecto))
                                 query = query.Where(p => p.IdProyecto == idProyecto);
                             break;
+
+                        case "proyecto":
+                            query = query.Where(p =>
+                                p.Proyecto != null && p.Proyecto.Nombre.ToLower().Contains(val));
+                            break;
+
 
                         case "anio":
                             if (int.TryParse(value, out int anio))

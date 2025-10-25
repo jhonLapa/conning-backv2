@@ -26,7 +26,6 @@
         public decimal MontoRedondeo { get; set; }
         public decimal ImporteTotal { get; set; }
 
-
         public int Estado { get; set; }
         public DateTime FechaCreacion { get; set; }
         public string? UsuarioCreacion { get; set; }

@@ -1,4 +1,6 @@
-﻿namespace Domain
+﻿using Domain.Entities;
+
+namespace Domain
 {
 
     public class Venta
@@ -17,7 +19,7 @@
         public decimal SubTotal { get; set; }
         public decimal Anticipos { get; set; }
         public decimal Descuentos { get; set; }
-        public decimal ValorVenta { get; set; }
+        public decimal ValorPago { get; set; }
         public decimal Isc { get; set; }
         public decimal Igv { get; set; }
         public decimal Icbper { get; set; }
@@ -46,5 +48,7 @@
         public Proyecto Proyecto { get; set; } = null!;
         public ICollection<DetalleVenta> Detalles { get; set; }
         public ICollection<PagoVentaCredito> PagosCredito { get; set; }
+        public ICollection<DepositoVenta> DepositosVenta { get; set; } 
+
     }
 }

@@ -134,5 +134,61 @@ namespace DinsidesBack.Controllers
             return TypedResults.BadRequest();
         }
 
+        [HttpGet("Descargar")]
+        [AllowAnonymous]
+        public async Task<Results<BadRequest, FileContentHttpResult>> Descargar([FromQuery] PaginationRequest dto)
+        {
+            // ⚙️ Detectar si hay filtros activos
+            bool tieneFiltros = dto.Filters != null && dto.Filters.Length > 0;
+
+            // ✅ Si hay filtros, filtra; si no, descarga todo
+            var response = await _ventaService.BusquedaPaginado(dto, descargarTodo: !tieneFiltros);
+
+            if (response == null || response.Data == null || response.Data.Count == 0)
+                return TypedResults.BadRequest();
+
+            // 🔹 Crear Excel
+            using var workbook = new ClosedXML.Excel.XLWorkbook();
+            var ws = workbook.Worksheets.Add("Ventas");
+
+            // 🔹 Encabezados
+            ws.Cell(1, 1).Value = "Cliente";
+            ws.Cell(1, 2).Value = "Proyecto";
+            ws.Cell(1, 3).Value = "Tipo Comprobante";
+            ws.Cell(1, 4).Value = "Serie";
+            ws.Cell(1, 5).Value = "Número";
+            ws.Cell(1, 6).Value = "Importe Total";
+            ws.Cell(1, 7).Value = "Estado";
+
+            // 🔹 Datos
+            int row = 2;
+            foreach (var v in response.Data)
+            {
+                ws.Cell(row, 1).Value = v.Cliente?.NombreCompleto ?? "";
+                ws.Cell(row, 2).Value = v.Proyecto?.Nombre ?? "";
+                ws.Cell(row, 3).Value = v.TipoComprobante?.Nombre ?? "";
+                ws.Cell(row, 4).Value = v.Serie ?? "";
+                ws.Cell(row, 5).Value = v.Numero ?? "";
+                ws.Cell(row, 6).Value = v.ImporteTotal;
+                ws.Cell(row, 7).Value = v.Estado == 1 ? "Pagado" : "Pendiente";
+                row++;
+            }
+
+            ws.Columns().AdjustToContents();
+            ws.Row(1).Style.Font.Bold = true;
+            ws.SheetView.FreezeRows(1);
+
+            // 🔹 Exportar como archivo
+            using var stream = new MemoryStream();
+            workbook.SaveAs(stream);
+            var bytes = stream.ToArray();
+
+            return TypedResults.File(
+                bytes,
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                "Ventas.xlsx"
+            );
+        }
+
     }
 }

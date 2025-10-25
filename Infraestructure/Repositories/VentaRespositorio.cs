@@ -12,72 +12,143 @@ namespace Infraestructure.Repositories
         private readonly ApplicationDbContext _context;
         public VentaRespositorio(ApplicationDbContext context) : base(context) => _context = context;
 
-        public async Task<PaginadoResponse<Venta>> BusquedaPaginado(PaginationRequest dto)
+        public async Task<PaginadoResponse<Venta>> BusquedaPaginado(PaginationRequest dto, bool descargarTodo = false)
         {
+            var context = _context.Set<Venta>()
+                .Include(c => c.Cliente)
+                .Include(c => c.TipoComprobante)
+                .Include(c => c.Proyecto)
+                .AsQueryable();
 
-            var contex = _context.Set<Venta>()
-              .Include(c => c.Cliente)
-              .Include(c => c.TipoComprobante)
-              .Include(c => c.Proyecto)
-              .AsQueryable();
-
-
+            // ============================================================
+            // 🔹 ORDENAMIENTO DINÁMICO
+            // ============================================================
             if (!string.IsNullOrWhiteSpace(dto.Sort))
             {
-                var ColumnsOrder = dto.Sort.Split(".");
-
-                var column = ColumnsOrder[0];
-                var order = ColumnsOrder[1];
-
-                contex = column switch
+                var columnsOrder = dto.Sort.Split(".");
+                if (columnsOrder.Length == 2)
                 {
-                    "name" => order == "desc" ? contex.OrderByDescending(p => p.Serie) : contex.OrderBy(p => p.Serie),
-                    "status" => order == "desc" ? contex.OrderByDescending(p => p.Estado) : contex.OrderBy(p => p.Estado),
-                    "createAt" => order == "desc" ? contex.OrderByDescending(p => p.FechaCreacion) : contex.OrderBy(p => p.FechaCreacion),
-                };
+                    var column = columnsOrder[0];
+                    var order = columnsOrder[1].ToLower();
 
+                    context = column switch
+                    {
+                        "serie" => order == "desc"
+                            ? context.OrderByDescending(p => p.Serie)
+                            : context.OrderBy(p => p.Serie),
+
+                        "cliente" => order == "desc"
+                            ? context.OrderByDescending(p => p.Cliente.NombreCompleto)
+                            : context.OrderBy(p => p.Cliente.NombreCompleto),
+
+                        "proyecto" => order == "desc"
+                            ? context.OrderByDescending(p => p.Proyecto.Nombre)
+                            : context.OrderBy(p => p.Proyecto.Nombre),
+
+                        "status" => order == "desc"
+                            ? context.OrderByDescending(p => p.Estado)
+                            : context.OrderBy(p => p.Estado),
+
+                        "createAt" => order == "desc"
+                            ? context.OrderByDescending(p => p.FechaCreacion)
+                            : context.OrderBy(p => p.FechaCreacion),
+
+                        _ => context
+                    };
+                }
             }
 
-
+            // ============================================================
+            // 🔹 FILTROS DINÁMICOS
+            // ============================================================
             if (dto.Filters != null && dto.Filters.Length > 0)
             {
                 foreach (var filter in dto.Filters)
                 {
-                    var id_value = filter.Split(":");
+                    var id_value = filter.Split(':', 2);
+                    if (id_value.Length < 2) continue;
 
-                    var id = id_value[0];
-                    var value = id_value[1];
+                    var id = id_value[0].Trim().ToLower();
+                    var value = id_value[1].Trim();
 
-                    if (id == "status")
+                    if (string.IsNullOrWhiteSpace(value))
+                        continue;
+
+                    var val = value.ToLower().Replace("-", "").Trim();
+
+                    switch (id)
                     {
-                        if (value == "activo") contex = contex.Where(p => p.Estado == 1);
-                        if (value == "inactivo") contex = contex.Where(p => p.Estado == 0);
-                    }
-                    else if (id == "name") contex = contex.Where(p => p.Serie.Contains(value));
+                        case "status":
+                            if (value.Equals("activo", StringComparison.OrdinalIgnoreCase))
+                                context = context.Where(p => p.Estado == 1);
+                            else if (value.Equals("inactivo", StringComparison.OrdinalIgnoreCase))
+                                context = context.Where(p => p.Estado == 0);
+                            break;
 
+                        case "numerocomprobante":
+                        case "comprobante": // 👈 Por compatibilidad
+                            context = context.Where(p =>
+                                (p.Serie + p.Numero).ToLower().Contains(val) ||
+                                (p.Serie + "-" + p.Numero).ToLower().Contains(val) ||
+                                p.Serie.ToLower().Contains(val) ||
+                                p.Numero.ToString().Contains(val)
+                            );
+                            break;
+
+                        case "cliente":
+                            context = context.Where(p =>
+                                p.Cliente != null && p.Cliente.NombreCompleto.ToLower().Contains(val));
+                            break;
+
+                        case "proyecto":
+                            context = context.Where(p =>
+                                p.Proyecto != null && p.Proyecto.Nombre.ToLower().Contains(val));
+                            break;
+
+                        case "tipocomprobante":
+                            context = context.Where(p =>
+                                p.TipoComprobante != null && p.TipoComprobante.Nombre.ToLower().Contains(val));
+                            break;
+                    }
                 }
             }
 
-            var take = dto.Take ?? 5;
-            var page = dto.Page ?? 1;
-            var skip = (page - 1) * take;
+            // ============================================================
+            // 🔹 PAGINACIÓN (condicional)
+            // ============================================================
+            List<Venta> data;
+            int total;
 
-            var data = await contex.Skip(skip).Take(take).ToListAsync();
-            var total = await contex.CountAsync();
+            if (descargarTodo)
+            {
+                // 🔸 Descargar todo → sin paginar
+                data = await context.ToListAsync();
+                total = data.Count;
+            }
+            else
+            {
+                var take = dto.Take ?? 5;
+                var page = dto.Page ?? 1;
+                var skip = (page - 1) * take;
 
+                total = await context.CountAsync();
+                data = await context.Skip(skip).Take(take).ToListAsync();
+            }
+
+            // ============================================================
+            // 🔹 META
+            // ============================================================
             var meta = new Meta
             {
-                Page = dto.Page,
+                Page = dto.Page ?? 1,
                 TotalCount = total,
-                TotalPages = (int)Math.Ceiling((double)total / take)
+                TotalPages = descargarTodo
+                    ? 1
+                    : (int)Math.Ceiling((double)total / (dto.Take ?? 5))
             };
 
-
-            PaginadoResponse<Venta> response = new(data, meta);
-
-            return response;
+            return new PaginadoResponse<Venta>(data, meta);
         }
-
 
         public async Task<IReadOnlyList<Venta>> SelectActivo()
         {
@@ -95,6 +166,7 @@ namespace Infraestructure.Repositories
                                  .Include(c => c.TipoComprobante)
                                  .Include(c => c.Detalles)
                                  .Include(c => c.PagosCredito)
+                                 .Include(c => c.DepositosVenta)
                                  .Include(c => c.Proyecto)
                                  .FirstOrDefaultAsync(x => x.IdVenta == id);
         }
@@ -110,6 +182,7 @@ namespace Infraestructure.Repositories
                                  .Include(c => c.TipoComprobante)
                                  .Include(c => c.Detalles)
                                  .Include(c => c.PagosCredito)
+                                 .Include(c => c.DepositosVenta)
                                  .Include(c => c.Proyecto)
                                  .ToListAsync();
         }

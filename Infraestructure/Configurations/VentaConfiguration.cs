@@ -53,7 +53,7 @@ namespace Infraestructure.Configurations
             builder.Property(v => v.SubTotal).HasPrecision(12, 2);
             builder.Property(v => v.Anticipos).HasPrecision(12, 2);
             builder.Property(v => v.Descuentos).HasPrecision(12, 2);
-            builder.Property(v => v.ValorVenta).HasPrecision(12, 2);
+            builder.Property(v => v.ValorPago).HasPrecision(12, 2);
             builder.Property(v => v.Isc).HasPrecision(12, 2);
             builder.Property(v => v.Igv).HasPrecision(12, 2);
             builder.Property(v => v.Icbper).HasPrecision(12, 2);

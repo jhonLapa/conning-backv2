@@ -111,5 +111,18 @@ namespace DinsidesBack.Controllers
             return TypedResults.BadRequest();
         }
 
+        [HttpGet("{id}/detalle-planilla")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetDetallePlanilla(int id)
+        {
+            var result = await _trabajadorService.GetDetallePlanillaAsync(id);
+
+            if (result.Success == true)
+                return Ok(result);
+
+            return BadRequest(result);
+        }
+
+
     }
 }

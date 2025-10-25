@@ -5,17 +5,17 @@
         public ProyectoCreateDto Proyecto { get; set; } = new();
         public List<TrabajadorProyectoCreateDto> Trabajador { get; set; } = new();
         public List<SindicatoDto> Sindicato { get; set; } = new();
-        public ProyectoEncargadoDto ProyectoEncargado { get; set; } = new();
+        public ProyectoEncargadoDto? ProyectoEncargado { get; set; }
     }
 
     public class ProyectoCreateDto
     {
-        public int IdProyecto { get; set; }
+        public int? IdProyecto { get; set; }        // 👈 acepta null
         public int IdCliente { get; set; }
         public string Nombre { get; set; } = string.Empty;
         public string Descripcion { get; set; } = string.Empty;
-        public DateTime FechaInicio { get; set; }  
-        public DateTime FechaFin { get; set; }  
+        public DateTime FechaInicio { get; set; }
+        public DateTime? FechaFin { get; set; }
         public string FrecuenciaPago { get; set; } = string.Empty;
         public string UsuarioCreacion { get; set; } = string.Empty;
     }

@@ -1,6 +1,7 @@
 ﻿using Application.Ventas.Dto;
 using AutoMapper;
 using Domain;
+using Domain.Entities;
 
 namespace Application.Ventas.Dtos.Profiles
 {
@@ -25,6 +26,8 @@ namespace Application.Ventas.Dtos.Profiles
 
             // ✅ PagoVentaCredito <-> PagosVentaCreditoSaveDto
             CreateMap<PagoVentaCredito, PagosVentaCreditoSaveDto>().ReverseMap();
+
+            CreateMap<DepositoVenta, DepositosVentaSaveDto>().ReverseMap();
         }
     }
 }

@@ -12,9 +12,9 @@ namespace Domain
         public int TipoDocumentoId { get; set; }
 
         // 🔹 Datos personales
-        public string NumeroDocumento { get; set; } = null!;
+        public string? NumeroDocumento { get; set; } = null!;
         public string ApellidosNombres { get; set; } = null!;
-        public DateTime FechaNacimiento { get; set; }
+        public DateTime? FechaNacimiento { get; set; }
         public string? Telefono { get; set; }
         public string? Email { get; set; }
         public string? Sexo { get; set; }
@@ -23,8 +23,8 @@ namespace Domain
         public string? Direccion { get; set; }
 
         // 🔹 Campos numéricos
-        public decimal AsignacionFamiliar { get; set; }
-        public int Hijos { get; set; }
+        public decimal? AsignacionFamiliar { get; set; }
+        public int? Hijos { get; set; }
 
         // 🔹 Auditoría
         public DateTime FechaCreacion { get; set; }

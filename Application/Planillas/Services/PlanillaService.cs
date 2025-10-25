@@ -1,4 +1,5 @@
 ﻿using Application.Exceptions;
+using Application.Mantenedores.Dtos.Bancos;
 using Application.Mantenedores.Dtos.Planillas;
 using Application.Planillas.Dto;
 using Application.Planillas.Services.Interfaces;
@@ -51,15 +52,22 @@ namespace Application.Planillas.Services
 
         public async Task<OperationResult<PlanillaDto>> DisabledAsync(int id)
         {
-            var planilla = await _planillaRepositorio.FindByIdAsync(id);
-            if (planilla == null) throw new NotFoundCoreException("Registro no encontrado con el id");
+            var bank = await _planillaRepositorio.FindByIdAsync(id);
+
+            if (bank == null) throw new NotFoundCoreException("Registro no encontrado con ese Id");
+
+            bank.Estado = bank.Estado == 1 ? 0 : 1;
+            await _planillaRepositorio.SaveAsync(bank);
 
             return new OperationResult<PlanillaDto>()
             {
-                Data = _mapper.Map<PlanillaDto>(planilla),
-                Message = "Se ha Desactivado",
-
+                Data = _mapper.Map<PlanillaDto>(bank),
+                Message = bank.Estado == 1
+                ? "Activado con éxito"
+                            : "Desactivado con éxito",
+                Success = true
             };
+
         }
 
         public async Task<OperationResult<PlanillaDto>> EditAsync(int id, PlanillaSaveDto saveDto)
@@ -121,6 +129,7 @@ namespace Application.Planillas.Services
                 else
                 {
                     // Nueva planilla
+                    planilla.Estado = 1;
                     planilla.FechaCreacion = DateTime.Now;
                     planilla.UsuarioCreacion ??= "system";
                     await _planillaRepositorio.SaveAsync(planilla);
@@ -133,9 +142,13 @@ namespace Application.Planillas.Services
                     detalle.IdPlanilla = planilla.IdPlanilla;
                     detalle.FechaCreacion = DateTime.Now;
                     detalle.UsuarioCreacion ??= planilla.UsuarioCreacion;
+
+                    detalle.TotalMonto = detalle.TotalMonto == 0 ? detalleDto.TotalMonto : detalle.TotalMonto;
+                    detalle.TotalHoras = detalle.TotalHoras == 0 ? detalleDto.TotalHoras : detalle.TotalHoras;
+                    detalle.TotalDescuentos = detalle.TotalDescuentos == 0 ? detalleDto.TotalDescuentos : detalle.TotalDescuentos;
+
                     await _detallePlanillaRepositorio.SaveAsync(detalle);
                 }
-
                 // 3️⃣ Insertar nuevos APORTES
                 foreach (var aporteDto in dto.Aportes)
                 {
