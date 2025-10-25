@@ -14,6 +14,7 @@ namespace Application.Usuarios.Dto.Profiles
             CreateMap<User , UserDto>().ReverseMap();
             CreateMap<User , UserSaveDto>().ReverseMap();
             CreateMap<User , UserView>().ReverseMap();
+            CreateMap<Rol , RolView>().ReverseMap();
             CreateMap<User, UserSelectDto>();
         }
     }

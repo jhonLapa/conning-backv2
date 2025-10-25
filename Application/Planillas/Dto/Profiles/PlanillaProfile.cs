@@ -27,7 +27,6 @@ namespace Application.Planillas.Dtos.Profiles
                 .ForMember(dest => dest.IdPlanilla, opt => opt.MapFrom(src => src.IdPlanilla))
                 .ForMember(dest => dest.IdProyecto, opt => opt.MapFrom(src => src.IdProyecto))
                 .ForMember(dest => dest.Mes, opt => opt.MapFrom(src => src.Mes))
-                .ForMember(dest => dest.Anio, opt => opt.MapFrom(src => src.Anio))
                 .ForMember(dest => dest.PeriodoInicio, opt => opt.MapFrom(src => src.PeriodoInicio))
                 .ForMember(dest => dest.PeriodoFin, opt => opt.MapFrom(src => src.PeriodoFin))
                 .ForMember(dest => dest.FechaPago, opt => opt.MapFrom(src => src.FechaPago))

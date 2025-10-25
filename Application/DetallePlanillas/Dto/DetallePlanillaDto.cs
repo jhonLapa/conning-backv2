@@ -1,5 +1,4 @@
-﻿using Application.Asistencias.Dto;
-
+﻿
 namespace Application.DetallePlanillas.Dto
 {
     public class DetallePlanillaDto
@@ -18,6 +17,9 @@ namespace Application.DetallePlanillas.Dto
         public DateTime FechaCreacion { get; set; }
         public string? UsuarioCreacion { get; set; }
 
-        // 🔹 Relación: cada detalle puede tener muchas asistencias
+        public decimal? Horas60 { get; set; }
+        public decimal? Horas100 { get; set; }
+        public decimal? Indemnizacion { get; set; }
+
     }
 }

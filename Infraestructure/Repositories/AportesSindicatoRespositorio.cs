@@ -102,10 +102,10 @@ namespace Infraestructure.Repositories
                                  .Include(c => c.Proyecto)
                                  .ToListAsync();
         }
-        public async Task<AportesSindicato?> FindByProyectoMesAnioAsync(int idProyecto, int mes, int anio)
+        public async Task<AportesSindicato?> FindByProyectoMesAnioAsync(int idProyecto, string mesAnio)
         {
             return await _context.Set<AportesSindicato>()
-                .FirstOrDefaultAsync(x => x.IdProyecto == idProyecto && x.Mes == mes && x.Anio == anio);
+                .FirstOrDefaultAsync(x => x.IdProyecto == idProyecto && x.Mes == mesAnio);
         }
         public async Task DeleteByProyectoIdAsync(int idProyecto)
         {

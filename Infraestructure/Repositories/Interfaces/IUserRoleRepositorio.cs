@@ -9,5 +9,6 @@ namespace Infraestructure.Repositories.Interfaces
         Task<IReadOnlyList<UserRole>> SelectActivo();
         Task<List<UserRole>> FindByUserIdAsync(int userId);
         Task<List<UserRole>> FindByRolIdAsync(int rolId);
+        Task<UserRole?> FindByIdAsyncUser(int id);
     }
 }

@@ -33,8 +33,7 @@
 
     public class SindicatoDto
     {
-        public int Mes { get; set; }
-        public int Anio { get; set; }
+        public string? Mes { get; set; }
         public decimal Monto { get; set; }
         public DateTime FechaPago { get; set; } 
         public string UsuarioCreacion { get; set; } = string.Empty;

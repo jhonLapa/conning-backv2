@@ -3,7 +3,6 @@ using Infraestructure.Contexts;
 using Infraestructure.Core.Repositories;
 using Infraestructure.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json.Linq;
 
 namespace Infraestructure.Repositories
 {
@@ -38,7 +37,6 @@ namespace Infraestructure.Repositories
                     "idProyecto" => order == "desc" ? query.OrderByDescending(p => p.IdProyecto) : query.OrderBy(p => p.IdProyecto),
                     "proyecto" => order == "desc" ? query.OrderByDescending(p => p.Proyecto.Nombre) : query.OrderBy(p => p.Proyecto.Nombre),
                     "mes" => order == "desc" ? query.OrderByDescending(p => p.Mes) : query.OrderBy(p => p.Mes),
-                    "anio" => order == "desc" ? query.OrderByDescending(p => p.Anio) : query.OrderBy(p => p.Anio),
                     "status" => order == "desc" ? query.OrderByDescending(p => p.Estado) : query.OrderBy(p => p.Estado),
                     "createAt" => order == "desc" ? query.OrderByDescending(p => p.FechaCreacion) : query.OrderBy(p => p.FechaCreacion),
                     _ => query.OrderByDescending(p => p.FechaCreacion)
@@ -77,15 +75,6 @@ namespace Infraestructure.Repositories
                             break;
 
 
-                        case "anio":
-                            if (int.TryParse(value, out int anio))
-                                query = query.Where(p => p.Anio == anio);
-                            break;
-
-                        case "mes":
-                            if (int.TryParse(value, out int mes))
-                                query = query.Where(p => p.Mes == mes);
-                            break;
                     }
                 }
             }
@@ -121,7 +110,6 @@ namespace Infraestructure.Repositories
                 .Include(p => p.Detalles)
                     .ThenInclude(d => d.TrabajadorProyecto)
                 .Include(p => p.Detalles)
-                    .ThenInclude(d => d.Asistencias)
                 .FirstOrDefaultAsync(p => p.IdPlanilla == id);
         }
 

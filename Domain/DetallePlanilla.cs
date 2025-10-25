@@ -32,7 +32,5 @@ namespace Domain
         [JsonIgnore]
         public TrabajadorProyecto? TrabajadorProyecto { get; set; }
 
-        // 👇 Agregar esta relación para enlazar las asistencias
-        public ICollection<Asistencia> Asistencias { get; set; } = new List<Asistencia>();
     }
 }

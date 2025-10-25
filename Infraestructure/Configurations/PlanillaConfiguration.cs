@@ -14,8 +14,6 @@ namespace Infraestructure.Configurations
             builder.Property(p => p.Mes)
                 .IsRequired();
 
-            builder.Property(p => p.Anio)
-                .IsRequired();
 
             builder.Property(p => p.PeriodoInicio)
                 .HasColumnType("datetime2(3)");

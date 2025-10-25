@@ -91,6 +91,17 @@ namespace Infraestructure.Repositories
         }
 
 
+        public async  Task<UserRole?> FindByIdAsyncUser(int id)
+        {
+            return await _context.Set<UserRole>()
+                                  .AsSplitQuery() // 👈 evita el warning MultipleCollectionInclude
+                                  .Include(c => c.Users)
+                                  .Include(c => c.Roles)
+                                  .FirstOrDefaultAsync(x => x.UserId == id);
+        }
+
+
+
         public async override Task<IReadOnlyList<UserRole>> FindAllAsync()
         {
             return await _context.Set<UserRole>()

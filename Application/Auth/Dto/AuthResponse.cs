@@ -1,7 +1,4 @@
-﻿
-using Domain;
-
-namespace Application.Auth.Dto
+﻿namespace Application.Auth.Dto
 {
     public class AuthResponse
     {

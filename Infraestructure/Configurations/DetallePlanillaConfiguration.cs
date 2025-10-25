@@ -63,10 +63,5 @@ public class DetallePlanillaConfiguration : IEntityTypeConfiguration<DetallePlan
                .HasForeignKey(dv => dv.IdTrabajadorProyecto)
                .OnDelete(DeleteBehavior.Restrict);
 
-        // (3) DetallePlanilla → Asistencias
-        builder.HasMany(dv => dv.Asistencias)
-               .WithOne(a => a.DetallePlanilla)
-               .HasForeignKey(a => a.IdDetallePlanilla)
-               .OnDelete(DeleteBehavior.Cascade);
     }
 }

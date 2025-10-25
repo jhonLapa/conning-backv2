@@ -26,9 +26,6 @@ namespace Infraestructure.Configurations
                    .HasColumnName("mes")
                    .IsRequired();
 
-            builder.Property(a => a.Anio)
-                   .HasColumnName("anio")
-                   .IsRequired();
 
             builder.Property(a => a.Monto)
                    .HasColumnName("monto")

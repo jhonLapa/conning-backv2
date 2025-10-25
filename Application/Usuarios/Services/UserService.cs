@@ -154,7 +154,13 @@ namespace Application.Usuarios.Services
         {
 
             User user = await _usuarioRepositorio.FindByEmailAsync(userAuthDto.Email) ?? throw new NotFoundCoreException("Usuario no registrado"); ;
-            
+
+            var userRol = await _userRolRepositorio.FindByIdAsyncUser(user.UserId) ?? throw new NotFoundCoreException("Usuario sin rol"); ;
+
+            Rol rol = await _rolRepositorio.FindByIdAsync(userRol.RoleId) ?? throw new NotFoundCoreException("Usuario sin rol"); ;
+
+
+
             bool isCorrect = _securityService.VerifyHashedPassword(user.Email, user.Password, userAuthDto.Password);
 
             if (!isCorrect) throw new NotFoundCoreException("La contraseña no es correcta");
@@ -169,6 +175,7 @@ namespace Application.Usuarios.Services
                 AccessToken = user_securiti.Token,
                 RefreshToken = user_securiti.Token,
                 User = _mapper.Map<UserView>(user),
+                Rol = _mapper.Map<RolView>(rol),
             };
 
 

@@ -200,7 +200,6 @@ namespace Application.Mantenedores.Services
                         {
                             IdProyecto = proyecto.IdProyecto,
                             Mes = s.Mes,
-                            Anio = s.Anio,
                             Monto = s.Monto,
                             FechaPago = s.FechaPago,
                             UsuarioCreacion = s.UsuarioCreacion,
