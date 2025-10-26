@@ -12,13 +12,25 @@ namespace Infraestructure.Repositories
         private readonly ApplicationDbContext _context;
         public VentaRespositorio(ApplicationDbContext context) : base(context) => _context = context;
 
-        public async Task<PaginadoResponse<Venta>> BusquedaPaginado(PaginationRequest dto, bool descargarTodo = false)
+        public async Task<PaginadoResponse<Venta>> BusquedaPaginado(PaginationRequest dto, bool descargarTodo = false, string fechaIni = null, string fechaFin = null)
         {
             var context = _context.Set<Venta>()
                 .Include(c => c.Cliente)
                 .Include(c => c.TipoComprobante)
                 .Include(c => c.Proyecto)
                 .AsQueryable();
+
+            // ============================================================
+            // 🔹 FILTRO POR FECHAS (solo si ambos existen)
+            // ============================================================
+            if (!string.IsNullOrEmpty(fechaIni) && !string.IsNullOrEmpty(fechaFin))
+            {
+                if (DateTime.TryParse(fechaIni, out var inicio) && DateTime.TryParse(fechaFin, out var fin))
+                {
+                    fin = fin.Date.AddDays(1).AddTicks(-1);
+                    context = context.Where(p => p.FechaEmision >= inicio && p.FechaEmision <= fin);
+                }
+            }
 
             // ============================================================
             // 🔹 ORDENAMIENTO DINÁMICO
@@ -86,7 +98,7 @@ namespace Infraestructure.Repositories
                             break;
 
                         case "numerocomprobante":
-                        case "comprobante": // 👈 Por compatibilidad
+                        case "comprobante":
                             context = context.Where(p =>
                                 (p.Serie + p.Numero).ToLower().Contains(val) ||
                                 (p.Serie + "-" + p.Numero).ToLower().Contains(val) ||
@@ -121,7 +133,6 @@ namespace Infraestructure.Repositories
 
             if (descargarTodo)
             {
-                // 🔸 Descargar todo → sin paginar
                 data = await context.ToListAsync();
                 total = data.Count;
             }
@@ -135,9 +146,6 @@ namespace Infraestructure.Repositories
                 data = await context.Skip(skip).Take(take).ToListAsync();
             }
 
-            // ============================================================
-            // 🔹 META
-            // ============================================================
             var meta = new Meta
             {
                 Page = dto.Page ?? 1,
@@ -149,7 +157,6 @@ namespace Infraestructure.Repositories
 
             return new PaginadoResponse<Venta>(data, meta);
         }
-
         public async Task<IReadOnlyList<Venta>> SelectActivo()
         {
             return await _context.Set<Venta>()

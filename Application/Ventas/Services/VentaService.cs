@@ -30,12 +30,14 @@ namespace Application.Ventas.Servicess
             _mapper = mapper;
         }
 
-        public async Task<PaginadoResponse<VentaDto>> BusquedaPaginado(PaginationRequest dto, bool descargarTodo = false)
+        public async Task<PaginadoResponse<VentaDto>> BusquedaPaginado(
+                      PaginationRequest dto,
+                      bool descargarTodo = false,
+                      string fechaIni = null,
+                      string fechaFin = null)
         {
-            var response = await _ventaRepositorio.BusquedaPaginado(dto, descargarTodo);
-
+            var response = await _ventaRepositorio.BusquedaPaginado(dto, descargarTodo, fechaIni, fechaFin);
             var data = _mapper.Map<ICollection<VentaDto>>(response.Data);
-
             return new PaginadoResponse<VentaDto>(data, response.Meta);
         }
 

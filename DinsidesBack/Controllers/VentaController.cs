@@ -101,14 +101,19 @@ namespace DinsidesBack.Controllers
 
         [HttpGet("BusquedaPaginado")]
         [AllowAnonymous]
-        public async Task<Results<BadRequest, Ok<PaginadoResponse<VentaDto>>>> BusquedaPaginado([FromQuery] PaginationRequest dto)
+        public async Task<Results<BadRequest, Ok<PaginadoResponse<VentaDto>>>> BusquedaPaginado(
+            [FromQuery] PaginationRequest dto,
+            string fechaIni = null,
+            string fechaFin = null)
         {
-            var response = await _ventaService.BusquedaPaginado(dto);
+            // 👇 Pasamos las fechas al servicio
+            var response = await _ventaService.BusquedaPaginado(dto, fechaIni: fechaIni, fechaFin: fechaFin);
 
-            if (response != null) return TypedResults.Ok(response);
+            if (response != null)
+                return TypedResults.Ok(response);
 
             return TypedResults.BadRequest();
-        }
+        }       
 
 
         [HttpDelete("{id}")]
@@ -136,13 +141,21 @@ namespace DinsidesBack.Controllers
 
         [HttpGet("Descargar")]
         [AllowAnonymous]
-        public async Task<Results<BadRequest, FileContentHttpResult>> Descargar([FromQuery] PaginationRequest dto)
+        public async Task<Results<BadRequest, FileContentHttpResult>> Descargar(
+         [FromQuery] PaginationRequest dto,
+         string fechaIni = null,
+         string fechaFin = null)
         {
             // ⚙️ Detectar si hay filtros activos
             bool tieneFiltros = dto.Filters != null && dto.Filters.Length > 0;
 
             // ✅ Si hay filtros, filtra; si no, descarga todo
-            var response = await _ventaService.BusquedaPaginado(dto, descargarTodo: !tieneFiltros);
+            var response = await _ventaService.BusquedaPaginado(
+                dto,
+                descargarTodo: !tieneFiltros,
+                fechaIni: fechaIni,
+                fechaFin: fechaFin
+            );
 
             if (response == null || response.Data == null || response.Data.Count == 0)
                 return TypedResults.BadRequest();
