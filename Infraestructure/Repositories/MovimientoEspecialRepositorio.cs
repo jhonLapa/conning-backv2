@@ -11,9 +11,21 @@ namespace Infraestructure.Repositories
         private readonly ApplicationDbContext _context;
         public MovimientoEspecialRespositorio(ApplicationDbContext context) : base(context) => _context = context;
 
-        public async Task<PaginadoResponse<MovimientoEspecial>> BusquedaPaginado(PaginationRequest dto)
+        public async Task<PaginadoResponse<MovimientoEspecial>> BusquedaPaginado(PaginationRequest dto, bool descargarTodo = false, string fechaIni = null, string fechaFin = null)
         {
             var contex = _context.Set<MovimientoEspecial>().AsQueryable();
+
+            // ============================================================
+            // 🔹 FILTRO POR FECHAS (solo si ambos existen)
+            // ============================================================
+            if (!string.IsNullOrEmpty(fechaIni) && !string.IsNullOrEmpty(fechaFin))
+            {
+                if (DateTime.TryParse(fechaIni, out var inicio) && DateTime.TryParse(fechaFin, out var fin))
+                {
+                    fin = fin.Date.AddDays(1).AddTicks(-1);
+                    contex = contex.Where(p => p.FechaCreacion >= inicio && p.FechaCreacion <= fin);
+                }
+            }
 
             if (!string.IsNullOrWhiteSpace(dto.Sort))
             {
@@ -55,18 +67,31 @@ namespace Infraestructure.Repositories
                 }
             }
 
-            var take = dto.Take ?? 5;
-            var page = dto.Page ?? 1;
-            var skip = (page - 1) * take;
+            List<MovimientoEspecial> data;
+            int total;
 
-            var data = await contex.Skip(skip).Take(take).ToListAsync();
-            var total = await contex.CountAsync();
+            if (descargarTodo)
+            {
+                data = await contex.ToListAsync();
+                total = data.Count;
+            }
+            else
+            {
+                var take = dto.Take ?? 5;
+                var page = dto.Page ?? 1;
+                var skip = (page - 1) * take;
+
+                data = await contex.Skip(skip).Take(take).ToListAsync();
+                total = await contex.CountAsync();
+            }
+
+            
 
             var meta = new Meta
             {
-                Page = dto.Page,
+                Page = dto.Page ?? 1,
                 TotalCount = total,
-                TotalPages = (int)Math.Ceiling((double)total / take)
+                TotalPages = descargarTodo ? 1 :  (int)Math.Ceiling((double)total / (dto.Take ?? 5))    
             };
 
 

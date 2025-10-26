@@ -32,9 +32,12 @@ namespace Application.Compras.Services
         }
 
 
-        public async Task<PaginadoResponse<CompraDto>> BusquedaPaginado(PaginationRequest dto)
+        public async Task<PaginadoResponse<CompraDto>> BusquedaPaginado(PaginationRequest dto,
+                      bool descargarTodo = false,
+                      string fechaIni = null,
+                      string fechaFin = null)
         {
-            var response = await _compraRepositorio.BusquedaPaginado(dto);
+            var response = await _compraRepositorio.BusquedaPaginado(dto, descargarTodo, fechaIni, fechaFin);
 
             var data = _mapper.Map<ICollection<CompraDto>>(response.Data);
 

@@ -11,13 +11,25 @@ namespace Infraestructure.Repositories
         private readonly ApplicationDbContext _context;
         public CompraRespositorio(ApplicationDbContext context) : base(context) => _context = context;
 
-        public async Task<PaginadoResponse<Compra>> BusquedaPaginado(PaginationRequest dto)
+        public async Task<PaginadoResponse<Compra>> BusquedaPaginado(PaginationRequest dto, bool descargarTodo = false, string fechaIni = null, string fechaFin = null)
         {
             var context = _context.Set<Compra>()
                 .Include(c => c.Proveedor)
                 .Include(c => c.TipoComprobante)
                 //.Include(c => c.Proyecto)
                 .AsQueryable();
+
+            // ============================================================
+            // 🔹 FILTRO POR FECHAS (solo si ambos existen)
+            // ============================================================
+            if (!string.IsNullOrEmpty(fechaIni) && !string.IsNullOrEmpty(fechaFin))
+            {
+                if (DateTime.TryParse(fechaIni, out var inicio) && DateTime.TryParse(fechaFin, out var fin))
+                {
+                    fin = fin.Date.AddDays(1).AddTicks(-1);
+                    context = context.Where(p => p.FechaEmision >= inicio && p.FechaEmision <= fin);
+                }
+            }
 
             // ============================================================
             // 🔹 ORDENAMIENTO DINÁMICO
@@ -130,21 +142,35 @@ namespace Infraestructure.Repositories
             // ============================================================
             // 🔹 PAGINACIÓN
             // ============================================================
-            var take = dto.Take ?? 5;
-            var page = dto.Page ?? 1;
-            var skip = (page - 1) * take;
 
-            var total = await context.CountAsync();
-            var data = await context.Skip(skip).Take(take).ToListAsync();
+            List<Compra> data;
+            int total;
+
+            if (descargarTodo)
+            {
+                data = await context.ToListAsync();
+                total = data.Count;
+            }
+            else
+            {
+                var take = dto.Take ?? 5;
+                var page = dto.Page ?? 1;
+                var skip = (page - 1) * take;
+
+                total = await context.CountAsync();
+                data = await context.Skip(skip).Take(take).ToListAsync();
+            }
+            
+            
 
             // ============================================================
             // 🔹 META
             // ============================================================
             var meta = new Meta
             {
-                Page = page,
+                Page = dto.Page ?? 1,
                 TotalCount = total,
-                TotalPages = (int)Math.Ceiling((double)total / take)
+                TotalPages = descargarTodo ? 1 : (int)Math.Ceiling((double)total / (dto.Take ?? 5))
             };
 
             return new PaginadoResponse<Compra>(data, meta);

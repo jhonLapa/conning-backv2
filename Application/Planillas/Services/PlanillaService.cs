@@ -24,9 +24,9 @@ namespace Application.Planillas.Services
             _mapper = mapper;
         }
 
-        public async Task<PaginadoResponse<PlanillaDto>> BusquedaPaginado(PaginationRequest dto)
+        public async Task<PaginadoResponse<PlanillaDto>> BusquedaPaginado(PaginationRequest dto, bool descargarTodo = false, string fechaIni = null, string fechaFin = null)
         {
-            var response = await _planillaRepositorio.BusquedaPaginado(dto);
+            var response = await _planillaRepositorio.BusquedaPaginado(dto, descargarTodo, fechaIni, fechaFin);
 
             var data = _mapper.Map<ICollection<PlanillaDto>>(response.Data);
 
