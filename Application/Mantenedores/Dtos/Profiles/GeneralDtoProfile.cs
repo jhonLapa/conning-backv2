@@ -13,6 +13,7 @@ using Application.Mantenedores.Dtos.TiposDocumento;
 using Application.Mantenedores.Dtos.Trabajadores;
 using AutoMapper;
 using Domain;
+using Infraestructure.Core.Dtos;
 
 namespace Application.Mantenedores.Dtos.Profiles
 {
@@ -44,6 +45,7 @@ namespace Application.Mantenedores.Dtos.Profiles
             CreateMap<Proyecto, ProyectoSaveDto>().ReverseMap();
             CreateMap<Proyecto, ProyectoSelectDto>().ReverseMap();
             CreateMap<Proyecto, ProyectoCreateDto>().ReverseMap();
+            CreateMap<ProyectoPlanillaTotalDto, ProyectoConTotalDto>();
 
             // 🧩 Relaciones secundarias
             CreateMap<TrabajadorProyecto, TrabajadorProyectoCreateDto>().ReverseMap();

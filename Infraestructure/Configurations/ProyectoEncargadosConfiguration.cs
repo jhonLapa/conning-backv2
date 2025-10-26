@@ -25,8 +25,7 @@ namespace Infraestructure.Configurations
                    .HasColumnType("date")   // en tu tabla es DATE
                    .IsRequired();
             builder.Property(p => p.FechaFin)
-                   .HasColumnType("date")   // en tu tabla es DATE
-                   .IsRequired();
+               .HasColumnType("date");
 
             builder.Property(tc => tc.Estado)
                .HasDefaultValue(1);

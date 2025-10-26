@@ -15,11 +15,12 @@ namespace Infraestructure.Configurations
                    .HasMaxLength(100);
             // Fechas
             builder.Property(p => p.FechaInicio)
-                   .HasColumnType("date") 
-                   .IsRequired();
+              .HasColumnType("date")
+              .IsRequired();
+
             builder.Property(p => p.FechaFin)
-                   .HasColumnType("date")
-                   .IsRequired();
+                   .HasColumnType("date");
+
 
             builder.Property(tc => tc.Estado)
                .HasDefaultValue(1);

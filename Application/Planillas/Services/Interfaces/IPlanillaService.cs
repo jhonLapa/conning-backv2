@@ -2,6 +2,8 @@
 using Application.Core.Services.Interfaces;
 using Domain;
 using Application.Mantenedores.Dtos.Planillas;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Application.Planillas.Services.Interfaces
 {
@@ -9,6 +11,7 @@ namespace Application.Planillas.Services.Interfaces
     {
         Task<PaginadoResponse<PlanillaDto>> BusquedaPaginado(PaginationRequest dto);
         Task<OperationResult<PlanillaDto>> CreatePlanillaCompletaAsync(PlanillaFormDataDto dto);
+        Task<PaginadoResponse<PlanillaDto>> BusquedaPaginadoProyectoTrabajador(PaginationRequest dto, int idTrabajador, int idProyecto);
 
     }
 }

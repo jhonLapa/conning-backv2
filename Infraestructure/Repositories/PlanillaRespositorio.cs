@@ -97,6 +97,58 @@ namespace Infraestructure.Repositories
             return new PaginadoResponse<Planilla>(data, meta);
         }
 
+
+        public async Task<PaginadoResponse<Planilla>> BusquedaPaginadoProyectoTrabajador(PaginationRequest dto, int idTrabajador, int idProyecto)
+        {
+            var query = _context.Set<Planilla>()
+                .Include(p => p.Proyecto)
+                .Include(p => p.Detalles)
+                    .ThenInclude(d => d.TrabajadorProyecto)
+                .ThenInclude(tp => tp.Trabajador)
+                .AsQueryable();
+
+            // 🔹 Filtro principal por Proyecto y Trabajador
+            query = query.Where(p =>
+                p.IdProyecto == idProyecto &&
+                p.Detalles.Any(d =>
+                    d.TrabajadorProyecto != null &&
+                    d.TrabajadorProyecto.IdTrabajador == idTrabajador));
+
+            // 🔹 Ordenamiento dinámico
+            if (!string.IsNullOrWhiteSpace(dto.Sort))
+            {
+                var parts = dto.Sort.Split('.', 2);
+                var column = parts.ElementAtOrDefault(0) ?? "createAt";
+                var order = parts.ElementAtOrDefault(1) ?? "asc";
+
+                query = column switch
+                {
+                    "idPlanilla" => order == "desc" ? query.OrderByDescending(p => p.IdPlanilla) : query.OrderBy(p => p.IdPlanilla),
+                    "proyecto" => order == "desc" ? query.OrderByDescending(p => p.Proyecto.Nombre) : query.OrderBy(p => p.Proyecto.Nombre),
+                    "mes" => order == "desc" ? query.OrderByDescending(p => p.Mes) : query.OrderBy(p => p.Mes),
+                    "status" => order == "desc" ? query.OrderByDescending(p => p.Estado) : query.OrderBy(p => p.Estado),
+                    _ => query.OrderByDescending(p => p.FechaCreacion)
+                };
+            }
+
+            // 🔹 Paginación
+            var take = dto.Take ?? 5;
+            var page = dto.Page ?? 1;
+            var skip = (page - 1) * take;
+
+            var total = await query.CountAsync();
+            var data = await query.Skip(skip).Take(take).ToListAsync();
+
+            var meta = new Meta
+            {
+                Page = page,
+                TotalCount = total,
+                TotalPages = (int)Math.Ceiling((double)total / take)
+            };
+
+            return new PaginadoResponse<Planilla>(data, meta);
+        }
+
         // ==========================================================
         // 🔹 DETALLE COMPLETO DE UNA PLANILLA
         // ==========================================================

@@ -110,5 +110,20 @@ namespace DinsidesBack.Controllers
 
             return TypedResults.BadRequest();
         }
+
+
+        [HttpGet("BusquedaPaginadoTrabajador")]
+        [AllowAnonymous]
+        public async Task<Results<BadRequest, Ok<PaginadoResponse<ProyectoConTotalDto>>>> BusquedaPaginadoTrabajador([FromQuery] PaginationRequest dto , int idTrabajador)
+        {
+            var response = await _proyectoService.BusquedaPaginadoTrabajador(dto, idTrabajador);
+
+            if (response != null) return TypedResults.Ok(response);
+
+            return TypedResults.BadRequest();
+        }
+
+
+
     }
 }

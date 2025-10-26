@@ -88,7 +88,7 @@ namespace DinsidesBack.Controllers
             return TypedResults.Ok(result);
         }
 
-        [HttpGet("Trabajador Proyecto/{idTrabajadorProyecto}")]
+        [HttpGet("TrabajadorProyecto/{idTrabajadorProyecto}")]
         [AllowAnonymous]
         public async Task<Results<
             NotFound<OperationResult<List<DetallePlanillaDto>>>,

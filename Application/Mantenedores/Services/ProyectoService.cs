@@ -39,6 +39,14 @@ namespace Application.Mantenedores.Services
 
             return new PaginadoResponse<ProyectoDto>(data, response.Meta);
         }
+        public async Task<PaginadoResponse<ProyectoConTotalDto>> BusquedaPaginadoTrabajador(PaginationRequest dto, int idTrabajador)
+        {
+            var response = await _projectRepositorio.BusquedaPaginadoTrabajador(dto, idTrabajador);
+
+            var data = _mapper.Map<ICollection<ProyectoConTotalDto>>(response.Data);
+
+            return new PaginadoResponse<ProyectoConTotalDto>(data, response.Meta);
+        }
 
 
         public async Task<OperationResult<ProyectoDto>> CreateAsync(ProyectoSaveDto saveDto)

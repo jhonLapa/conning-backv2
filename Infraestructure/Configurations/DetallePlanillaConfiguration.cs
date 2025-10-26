@@ -47,6 +47,15 @@ public class DetallePlanillaConfiguration : IEntityTypeConfiguration<DetallePlan
                .HasColumnType("varchar(50)")
                .IsRequired(false);
 
+            builder.Property(dp => dp.Horas60)
+           .HasPrecision(18, 2); // ✅ precisión y escala
+
+            builder.Property(dp => dp.Horas100)
+                   .HasPrecision(18, 2);
+
+            builder.Property(dp => dp.Indemnizacion)
+                   .HasPrecision(18, 2);
+
         // ====================================================
         // 🔹 Relaciones
         // ====================================================

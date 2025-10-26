@@ -175,7 +175,14 @@ namespace Application.Planillas.Services
             }
         }
 
+        public async Task<PaginadoResponse<PlanillaDto>> BusquedaPaginadoProyectoTrabajador(PaginationRequest dto, int idTrabajador, int idProyecto)
+        {
+            var response = await _planillaRepositorio.BusquedaPaginadoProyectoTrabajador(dto, idTrabajador, idProyecto);
 
+            var data = _mapper.Map<ICollection<PlanillaDto>>(response.Data);
+
+            return new PaginadoResponse<PlanillaDto>(data, response.Meta);
+        }
     }
 }
 

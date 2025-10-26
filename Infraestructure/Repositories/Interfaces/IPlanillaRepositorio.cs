@@ -7,7 +7,7 @@ namespace Infraestructure.Repositories.Interfaces
     public interface IPlanillaRepositorio : ICrudCoreRespository<Planilla, int>
     {
         Task<PaginadoResponse<Planilla>> BusquedaPaginado(PaginationRequest dto);
-
+        Task<PaginadoResponse<Planilla>> BusquedaPaginadoProyectoTrabajador(PaginationRequest dto, int idTrabajador, int idProyecto);
     }
 }
 
