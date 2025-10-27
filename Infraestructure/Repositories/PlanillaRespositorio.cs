@@ -3,6 +3,7 @@ using Infraestructure.Contexts;
 using Infraestructure.Core.Repositories;
 using Infraestructure.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client.Extensions.Msal;
 
 namespace Infraestructure.Repositories
 {
@@ -18,11 +19,23 @@ namespace Infraestructure.Repositories
         // ==========================================================
         // 🔹 BÚSQUEDA PAGINADA
         // ==========================================================
-        public async Task<PaginadoResponse<Planilla>> BusquedaPaginado(PaginationRequest dto)
+        public async Task<PaginadoResponse<Planilla>> BusquedaPaginado(PaginationRequest dto, bool descargarTodo = false, string fechaIni = null, string fechaFin = null)
         {
             var query = _context.Set<Planilla>()
                 .Include(p => p.Proyecto)
                 .AsQueryable();
+
+            // ============================================================
+            // 🔹 FILTRO POR FECHAS (solo si ambos existen)
+            // ============================================================
+            if (!string.IsNullOrEmpty(fechaIni) && !string.IsNullOrEmpty(fechaFin))
+            {
+                if (DateTime.TryParse(fechaIni, out var inicio) && DateTime.TryParse(fechaFin, out var fin))
+                {
+                    fin = fin.Date.AddDays(1).AddTicks(-1);
+                    query = query.Where(p => p.PeriodoInicio >= inicio && p.PeriodoFin <= fin);
+                }
+            }
 
             // Ordenamiento dinámico
             if (!string.IsNullOrWhiteSpace(dto.Sort))
@@ -79,19 +92,32 @@ namespace Infraestructure.Repositories
                 }
             }
 
-            // Paginación
-            var take = dto.Take ?? 5;
-            var page = dto.Page ?? 1;
-            var skip = (page - 1) * take;
+            List<Planilla> data;
+            int total;
 
-            var total = await query.CountAsync();
-            var data = await query.Skip(skip).Take(take).ToListAsync();
+            if (descargarTodo)
+            {
+                data = await query.ToListAsync();
+                total = data.Count;
+            }
+            else
+            {
+                // Paginación
+                var take = dto.Take ?? 5;
+                var page = dto.Page ?? 1;
+                var skip = (page - 1) * take;
+
+                total = await query.CountAsync();
+                data = await query.Skip(skip).Take(take).ToListAsync();
+            }
+
+            
 
             var meta = new Meta
             {
-                Page = page,
+                Page = dto.Page ?? 1,
                 TotalCount = total,
-                TotalPages = (int)Math.Ceiling((double)total / take)
+                TotalPages = descargarTodo ? 1 : (int)Math.Ceiling((double)total / (dto.Take ?? 5))
             };
 
             return new PaginadoResponse<Planilla>(data, meta);

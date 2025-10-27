@@ -18,9 +18,9 @@ namespace Application.Mantenedores.Services
             _mapper = mapper;
         }
 
-        public async Task<PaginadoResponse<MovimientoEspecialDto>> BusquedaPaginado(PaginationRequest dto)
+        public async Task<PaginadoResponse<MovimientoEspecialDto>> BusquedaPaginado(PaginationRequest dto, bool descargarTodo = false, string fechaIni = null, string fechaFin = null)
         {
-            var response = await _movimientoEspecialRepositorio.BusquedaPaginado(dto);
+            var response = await _movimientoEspecialRepositorio.BusquedaPaginado(dto, descargarTodo, fechaIni, fechaFin);
 
             var data = _mapper.Map<ICollection<MovimientoEspecialDto>>(response.Data);
 

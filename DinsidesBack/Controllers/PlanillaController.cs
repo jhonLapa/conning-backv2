@@ -75,9 +75,10 @@ namespace DinsidesBack.Controllers
 
         [HttpGet("BusquedaPaginado")]
         [AllowAnonymous]
-        public async Task<Results<BadRequest, Ok<PaginadoResponse<PlanillaDto>>>> BusquedaPaginado([FromQuery] PaginationRequest dto)
+        public async Task<Results<BadRequest, Ok<PaginadoResponse<PlanillaDto>>>> BusquedaPaginado([FromQuery] PaginationRequest dto, string fechaIni = null,
+            string fechaFin = null)
         {
-            var response = await _planillaService.BusquedaPaginado(dto);
+            var response = await _planillaService.BusquedaPaginado(dto, fechaIni: fechaIni, fechaFin: fechaFin);
 
             if (response != null) return TypedResults.Ok(response);
 
@@ -113,6 +114,65 @@ namespace DinsidesBack.Controllers
             return TypedResults.Ok(response);
         }
 
+        [HttpGet("Descargar")]
+        [AllowAnonymous]
+        public async Task<Results<BadRequest, FileContentHttpResult>> Descargar(
+         [FromQuery] PaginationRequest dto,
+         string fechaIni = null,
+         string fechaFin = null)
+        {
+            bool tieneFiltros = dto.Filters != null && dto.Filters.Length > 0;
+
+
+
+            var response = await _planillaService.BusquedaPaginado(
+                dto,
+                descargarTodo: !tieneFiltros,
+                fechaIni: fechaIni,
+                fechaFin: fechaFin
+            );
+
+            if (response == null || response.Data == null || response.Data.Count == 0)
+                return TypedResults.BadRequest();
+
+            //Crear Excel
+            using var workbook = new ClosedXML.Excel.XLWorkbook();
+            var ws = workbook.Worksheets.Add("Plantillas");
+
+            //Encabezados
+            ws.Cell(1, 1).Value = "Proyecto";
+            ws.Cell(1, 2).Value = "Mes";
+            ws.Cell(1, 3).Value = "Periodo Inicio";
+            ws.Cell(1, 4).Value = "Periodo Fin";
+            ws.Cell(1, 5).Value = "Estado";
+
+            //Datos
+            int row = 2;
+            foreach (var v in response.Data)
+            {
+                ws.Cell(row, 1).Value = v.Proyecto?.Nombre ?? "";
+                ws.Cell(row, 2).Value = v.Mes ?? "";
+                ws.Cell(row, 3).Value = v.PeriodoInicio;
+                ws.Cell(row, 4).Value = v.PeriodoFin;
+                ws.Cell(row, 5).Value = v.Estado == 1 ? "Pagado" : "Pendiente";
+                row++;
+            }
+
+            ws.Columns().AdjustToContents();
+            ws.Row(1).Style.Font.Bold = true;
+            ws.SheetView.FreezeRows(1);
+
+            //Exportar como archivo
+            using var stream = new MemoryStream();
+            workbook.SaveAs(stream);
+            var bytes = stream.ToArray();
+
+            return TypedResults.File(
+                bytes,
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                "Plantillas.xlsx"
+            );
+        }
 
         [HttpGet("BusquedaPaginadoProyectoTrabajador")]
         [AllowAnonymous]
@@ -124,7 +184,6 @@ namespace DinsidesBack.Controllers
 
             return TypedResults.BadRequest();
         }
-
 
     }
 }
