@@ -183,6 +183,163 @@ namespace Application.Planillas.Services
 
             return new PaginadoResponse<PlanillaDto>(data, response.Meta);
         }
+
+        public async Task<BoletaDto?> ObtenerBoletaAsync(int idPlanilla, int idTrabajador)
+        {
+            var planilla = await _planillaRepositorio.FindByPlanillaAndTrabajadorAsync(idPlanilla, idTrabajador);
+
+            if (planilla == null) return null;
+
+            var detalle = planilla.Detalles.FirstOrDefault();
+            if (detalle == null) return null;
+
+            var trabajador = detalle.TrabajadorProyecto.Trabajador;
+            var categoria = trabajador.Categoria;
+            var regimen = trabajador.Regimen;
+
+            var dto = new BoletaDto
+            {
+                IdPlanilla = planilla.IdPlanilla,
+                Proyecto = planilla.Proyecto?.Nombre ?? "",
+                Periodo =  planilla.Mes ?? "",
+                ApellidosNombres = trabajador.ApellidosNombres,
+                Dni = trabajador.NumeroDocumento,
+                Categoria = categoria?.Nombre ?? "",
+                Regimen = regimen?.Nombre ?? "",
+                DiasTrabajados = detalle.DiasTrabajados,
+                Horas60 = detalle.Horas60,
+                Horas100 = detalle.Horas100,
+                Indemnizacion = detalle.Indemnizacion
+            };
+
+            decimal totalIngresos = 0;
+            decimal totalDescuentos = 0;
+            decimal totalAportes = 0;
+
+            // ============================================================
+            // 🧩 Conceptos base de la categoría
+            // ============================================================
+            if (categoria?.ConceptosCategoria != null)
+            {
+                foreach (var concepto in categoria.ConceptosCategoria)
+                {
+                    var valor = concepto.Valor;
+
+                    // Multiplicadores según tipo
+                    if (concepto.NombreConcepto.ToLower().Contains("salario") ||
+                        concepto.NombreConcepto.ToLower().Contains("buc") ||
+                        concepto.NombreConcepto.ToLower().Contains("dso"))
+                        valor = Math.Round(concepto.Valor * detalle.DiasTrabajados, 2);
+
+                    if (concepto.NombreConcepto.ToLower().Contains("horaextra60"))
+                        valor = Math.Round(valor * (detalle.Horas60 ?? 0), 2);
+
+                    if (concepto.NombreConcepto.ToLower().Contains("horaextra100"))
+                        valor = Math.Round(valor * (detalle.Horas100 ?? 0), 2);
+
+
+                    if (concepto.TipoConcepto == "INGRESO") totalIngresos += valor;
+                    else if (concepto.TipoConcepto == "DESCUENTO") totalDescuentos += valor;
+                    else if (concepto.TipoConcepto == "APORTE") totalAportes += valor;
+
+                    dto.Conceptos.Add(new BoletaConceptoDto
+                    {
+                        Codigo = $"C{concepto.IdConcepto:D4}",
+                        Nombre = concepto.NombreConcepto,
+                        NombreMostrar = concepto.NombreConcepto switch
+                        {
+                            "salarioBasico" => "BASICO",
+                            "dso" => "DOMINICAL",
+                            "feriado" => "FERIADO",
+                            "horaExtra60" => "H.E. 60%",
+                            "horaExtra100" => "H.E. 100%",
+                            "buc" => "BUC",
+                            "movilidad" => "MOVILIDAD",
+                            "cts" => "CTS",
+                            "vacaciones" => "VACACIONES TRUNCAS",
+                            "gratificacion" => "GRATIFICACIONES TRUNCAS",
+                            "asigEscolar" => "ASIG. ESCOLAR",
+                            "bon29351" => "BON. 29351",
+                            "bextraEsSalud" => "BON. EXTRA ESSALUD",
+                            "aporteVoluntario1" => "APORTE VOLUNTARIO 1%",
+                            _ => concepto.NombreConcepto.ToUpper()
+                        },
+                        Tipo = concepto.TipoConcepto,
+                        Valor = valor
+                    });
+                }
+            }
+
+            // ============================================================
+            // 🧮 Aportes previsionales (ONP o AFP)
+            // ============================================================
+            if (regimen != null)
+            {
+                var baseImponible = totalIngresos;
+
+                if (regimen.Tipo == "ONP")
+                {
+                    var onp = Math.Round(baseImponible * (regimen.Aporte / 100), 2);
+                    var conafovicer = Math.Round(baseImponible * 0.02m, 2);
+
+                    totalDescuentos += onp;
+                    totalAportes += conafovicer;
+
+                    dto.Conceptos.Add(new BoletaConceptoDto { Codigo = "R0001", Nombre = "onp", NombreMostrar = "ONP", Tipo = "DESCUENTO", Valor = onp });
+                    dto.Conceptos.Add(new BoletaConceptoDto { Codigo = "R0002", Nombre = "conafovicer", NombreMostrar = "CONAFOVICER", Tipo = "APORTE", Valor = conafovicer });
+                }
+                else if (regimen.Tipo == "AFP")
+                {
+                    var aporteObligatorio = Math.Round(baseImponible * (regimen.Aporte / 100), 2);
+                    var comision = Math.Round(baseImponible * ((regimen.Comision ?? 0m) / 100m), 2);
+                    var prima = Math.Round(baseImponible * ((regimen.Prima ?? 0m) / 100m), 2);
+                    totalDescuentos += aporteObligatorio + comision + prima;
+
+                    dto.Conceptos.Add(new BoletaConceptoDto { Codigo = "R0003", Nombre = "aporteObligatorio", NombreMostrar = "AFP APORTE OBLIGATORIO", Tipo = "DESCUENTO", Valor = aporteObligatorio });
+                    dto.Conceptos.Add(new BoletaConceptoDto { Codigo = "R0004", Nombre = "comisionAfp", NombreMostrar = "AFP COMIS. VARIABLE", Tipo = "DESCUENTO", Valor = comision });
+                    dto.Conceptos.Add(new BoletaConceptoDto { Codigo = "R0005", Nombre = "primaAfp", NombreMostrar = "AFP PRIMA SEGURO", Tipo = "DESCUENTO", Valor = prima });
+
+                    // Para AFP también puedes incluir un aporte voluntario o seguro de vida ley si deseas
+                    var seguroVidaLey = Math.Round(baseImponible * 0.01m, 2);
+                    dto.Conceptos.Add(new BoletaConceptoDto { Codigo = "R0006", Nombre = "seguroVidaLey", NombreMostrar = "SEGURO DE VIDA LEY", Tipo = "APORTE", Valor = seguroVidaLey });
+                    totalAportes += seguroVidaLey;
+                }
+            }
+
+            // ============================================================
+            // 🧾 Aportes de planilla (ESSALUD, SCTR)
+            // ============================================================
+            foreach (var aporte in planilla.AportesPlanilla)
+            {
+                dto.Conceptos.Add(new BoletaConceptoDto
+                {
+                    Codigo = $"A{aporte.IdAportePlanilla:D4}",
+                    Nombre = aporte.TipoAporte.ToLower(),
+                    NombreMostrar = aporte.TipoAporte.ToUpper(),
+                    Tipo = "APORTE",
+                    Valor = aporte.Monto
+                });
+                totalAportes += aporte.Monto;
+            }
+
+            // ============================================================
+            // 💰 Totales finales
+            // ============================================================
+            dto.TotalIngresos = Math.Round(totalIngresos, 2);
+            dto.TotalDescuentos = Math.Round(totalDescuentos, 2);
+            dto.TotalAportes = Math.Round(totalAportes, 2);
+            dto.NetoPagar = Math.Round(totalIngresos - totalDescuentos, 2);
+
+            // 🗂 Orden visual igual a tu Excel (INGRESOS → DESCUENTOS → APORTES)
+            dto.Conceptos = dto.Conceptos
+                .OrderBy(c => c.Tipo == "INGRESO" ? 1 : c.Tipo == "DESCUENTO" ? 2 : 3)
+                .ThenBy(c => c.Codigo)
+                .ToList();
+
+            return dto;
+        }
+
+
     }
 }
 

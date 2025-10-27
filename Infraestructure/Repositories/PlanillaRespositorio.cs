@@ -3,7 +3,6 @@ using Infraestructure.Contexts;
 using Infraestructure.Core.Repositories;
 using Infraestructure.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client.Extensions.Msal;
 
 namespace Infraestructure.Repositories
 {
@@ -190,6 +189,28 @@ namespace Infraestructure.Repositories
                 .Include(p => p.Detalles)
                 .FirstOrDefaultAsync(p => p.IdPlanilla == id);
         }
+
+
+        public async Task<Planilla?> FindByPlanillaAndTrabajadorAsync(int idPlanilla, int idTrabajador)
+        {
+            return await _context.Set<Planilla>()
+                .AsSplitQuery()
+                .Include(p => p.Proyecto)
+                .Include(p => p.Detalles
+                    .Where(d => d.TrabajadorProyecto.Trabajador.IdTrabajador == idTrabajador)) // 👈 solo ese trabajador
+                    .ThenInclude(d => d.TrabajadorProyecto)
+                        .ThenInclude(tp => tp.Trabajador)
+                            .ThenInclude(t => t.Categoria)
+                                .ThenInclude(c => c.ConceptosCategoria)
+                .Include(p => p.Detalles
+                    .Where(d => d.TrabajadorProyecto.Trabajador.IdTrabajador == idTrabajador))
+                    .ThenInclude(d => d.TrabajadorProyecto)
+                        .ThenInclude(tp => tp.Trabajador)
+                            .ThenInclude(t => t.Regimen)
+                .Include(p => p.AportesPlanilla)
+                .FirstOrDefaultAsync(p => p.IdPlanilla == idPlanilla);
+        }
+
 
         // ==========================================================
         // 🔹 OBTENER TODAS LAS PLANILLAS

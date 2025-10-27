@@ -185,5 +185,29 @@ namespace DinsidesBack.Controllers
             return TypedResults.BadRequest();
         }
 
+
+
+        [HttpGet("ObtenerBoletaAsync/{idPlanilla}/{idTrabajador}")]
+        [AllowAnonymous]
+        public async Task<Results<NotFound<OperationResult<BoletaDto>>, Ok<OperationResult<BoletaDto>>>> ObtenerBoletaAsync(int idPlanilla, int idTrabajador)
+        {
+            var response = await _planillaService.ObtenerBoletaAsync(idPlanilla, idTrabajador);
+
+            if (response == null)
+            {
+                return TypedResults.NotFound(new OperationResult<BoletaDto>
+                {
+                    Data = null,
+                    Message = $"No se encontró ninguna planilla con el Id {idPlanilla}"
+                });
+            }
+
+            return TypedResults.Ok(new OperationResult<BoletaDto>
+            {
+                Data = response,
+            });
+        }
+
+
     }
 }

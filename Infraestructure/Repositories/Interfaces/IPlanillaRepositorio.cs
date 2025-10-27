@@ -8,7 +8,7 @@ namespace Infraestructure.Repositories.Interfaces
     {
         Task<PaginadoResponse<Planilla>> BusquedaPaginadoProyectoTrabajador(PaginationRequest dto, int idTrabajador, int idProyecto);
         Task<PaginadoResponse<Planilla>> BusquedaPaginado(PaginationRequest dto, bool descargarTodo = false, string fechaIni = null, string fechaFin = null);
-
+        Task<Planilla?> FindByPlanillaAndTrabajadorAsync(int idPlanilla, int idTrabajador);
     }
 }
 
