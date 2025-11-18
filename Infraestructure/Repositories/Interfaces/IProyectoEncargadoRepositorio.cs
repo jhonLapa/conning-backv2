@@ -10,5 +10,6 @@ namespace Infraestructure.Repositories.Interfaces
         Task<ProyectoEncargado?> FindByProyectoAsync(int idProyecto);
         Task DeleteByProyectoIdAsync(int idProyecto);
         Task<ProyectoEncargado?> FindLastByProyectoAsync(int idProyecto);
+        Task<List<ProyectoEncargado>> GetByProyectoIdAsync(int idProyecto);
     }
 }

@@ -1,6 +1,4 @@
-﻿using Application.Mantenedores.Dtos.TiposComprobantes;
-using Application.Mantenedores.Dtos.Trabajadores;
-using Application.Mantenedores.Services;
+﻿using Application.Mantenedores.Dtos.Trabajadores;
 using Application.Mantenedores.Services.Interfaces;
 using Domain;
 using Microsoft.AspNetCore.Authorization;
@@ -99,9 +97,7 @@ namespace DinsidesBack.Controllers
             return TypedResults.BadRequest();
         }
 
-        // =====================================
-        // 🔹 Crear trabajador con cuentas
-        // =====================================
+
         [HttpPost("with-accounts")]
         [AllowAnonymous]
         public async Task<Results<BadRequest, Ok<OperationResult<TrabajadorDto>>>> PostWithAccounts([FromBody] TrabajadorWithAccountsSaveDto request)
@@ -121,6 +117,32 @@ namespace DinsidesBack.Controllers
                 return Ok(result);
 
             return BadRequest(result);
+        }
+
+        [HttpGet("SelectByProyecto/{idProyecto}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> SelectByProyecto(int idProyecto)
+        {
+            var response = await _trabajadorService.SelectByProyecto(idProyecto);
+
+            if (response != null)
+                return Ok(response);
+
+            return BadRequest();
+        }
+
+        [HttpGet("BusquedaPaginadoConPlanilla")]
+        [AllowAnonymous]
+        public async Task<Results<BadRequest, Ok<PaginadoResponse<TrabajadorDto>>>> BusquedaPaginadoConPlanilla(
+                [FromQuery] PaginationRequest dto,
+                DateTime? fechaInicio = null,
+                DateTime? fechaFin = null)
+        {
+            var response = await _trabajadorService.BusquedaPaginadoConPlanilla(dto, fechaInicio, fechaFin);
+
+            if (response != null) return TypedResults.Ok(response);
+
+            return TypedResults.BadRequest();
         }
 
 

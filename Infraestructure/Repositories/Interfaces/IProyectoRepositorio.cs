@@ -8,6 +8,10 @@ namespace Infraestructure.Repositories.Interfaces
     {
         Task<PaginadoResponse<Proyecto>> BusquedaPaginado(PaginationRequest dto);
         Task<IReadOnlyList<Proyecto>> SelectActivo();
-        Task<PaginadoResponse<ProyectoPlanillaTotalDto>> BusquedaPaginadoTrabajador(PaginationRequest dto,int idTrabajador);  
+        Task<PaginadoResponse<ProyectoPlanillaTotalDto>> BusquedaPaginadoTrabajador(
+           PaginationRequest dto,
+           int idTrabajador,
+           DateTime? fechaInicio = null,
+           DateTime? fechaFin = null);
     }
 }

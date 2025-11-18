@@ -1,10 +1,5 @@
 ﻿using Domain;
 using Infraestructure.Core.Repositories.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Infraestructure.Repositories.Interfaces
 {
@@ -12,5 +7,10 @@ namespace Infraestructure.Repositories.Interfaces
     {
         Task<PaginadoResponse<Trabajador>> BusquedaPaginado(PaginationRequest dto);
         Task<IReadOnlyList<Trabajador>> SelectActivo();
+        Task<IReadOnlyList<Trabajador>> SelectByProyecto(int idProyecto);
+        Task<PaginadoResponse<Trabajador>> BusquedaPaginadoConPlanilla(
+                PaginationRequest dto,
+                DateTime? fechaInicio = null,
+                DateTime? fechaFin = null);
     }
 }

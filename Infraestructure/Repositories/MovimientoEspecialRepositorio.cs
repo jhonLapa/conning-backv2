@@ -63,6 +63,8 @@ namespace Infraestructure.Repositories
                         if (value == "inactivo") contex = contex.Where(p => p.Estado == 0);
                     }
                     else if (id == "descripcion") contex = contex.Where(p => p.Descripcion.Contains(value));
+                    else if (id == "observacion") contex = contex.Where(p => p.Observacion.Contains(value));
+                    else if (id == "tipoMovimiento") contex = contex.Where(p => p.TipoMovimiento.Contains(value));
 
                 }
             }

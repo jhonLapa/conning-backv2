@@ -1,4 +1,5 @@
 ﻿using Application.Mantenedores.Dtos.Categorias;
+using Domain;
 
 namespace Application.Mantenedores.Dtos.Trabajadores
 {
@@ -8,6 +9,7 @@ namespace Application.Mantenedores.Dtos.Trabajadores
         public string NumeroDocumento { get; set; }
         public string ApellidosNombres { get; set; }
         public CategoriaDto? Categoria { get; set; }
+        public int? IdTrabajadorProyecto { get; set; }
 
     }
 }

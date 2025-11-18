@@ -103,7 +103,16 @@ namespace Application.Mantenedores.Dtos.Profiles
             // ==============================
             CreateMap<Trabajador, TrabajadorDto>().ReverseMap();
             CreateMap<Trabajador, TrabajadorSaveDto>().ReverseMap();
-            CreateMap<Trabajador, TrabajadorSelectDto>().ReverseMap();
+            // 🔹 Mapeo especial para Select
+            CreateMap<Trabajador, TrabajadorSelectDto>()
+                .ForMember(dest => dest.IdTrabajadorProyecto,
+                    opt => opt.MapFrom(src =>
+                        src.TrabajosProyectos.FirstOrDefault() != null
+                            ? src.TrabajosProyectos.FirstOrDefault().IdTrabajadorProyecto
+                            : (int?)null
+                    ))
+                .ReverseMap();
+
 
             CreateMap<TrabajadorWithAccountsSaveDto, Trabajador>().ReverseMap();
             CreateMap<CuentaBancoSaveDto, CuentaBancariaTrabajador>().ReverseMap();

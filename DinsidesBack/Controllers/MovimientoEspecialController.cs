@@ -129,7 +129,7 @@ namespace DinsidesBack.Controllers
             ws.Cell(1, 2).Value = "Monto";
             ws.Cell(1, 3).Value = "Tipo Movimiento";
             ws.Cell(1, 4).Value = "Cuenta Bancaria";
-            ws.Cell(1, 5).Value = "Observación";
+            ws.Cell(1, 5).Value = "Proyecto";
             ws.Cell(1, 6).Value = "Estado";
 
             //Datos

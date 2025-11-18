@@ -9,5 +9,6 @@ namespace Infraestructure.Core.Repositories.Interfaces
         Task<T> SaveAsync(T entity);
         Task<bool> ExistsAsync(Expression<Func<T, bool>> predicate, int? excludeId = null);
         Task<string> GenerarCodigoAsync(string prefijo, int longitud = 4);
+        Task DeleteAsync(int id);
     }
 }

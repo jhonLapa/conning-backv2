@@ -13,59 +13,58 @@ namespace Application.Dashboard.Services
             _context = context;
         }
 
-        public async Task<DashboardDto> GetDashboardAsync()
+        public async Task<DashboardDto> GetDashboardAsync(DateTime fechaInicio, DateTime fechaFin)
         {
             // 🧾 Totales generales
             var totalVentas = await _context.Set<Venta>()
-                .Where(v => v.Estado == 1)
+                .Where(v => v.Estado == 1 && v.FechaEmision >= fechaInicio && v.FechaEmision <= fechaFin)
                 .SumAsync(v => (decimal?)v.ImporteTotal) ?? 0;
 
             var totalCompras = await _context.Set<Compra>()
-                .Where(c => c.Estado == 1)
+                .Where(c => c.Estado == 1 && c.FechaEmision >= fechaInicio && c.FechaEmision <= fechaFin)
                 .SumAsync(c => (decimal?)c.ImporteTotal) ?? 0;
 
             var totalPlanillas = await _context.Set<Planilla>()
-                .Where(p => p.Estado == 1)
+                .Where(p => p.Estado == 1 && p.FechaCreacion >= fechaInicio && p.FechaCreacion <= fechaFin)
                 .SumAsync(p => (decimal?)p.TotalGeneral) ?? 0;
 
-            // 🟣 Totales de movimientos especiales
             var totalIngresos = await _context.Set<MovimientoEspecial>()
-                .Where(m => m.Estado == 1 && m.TipoMovimiento == "INGRESO")
+                .Where(m => m.Estado == 1 && m.TipoMovimiento == "INGRESO" && m.Fecha >= fechaInicio && m.Fecha <= fechaFin)
                 .SumAsync(m => (decimal?)m.Monto) ?? 0;
 
             var totalEgresos = await _context.Set<MovimientoEspecial>()
-                .Where(m => m.Estado == 1 && m.TipoMovimiento == "EGRESO")
+                .Where(m => m.Estado == 1 && m.TipoMovimiento == "EGRESO" && m.Fecha >= fechaInicio && m.Fecha <= fechaFin)
                 .SumAsync(m => (decimal?)m.Monto) ?? 0;
 
-            // 📊 Ventas mensuales (últimos 6 meses, solo activas)
+            // 📊 Ventas mensuales dentro del rango
             var ventasMensuales = await _context.Set<Venta>()
-                .Where(v => v.Estado == 1 && v.FechaEmision >= DateTime.Now.AddMonths(-6))
-                .GroupBy(v => v.FechaEmision.Value.Month)
+                .Where(v => v.Estado == 1 && v.FechaEmision >= fechaInicio && v.FechaEmision <= fechaFin)
+                .GroupBy(v => new { v.FechaEmision.Value.Year, v.FechaEmision.Value.Month })
                 .Select(g => new ResumenMensualDto
                 {
-                    Mes = new DateTime(DateTime.Now.Year, g.Key, 1).ToString("MMM"),
+                    Mes = new DateTime(g.Key.Year, g.Key.Month, 1).ToString("MMM"),
                     Total = Math.Abs(g.Sum(x => x.ImporteTotal))
                 })
                 .ToListAsync();
 
-            // 📊 Compras mensuales (últimos 6 meses, solo activas)
+            // 📊 Compras mensuales
             var comprasMensuales = await _context.Set<Compra>()
-                .Where(c => c.Estado == 1 && c.FechaEmision >= DateTime.Now.AddMonths(-6))
-                .GroupBy(c => c.FechaEmision.Value.Month)
+                .Where(c => c.Estado == 1 && c.FechaEmision >= fechaInicio && c.FechaEmision <= fechaFin)
+                .GroupBy(c => new { c.FechaEmision.Value.Year, c.FechaEmision.Value.Month })
                 .Select(g => new ResumenMensualDto
                 {
-                    Mes = new DateTime(DateTime.Now.Year, g.Key, 1).ToString("MMM"),
+                    Mes = new DateTime(g.Key.Year, g.Key.Month, 1).ToString("MMM"),
                     Total = Math.Abs(g.Sum(x => x.ImporteTotal))
                 })
                 .ToListAsync();
 
-            // 📊 Planillas mensuales (solo activas)
+            // 📊 Planillas mensuales
             var planillasMensuales = await _context.Set<Planilla>()
-                .Where(p => p.Estado == 1 && p.FechaCreacion >= DateTime.Now.AddMonths(-6))
-                .GroupBy(p => p.FechaCreacion.Month)
+                .Where(p => p.Estado == 1 && p.FechaCreacion >= fechaInicio && p.FechaCreacion <= fechaFin)
+                .GroupBy(p => new { p.FechaCreacion.Year, p.FechaCreacion.Month })
                 .Select(g => new ResumenMensualDto
                 {
-                    Mes = new DateTime(DateTime.Now.Year, g.Key, 1).ToString("MMM"),
+                    Mes = new DateTime(g.Key.Year, g.Key.Month, 1).ToString("MMM"),
                     Total = Math.Abs(g.Sum(x => x.TotalGeneral))
                 })
                 .ToListAsync();
@@ -76,11 +75,11 @@ namespace Application.Dashboard.Services
 
             var totalGeneral = (totalVentas + totalIngresos) - (totalCompras + totalPlanillas + totalEgresos);
 
-            // 💸 Últimos movimientos combinados (solo Estado = 1)
+            // 💸 Últimos movimientos (filtrados por rango)
             var ultimosMovimientos = new List<MovimientoDto>();
 
             var ventas = await _context.Set<Venta>()
-                .Where(v => v.Estado == 1)
+                .Where(v => v.Estado == 1 && v.FechaEmision >= fechaInicio && v.FechaEmision <= fechaFin)
                 .OrderByDescending(v => v.FechaEmision)
                 .Take(5)
                 .Select(v => new MovimientoDto
@@ -93,7 +92,7 @@ namespace Application.Dashboard.Services
                 .ToListAsync();
 
             var compras = await _context.Set<Compra>()
-                .Where(c => c.Estado == 1)
+                .Where(c => c.Estado == 1 && c.FechaEmision >= fechaInicio && c.FechaEmision <= fechaFin)
                 .OrderByDescending(c => c.FechaEmision)
                 .Take(5)
                 .Select(c => new MovimientoDto
@@ -106,12 +105,12 @@ namespace Application.Dashboard.Services
                 .ToListAsync();
 
             var planillas = await _context.Set<Planilla>()
-                .Where(p => p.Estado == 1)
-                .OrderByDescending(p => p.FechaCreacion)
+                .Where(p => p.Estado == 1 && p.FechaPago >= fechaInicio && p.FechaPago <= fechaFin)
+                .OrderByDescending(p => p.FechaPago)
                 .Take(5)
                 .Select(p => new MovimientoDto
                 {
-                    Fecha = p.FechaCreacion.ToString("dd/MM"),
+                    Fecha = p.FechaPago.HasValue ? p.FechaPago.Value.ToString("dd/MM") : "",
                     Tipo = "Planilla",
                     Descripcion = "Pago trabajadores",
                     Monto = -p.TotalGeneral
@@ -119,7 +118,7 @@ namespace Application.Dashboard.Services
                 .ToListAsync();
 
             var movimientosEspeciales = await _context.Set<MovimientoEspecial>()
-                .Where(m => m.Estado == 1)
+                .Where(m => m.Estado == 1 && m.Fecha >= fechaInicio && m.Fecha <= fechaFin)
                 .OrderByDescending(m => m.Fecha)
                 .Take(5)
                 .Select(m => new MovimientoDto

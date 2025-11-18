@@ -114,15 +114,17 @@ namespace DinsidesBack.Controllers
 
         [HttpGet("BusquedaPaginadoTrabajador")]
         [AllowAnonymous]
-        public async Task<Results<BadRequest, Ok<PaginadoResponse<ProyectoConTotalDto>>>> BusquedaPaginadoTrabajador([FromQuery] PaginationRequest dto , int idTrabajador)
+        public async Task<Results<BadRequest, Ok<PaginadoResponse<ProyectoConTotalDto>>>> BusquedaPaginadoTrabajador(
+            [FromQuery] PaginationRequest dto,
+            int idTrabajador,
+            DateTime? fechaInicio = null,
+            DateTime? fechaFin = null)
         {
-            var response = await _proyectoService.BusquedaPaginadoTrabajador(dto, idTrabajador);
+            var response = await _proyectoService.BusquedaPaginadoTrabajador(dto, idTrabajador, fechaInicio, fechaFin);
 
             if (response != null) return TypedResults.Ok(response);
-
             return TypedResults.BadRequest();
         }
-
 
 
     }

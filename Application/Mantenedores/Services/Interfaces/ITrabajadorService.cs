@@ -10,5 +10,10 @@ namespace Application.Mantenedores.Services.Interfaces
         Task<IReadOnlyList<TrabajadorSelectDto>> SelectActivo();
         Task<OperationResult<TrabajadorDto>> CreateOrUpdateWithAccountsAsync(TrabajadorWithAccountsSaveDto dto);
         Task<OperationResult<object>> GetDetallePlanillaAsync(int id);
+        Task<IReadOnlyList<TrabajadorSelectDto>> SelectByProyecto(int idProyecto);
+        Task<PaginadoResponse<TrabajadorDto>> BusquedaPaginadoConPlanilla(
+                PaginationRequest dto,
+                DateTime? fechaInicio = null,
+                DateTime? fechaFin = null);
     }
 }

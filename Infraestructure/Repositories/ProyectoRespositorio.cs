@@ -74,9 +74,11 @@ namespace Infraestructure.Repositories
         }
 
 
-            public async Task<PaginadoResponse<ProyectoPlanillaTotalDto>> BusquedaPaginadoTrabajador(
-                PaginationRequest dto,
-                int idTrabajador)
+        public async Task<PaginadoResponse<ProyectoPlanillaTotalDto>> BusquedaPaginadoTrabajador(
+           PaginationRequest dto,
+           int idTrabajador,
+           DateTime? fechaInicio = null,
+           DateTime? fechaFin = null)
         {
             var query = _context.Set<Proyecto>()
                 .Include(p => p.Planillas)
@@ -84,12 +86,27 @@ namespace Infraestructure.Repositories
                 .Where(p => p.TrabajadoresProyectos.Any(tp => tp.IdTrabajador == idTrabajador))
                 .AsQueryable();
 
+            // 🔹 Filtro opcional por rango de fechas (usando FechaPago de las planillas)
+            if (fechaInicio.HasValue && fechaFin.HasValue)
+            {
+                query = query.Where(p =>
+                    p.Planillas.Any(pl => pl.FechaPago >= fechaInicio && pl.FechaPago <= fechaFin));
+            }
+            else if (fechaInicio.HasValue)
+            {
+                query = query.Where(p => p.Planillas.Any(pl => pl.FechaPago >= fechaInicio));
+            }
+            else if (fechaFin.HasValue)
+            {
+                query = query.Where(p => p.Planillas.Any(pl => pl.FechaPago <= fechaFin));
+            }
+
             // 🔹 Orden dinámico
             if (!string.IsNullOrWhiteSpace(dto.Sort))
             {
-                var parts = dto.Sort.Split(".");
-                var column = parts[0];
-                var order = parts[1];
+                var parts = dto.Sort.Split('.');
+                var column = parts.ElementAtOrDefault(0);
+                var order = parts.ElementAtOrDefault(1) ?? "asc";
 
                 query = column switch
                 {
@@ -97,11 +114,11 @@ namespace Infraestructure.Repositories
                     "descripcion" => order == "desc" ? query.OrderByDescending(p => p.Descripcion) : query.OrderBy(p => p.Descripcion),
                     "status" => order == "desc" ? query.OrderByDescending(p => p.Estado) : query.OrderBy(p => p.Estado),
                     "createAt" => order == "desc" ? query.OrderByDescending(p => p.FechaCreacion) : query.OrderBy(p => p.FechaCreacion),
-                    _ => query
+                    _ => query.OrderByDescending(p => p.FechaCreacion)
                 };
             }
 
-            // 🔹 Filtros
+            // 🔹 Filtros adicionales
             if (dto.Filters != null && dto.Filters.Length > 0)
             {
                 foreach (var filter in dto.Filters)
@@ -128,7 +145,7 @@ namespace Infraestructure.Repositories
             var skip = (page - 1) * take;
             var total = await query.CountAsync();
 
-            // 🔹 Selección final usando el DTO
+            // 🔹 Selección final
             var data = await query
                 .Skip(skip)
                 .Take(take)
@@ -139,7 +156,12 @@ namespace Infraestructure.Repositories
                     Descripcion = p.Descripcion,
                     Estado = p.Estado,
                     FechaCreacion = p.FechaCreacion,
-                    TotalPlanillas = p.Planillas.Sum(pl => (decimal?)pl.TotalGeneral) ?? 0
+                    // Total de planillas filtradas dentro del rango (si hay)
+                    TotalPlanillas = p.Planillas
+                        .Where(pl =>
+                            (!fechaInicio.HasValue || pl.FechaPago >= fechaInicio) &&
+                            (!fechaFin.HasValue || pl.FechaPago <= fechaFin))
+                        .Sum(pl => (decimal?)pl.TotalGeneral) ?? 0
                 })
                 .ToListAsync();
 
@@ -174,8 +196,9 @@ namespace Infraestructure.Repositories
 
             if (proyecto != null && proyecto.proyectoEncargados.Any())
             {
-                // 🔹 Dejar solo el último encargado según la fecha más reciente
+                // 🔹 Dejar solo el último encargado ACTIVO (Estado = 1)
                 proyecto.proyectoEncargados = proyecto.proyectoEncargados
+                    .Where(e => e.Estado == 1)                    // ✅ Solo activos
                     .OrderByDescending(e => e.FechaInicio)
                     .Take(1)
                     .ToList();

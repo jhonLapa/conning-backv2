@@ -176,15 +176,18 @@ namespace DinsidesBack.Controllers
 
         [HttpGet("BusquedaPaginadoProyectoTrabajador")]
         [AllowAnonymous]
-        public async Task<Results<BadRequest, Ok<PaginadoResponse<PlanillaDto>>>> BusquedaPaginadoProyectoTrabajador([FromQuery] PaginationRequest dto, int idTrabajador, int idProyecto)
+        public async Task<Results<BadRequest, Ok<PaginadoResponse<PlanillaDto>>>> BusquedaPaginadoProyectoTrabajador(
+              [FromQuery] PaginationRequest dto,
+              int idTrabajador,
+              int idProyecto,
+              DateTime? fechaInicio = null,
+              DateTime? fechaFin = null)
         {
-            var response = await _planillaService.BusquedaPaginadoProyectoTrabajador(dto, idTrabajador, idProyecto);
+            var response = await _planillaService.BusquedaPaginadoProyectoTrabajador(dto, idTrabajador, idProyecto, fechaInicio, fechaFin);
 
             if (response != null) return TypedResults.Ok(response);
-
             return TypedResults.BadRequest();
         }
-
 
 
         [HttpGet("ObtenerBoletaAsync/{idPlanilla}/{idTrabajador}")]

@@ -215,24 +215,27 @@ namespace Application.Mantenedores.Services
         }
 
 
-        // ======================================================
-        // 🔹 Obtener detalle de planilla de un trabajador
-        // ======================================================
         public async Task<OperationResult<object>> GetDetallePlanillaAsync(int id)
         {
             try
             {
-                var trabajador = await _context.Set<Trabajador>()
-                    .Include(t => t.Categoria)
-                        .ThenInclude(c => c.ConceptosCategoria)
-                    .Include(t => t.Regimen)
-                    .FirstOrDefaultAsync(t => t.IdTrabajador == id);
+                // 🔹 Buscar relación TrabajadorProyecto + incluir el Trabajador real
+                var tp = await _context.Set<TrabajadorProyecto>()
+                    .Include(tp => tp.Trabajador)
+                        .ThenInclude(t => t.Categoria)
+                            .ThenInclude(c => c.ConceptosCategoria)
+                    .Include(tp => tp.Trabajador)
+                        .ThenInclude(t => t.Regimen)
+                    .FirstOrDefaultAsync(tp => tp.IdTrabajadorProyecto == id);
 
-                if (trabajador == null)
-                    throw new NotFoundCoreException("No se encontró el trabajador con ese ID.");
+                if (tp == null)
+                    throw new NotFoundCoreException("No se encontró el trabajador del proyecto con ese ID.");
+
+                var trabajador = tp.Trabajador;
 
                 var response = new
                 {
+                    idTrabajadorProyecto = tp.IdTrabajadorProyecto,
                     idTrabajador = trabajador.IdTrabajador,
                     apellidosNombres = trabajador.ApellidosNombres,
                     categoria = new
@@ -283,9 +286,28 @@ namespace Application.Mantenedores.Services
                 return new OperationResult<object>
                 {
                     Success = false,
-                    Message = "Error al obtener el detalle del trabajador.",
+                    Message = $"Error al obtener el detalle del trabajador: {ex.Message}",
                 };
             }
+        }
+
+
+        public async Task<IReadOnlyList<TrabajadorSelectDto>> SelectByProyecto(int idProyecto)
+        {
+            var response = await _trabajadorRepositorio.SelectByProyecto(idProyecto);
+            return _mapper.Map<IReadOnlyList<TrabajadorSelectDto>>(response);
+        }
+
+        public async Task<PaginadoResponse<TrabajadorDto>> BusquedaPaginadoConPlanilla(
+            PaginationRequest dto,
+            DateTime? fechaInicio = null,
+            DateTime? fechaFin = null)
+        {
+            var response = await _trabajadorRepositorio.BusquedaPaginadoConPlanilla(dto, fechaInicio, fechaFin);
+
+            var data = _mapper.Map<ICollection<TrabajadorDto>>(response.Data);
+
+            return new PaginadoResponse<TrabajadorDto>(data, response.Meta);
         }
 
 

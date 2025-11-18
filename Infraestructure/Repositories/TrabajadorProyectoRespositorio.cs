@@ -125,5 +125,18 @@ namespace Infraestructure.Repositories
             }
         }
 
+        public async Task<bool> ExisteEnPlanillaAsync(int idTrabajadorProyecto)
+        {
+            return await _context.Set<DetallePlanilla>()
+                .AnyAsync(dp => dp.IdTrabajadorProyecto == idTrabajadorProyecto);
+        }
+
+        public async Task<List<TrabajadorProyecto>> GetByProyectoIdAsync(int idProyecto)
+        {
+            return await _context.Set<TrabajadorProyecto>()
+                .Where(tp => tp.IdProyecto == idProyecto)
+                .ToListAsync();
+        }
+
     }
 }

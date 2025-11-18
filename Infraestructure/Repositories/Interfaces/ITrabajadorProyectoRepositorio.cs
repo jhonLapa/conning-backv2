@@ -9,5 +9,8 @@ namespace Infraestructure.Repositories.Interfaces
         Task<IReadOnlyList<TrabajadorProyecto>> SelectActivo();
         Task<TrabajadorProyecto?> FindByProyectoYTrabajadorAsync(int idProyecto, int idTrabajador);
         Task DeleteByProyectoIdAsync(int idProyecto);
+        Task<bool> ExisteEnPlanillaAsync(int idTrabajadorProyecto);
+        Task<List<TrabajadorProyecto>> GetByProyectoIdAsync(int idProyecto);
+
     }
 }

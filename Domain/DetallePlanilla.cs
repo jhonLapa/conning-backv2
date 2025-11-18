@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using Domain.Entities;
+using System.Text.Json.Serialization;
 
 namespace Domain
 {
@@ -22,6 +23,7 @@ namespace Domain
         public decimal? Horas60 { get; set; }
         public decimal? Horas100 { get; set; }
         public decimal? Indemnizacion { get; set; }
+        public int? IdHistorialTrabajadorProyecto { get; set; }
 
         // ==================================================
         // 🔹 Relaciones
@@ -31,6 +33,7 @@ namespace Domain
 
         [JsonIgnore]
         public TrabajadorProyecto? TrabajadorProyecto { get; set; }
+        public HistorialTrabajadorProyecto? HistorialTrabajadorProyecto { get; set; }
 
     }
 }

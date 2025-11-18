@@ -32,7 +32,7 @@ namespace Infraestructure.Repositories
                 if (DateTime.TryParse(fechaIni, out var inicio) && DateTime.TryParse(fechaFin, out var fin))
                 {
                     fin = fin.Date.AddDays(1).AddTicks(-1);
-                    query = query.Where(p => p.PeriodoInicio >= inicio && p.PeriodoFin <= fin);
+                    query = query.Where(p => p.FechaPago >= inicio && p.FechaPago <= fin);
                 }
             }
 
@@ -123,7 +123,13 @@ namespace Infraestructure.Repositories
         }
 
 
-        public async Task<PaginadoResponse<Planilla>> BusquedaPaginadoProyectoTrabajador(PaginationRequest dto, int idTrabajador, int idProyecto)
+
+        public async Task<PaginadoResponse<Planilla>> BusquedaPaginadoProyectoTrabajador(
+                    PaginationRequest dto,
+                    int idTrabajador,
+                    int idProyecto,
+                    DateTime? fechaInicio = null,
+                    DateTime? fechaFin = null)
         {
             var query = _context.Set<Planilla>()
                 .Include(p => p.Proyecto)
@@ -138,6 +144,20 @@ namespace Infraestructure.Repositories
                 p.Detalles.Any(d =>
                     d.TrabajadorProyecto != null &&
                     d.TrabajadorProyecto.IdTrabajador == idTrabajador));
+
+            // 🔹 Filtro opcional por rango de fechas (FechaPago)
+            if (fechaInicio.HasValue && fechaFin.HasValue)
+            {
+                query = query.Where(p => p.FechaPago >= fechaInicio && p.FechaPago <= fechaFin);
+            }
+            else if (fechaInicio.HasValue)
+            {
+                query = query.Where(p => p.FechaPago >= fechaInicio);
+            }
+            else if (fechaFin.HasValue)
+            {
+                query = query.Where(p => p.FechaPago <= fechaFin);
+            }
 
             // 🔹 Ordenamiento dinámico
             if (!string.IsNullOrWhiteSpace(dto.Sort))
@@ -174,6 +194,7 @@ namespace Infraestructure.Repositories
             return new PaginadoResponse<Planilla>(data, meta);
         }
 
+
         // ==========================================================
         // 🔹 DETALLE COMPLETO DE UNA PLANILLA
         // ==========================================================
@@ -207,7 +228,7 @@ namespace Infraestructure.Repositories
                     .ThenInclude(d => d.TrabajadorProyecto)
                         .ThenInclude(tp => tp.Trabajador)
                             .ThenInclude(t => t.Regimen)
-                .Include(p => p.AportesPlanilla)
+
                 .FirstOrDefaultAsync(p => p.IdPlanilla == idPlanilla);
         }
 

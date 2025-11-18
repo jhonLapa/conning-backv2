@@ -131,5 +131,12 @@ namespace Infraestructure.Repositories
                 .OrderByDescending(e => e.IdProyectoEncargado) // o FechaInicio si prefieres
                 .FirstOrDefaultAsync();
         }
+
+        public async Task<List<ProyectoEncargado>> GetByProyectoIdAsync(int idProyecto)
+        {
+            return await _context.Set<ProyectoEncargado>()
+                .Where(x => x.IdProyecto == idProyecto)
+                .ToListAsync();
+        }
     }
 }

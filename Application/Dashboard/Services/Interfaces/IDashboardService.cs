@@ -2,6 +2,6 @@
 {
     public interface IDashboardService
     {
-        Task<DashboardDto> GetDashboardAsync();
+        Task<DashboardDto> GetDashboardAsync(DateTime fechaInicio, DateTime fechaFin);
     }
 }

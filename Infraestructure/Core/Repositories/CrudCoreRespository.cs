@@ -1,4 +1,5 @@
-﻿using Infraestructure.Contexts;
+﻿using Domain;
+using Infraestructure.Contexts;
 using Infraestructure.Core.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
@@ -87,6 +88,18 @@ namespace Infraestructure.Core.Repositories
             return $"{prefijo}{numero.ToString($"D{longitud}")}";
         }
 
+
+        public async Task DeleteAsync(int id)
+        {
+            var entity = await _context.Set<TrabajadorProyecto>()
+                .FirstOrDefaultAsync(x => x.IdTrabajadorProyecto == id);
+
+            if (entity != null)
+            {
+                _context.Set<TrabajadorProyecto>().Remove(entity);
+                await _context.SaveChangesAsync();
+            }
+        }
 
     }
 }

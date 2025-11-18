@@ -3,10 +3,7 @@ using Application.Mantenedores.Dtos.Proyectos;
 using Application.Mantenedores.Services.Interfaces;
 using AutoMapper;
 using Domain;
-using Infraestructure.Repositories;
 using Infraestructure.Repositories.Interfaces;
-using System;
-using System.Globalization;
 
 namespace Application.Mantenedores.Services
 {
@@ -39,10 +36,13 @@ namespace Application.Mantenedores.Services
 
             return new PaginadoResponse<ProyectoDto>(data, response.Meta);
         }
-        public async Task<PaginadoResponse<ProyectoConTotalDto>> BusquedaPaginadoTrabajador(PaginationRequest dto, int idTrabajador)
+        public async Task<PaginadoResponse<ProyectoConTotalDto>> BusquedaPaginadoTrabajador(
+            PaginationRequest dto,
+            int idTrabajador,
+            DateTime? fechaInicio = null,
+            DateTime? fechaFin = null)
         {
-            var response = await _projectRepositorio.BusquedaPaginadoTrabajador(dto, idTrabajador);
-
+            var response = await _projectRepositorio.BusquedaPaginadoTrabajador(dto, idTrabajador, fechaInicio, fechaFin);
             var data = _mapper.Map<ICollection<ProyectoConTotalDto>>(response.Data);
 
             return new PaginadoResponse<ProyectoConTotalDto>(data, response.Meta);
@@ -150,9 +150,9 @@ namespace Application.Mantenedores.Services
                 dto.Proyecto.IdProyecto ??= 0;
                 Proyecto proyecto;
 
-                // ---------------------------------------------------------
+                // ============================================================
                 // 🟢 Crear o actualizar PROYECTO
-                // ---------------------------------------------------------
+                // ============================================================
                 if (dto.Proyecto.IdProyecto == 0)
                 {
                     proyecto = _mapper.Map<Proyecto>(dto.Proyecto);
@@ -169,37 +169,83 @@ namespace Application.Mantenedores.Services
                     _mapper.Map(dto.Proyecto, proyecto);
                     proyecto.FechaModificacion = DateTime.Now;
                     proyecto.UsuarioModificacion = dto.Proyecto.UsuarioCreacion;
-
                     await _projectRepositorio.SaveAsync(proyecto);
 
-                    // 🔥 Eliminar registros anteriores excepto encargados
-                    await _trabajadorProyectoRepositorio.DeleteByProyectoIdAsync(proyecto.IdProyecto);
+                    // 🔄 Eliminar aportes sindicato viejos (siempre se regeneran)
                     await _aportesSindicatoRepositorio.DeleteByProyectoIdAsync(proyecto.IdProyecto);
                 }
 
-                // ---------------------------------------------------------
-                // 👷 Guardar TRABAJADORES
-                // ---------------------------------------------------------
-                if (dto.Trabajador != null && dto.Trabajador.Any())
+                // ============================================================
+                // 👷 SINCRONIZAR TRABAJADORES DEL PROYECTO
+                // ============================================================
+                if (dto.Trabajador != null)
                 {
+                    var trabajadoresExistentes = await _trabajadorProyectoRepositorio.GetByProyectoIdAsync(proyecto.IdProyecto);
+
+                    foreach (var trabajadorExistente in trabajadoresExistentes)
+                    {
+                        bool usadoEnPlanilla = await _trabajadorProyectoRepositorio
+                            .ExisteEnPlanillaAsync(trabajadorExistente.IdTrabajadorProyecto);
+
+                        var match = dto.Trabajador.FirstOrDefault(t => t.IdTrabajador == trabajadorExistente.IdTrabajador);
+
+                        if (usadoEnPlanilla)
+                        {
+                            // 🔄 Si está en planilla → actualizar datos, no eliminar
+                            if (match != null)
+                            {
+                                trabajadorExistente.FechaInicio = match.FechaInicio;
+                                trabajadorExistente.Estado = match.Estado;
+                                trabajadorExistente.UsuarioCreacion = match.UsuarioCreacion;
+                                await _trabajadorProyectoRepositorio.SaveAsync(trabajadorExistente);
+                            }
+                            // ⚠️ Si está en planilla pero no vino en dto, se conserva
+                        }
+                        else
+                        {
+                            // ❌ Si no está en planilla
+                            if (match == null)
+                            {
+                                // eliminar si no se envió en el DTO
+                                await _trabajadorProyectoRepositorio.DeleteAsync(trabajadorExistente.IdTrabajadorProyecto);
+                            }
+                            else
+                            {
+                                // ✅ Si vino en DTO, actualizarlo (no eliminar)
+                                trabajadorExistente.FechaInicio = match.FechaInicio;
+                                trabajadorExistente.Estado = match.Estado;
+                                trabajadorExistente.UsuarioCreacion = match.UsuarioCreacion;
+                                await _trabajadorProyectoRepositorio.SaveAsync(trabajadorExistente);
+                            }
+                        }
+                    }
+
+                    // 🟢 Recargar lista luego de eliminar/actualizar
+                    trabajadoresExistentes = await _trabajadorProyectoRepositorio.GetByProyectoIdAsync(proyecto.IdProyecto);
+
+                    // 🆕 Agregar nuevos trabajadores que no existían
                     foreach (var t in dto.Trabajador)
                     {
-                        var trabajadorProyecto = new TrabajadorProyecto
+                        var existe = trabajadoresExistentes.Any(x => x.IdTrabajador == t.IdTrabajador);
+                        if (!existe)
                         {
-                            IdProyecto = proyecto.IdProyecto,
-                            IdTrabajador = t.IdTrabajador,
-                            FechaInicio = t.FechaInicio,
-                            Estado = t.Estado,
-                            UsuarioCreacion = t.UsuarioCreacion,
-                            FechaCreacion = DateTime.Now
-                        };
-                        await _trabajadorProyectoRepositorio.SaveAsync(trabajadorProyecto);
+                            var nuevo = new TrabajadorProyecto
+                            {
+                                IdProyecto = proyecto.IdProyecto,
+                                IdTrabajador = t.IdTrabajador,
+                                FechaInicio = t.FechaInicio,
+                                Estado = t.Estado,
+                                UsuarioCreacion = t.UsuarioCreacion,
+                                FechaCreacion = DateTime.Now
+                            };
+                            await _trabajadorProyectoRepositorio.SaveAsync(nuevo);
+                        }
                     }
                 }
 
-                // ---------------------------------------------------------
-                // 🤝 Guardar APORTES SINDICATO
-                // ---------------------------------------------------------
+                // ============================================================
+                // 💰 APORTES SINDICATO
+                // ============================================================
                 if (dto.Sindicato != null && dto.Sindicato.Any())
                 {
                     foreach (var s in dto.Sindicato)
@@ -217,57 +263,47 @@ namespace Application.Mantenedores.Services
                     }
                 }
 
-                // ---------------------------------------------------------
+                // ============================================================
                 // 👨‍💼 ENCARGADO DEL PROYECTO
-                // ---------------------------------------------------------
-                if (dto.ProyectoEncargado != null)
-                {
-                    // 🔍 Obtener el último encargado registrado para este proyecto
-                    var ultimoEncargado = await _proyectoEncargadoRepositorio
-                        .FindLastByProyectoAsync(proyecto.IdProyecto); // ← Debe devolver el último por fecha
+                // ============================================================
+                var encargadosExistentes = await _proyectoEncargadoRepositorio.GetByProyectoIdAsync(proyecto.IdProyecto);
 
-                    if (ultimoEncargado == null)
+                if (dto.ProyectoEncargado == null)
+                {
+                    // 🔻 Si el usuario DESELECCIONÓ el encargado
+                    foreach (var enc in encargadosExistentes)
                     {
-                        // ➕ No existe ninguno → crear nuevo
-                        var nuevoEncargado = new ProyectoEncargado
-                        {
-                            IdProyecto = proyecto.IdProyecto,
-                            IdTrabajador = dto.ProyectoEncargado.IdTrabajador,
-                            Rol = dto.ProyectoEncargado.Rol,
-                            FechaInicio = dto.ProyectoEncargado.FechaInicio,
-                            Estado =1,
-                        };
-                        await _proyectoEncargadoRepositorio.SaveAsync(nuevoEncargado);
-                    }
-                    else
-                    {
-                        // 🔁 Existe encargado → comparar solo con el último
-                        if (ultimoEncargado.IdTrabajador == dto.ProyectoEncargado.IdTrabajador)
-                        {
-                            // ✅ Mismo trabajador → solo actualizar sus datos
-                            ultimoEncargado.Rol = dto.ProyectoEncargado.Rol;
-                            ultimoEncargado.FechaInicio = dto.ProyectoEncargado.FechaInicio;
-                            await _proyectoEncargadoRepositorio.SaveAsync(ultimoEncargado);
-                        }
-                        else
-                        {
-                            // ⚡ Distinto trabajador → crear nuevo registro (histórico)
-                            var nuevoEncargado = new ProyectoEncargado
-                            {
-                                IdProyecto = proyecto.IdProyecto,
-                                IdTrabajador = dto.ProyectoEncargado.IdTrabajador,
-                                Rol = dto.ProyectoEncargado.Rol,
-                                FechaInicio = dto.ProyectoEncargado.FechaInicio,
-                                Estado = 1,
-                            };
-                            await _proyectoEncargadoRepositorio.SaveAsync(nuevoEncargado);
-                        }
+                        enc.Estado = 0;
+                        enc.FechaFin = DateTime.Now;
+                        await _proyectoEncargadoRepositorio.SaveAsync(enc);
                     }
                 }
+                else
+                {
+                    // 🔹 Desactivar anteriores
+                    foreach (var enc in encargadosExistentes)
+                    {
+                        enc.Estado = 0;
+                        enc.FechaFin = DateTime.Now;
+                        await _proyectoEncargadoRepositorio.SaveAsync(enc);
+                    }
 
-                // ---------------------------------------------------------
-                // 🟩 Retornar resultado
-                // ---------------------------------------------------------
+                    // 🔹 Crear nuevo encargado activo
+                    var nuevoEncargado = new ProyectoEncargado
+                    {
+                        IdProyecto = proyecto.IdProyecto,
+                        IdTrabajador = dto.ProyectoEncargado.IdTrabajador,
+                        Rol = dto.ProyectoEncargado.Rol,
+                        FechaInicio = dto.ProyectoEncargado.FechaInicio,
+                        FechaFin = dto.ProyectoEncargado.FechaFin,
+                        Estado = 1
+                    };
+                    await _proyectoEncargadoRepositorio.SaveAsync(nuevoEncargado);
+                }
+
+                // ============================================================
+                // 🟩 RETORNAR RESULTADO
+                // ============================================================
                 var projectWithIncludes = await _projectRepositorio.FindByIdAsync(proyecto.IdProyecto);
                 var mappedDto = _mapper.Map<ProyectoDto>(projectWithIncludes);
 

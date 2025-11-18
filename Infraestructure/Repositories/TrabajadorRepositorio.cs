@@ -108,13 +108,130 @@ namespace Infraestructure.Repositories
                 .Include(t => t.Categoria)
                 .Include(t => t.Regimen)
                 .Include(t => t.TipoDocumento)
-                .Include(t => t.CuentasBancarias) // ✅ incluir cuentas
+                .Include(t => t.CuentasBancarias) 
                     .ThenInclude(cb => cb.Banco)
                 .FirstOrDefaultAsync(t => t.IdTrabajador == id);
 
             return response;
         }
 
+        public async Task<IReadOnlyList<Trabajador>> SelectByProyecto(int idProyecto)
+        {
+            return await _context.Set<Trabajador>()
+                .AsNoTracking()
+                .Include(t => t.Categoria)
+                .Include(t => t.TrabajosProyectos.Where(tp => tp.IdProyecto == idProyecto)) // 👈 filtrado interno
+                    .ThenInclude(tp => tp.Proyecto)
+                .Where(t => t.Estado == 1 &&
+                            t.TrabajosProyectos.Any(tp => tp.IdProyecto == idProyecto))
+                .ToListAsync();
+        }
+        public async Task<PaginadoResponse<Trabajador>> BusquedaPaginadoConPlanilla(
+                    PaginationRequest dto,
+                    DateTime? fechaInicio = null,
+                    DateTime? fechaFin = null)
+        {
+            var query = _context.Set<Trabajador>()
+                .Include(t => t.Categoria)
+                .Include(t => t.Regimen)
+                .Include(t => t.TipoDocumento)
+                .Include(t => t.TrabajosProyectos)
+                    .ThenInclude(tp => tp.Detalles)
+                        .ThenInclude(d => d.Planilla)
+                .AsQueryable();
+
+            // 🔹 Solo trabajadores con al menos una planilla
+            query = query.Where(t =>
+                t.TrabajosProyectos.Any(tp =>
+                    tp.Detalles.Any(d => d.Planilla != null)));
+
+            // 🔹 Filtro opcional por rango de fechas (FechaPago de la planilla)
+            if (fechaInicio.HasValue && fechaFin.HasValue)
+            {
+                query = query.Where(t =>
+                    t.TrabajosProyectos.Any(tp =>
+                        tp.Detalles.Any(d =>
+                            d.Planilla != null &&
+                            d.Planilla.FechaPago >= fechaInicio &&
+                            d.Planilla.FechaPago <= fechaFin)));
+            }
+            else if (fechaInicio.HasValue)
+            {
+                query = query.Where(t =>
+                    t.TrabajosProyectos.Any(tp =>
+                        tp.Detalles.Any(d =>
+                            d.Planilla != null &&
+                            d.Planilla.FechaPago >= fechaInicio)));
+            }
+            else if (fechaFin.HasValue)
+            {
+                query = query.Where(t =>
+                    t.TrabajosProyectos.Any(tp =>
+                        tp.Detalles.Any(d =>
+                            d.Planilla != null &&
+                            d.Planilla.FechaPago <= fechaFin)));
+            }
+
+            // 🔹 Ordenamiento
+            if (!string.IsNullOrWhiteSpace(dto.Sort))
+            {
+                var parts = dto.Sort.Split(".");
+                var column = parts[0];
+                var order = parts.ElementAtOrDefault(1) ?? "asc";
+
+                query = column switch
+                {
+                    "name" => order == "desc"
+                        ? query.OrderByDescending(t => t.ApellidosNombres)
+                        : query.OrderBy(t => t.ApellidosNombres),
+                    "status" => order == "desc"
+                        ? query.OrderByDescending(t => t.Estado)
+                        : query.OrderBy(t => t.Estado),
+                    "createAt" => order == "desc"
+                        ? query.OrderByDescending(t => t.FechaCreacion)
+                        : query.OrderBy(t => t.FechaCreacion),
+                    _ => query.OrderByDescending(t => t.FechaCreacion)
+                };
+            }
+
+            // 🔹 Filtros adicionales
+            if (dto.Filters != null && dto.Filters.Length > 0)
+            {
+                foreach (var filter in dto.Filters)
+                {
+                    var id_value = filter.Split(":");
+                    var id = id_value[0];
+                    var value = id_value[1];
+
+                    if (id == "status")
+                    {
+                        if (value == "activo") query = query.Where(t => t.Estado == 1);
+                        if (value == "inactivo") query = query.Where(t => t.Estado == 0);
+                    }
+                    else if (id == "name")
+                    {
+                        query = query.Where(t => t.ApellidosNombres.Contains(value));
+                    }
+                }
+            }
+
+            // 🔹 Paginación
+            var take = dto.Take ?? 5;
+            var page = dto.Page ?? 1;
+            var skip = (page - 1) * take;
+
+            var total = await query.CountAsync();
+            var data = await query.Skip(skip).Take(take).ToListAsync();
+
+            var meta = new Meta
+            {
+                Page = page,
+                TotalCount = total,
+                TotalPages = (int)Math.Ceiling((double)total / take)
+            };
+
+            return new PaginadoResponse<Trabajador>(data, meta);
+        }
 
 
     }

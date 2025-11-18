@@ -4,7 +4,10 @@ using Application.Mantenedores.Dtos.Planillas;
 using Application.Planillas.Dto;
 using Application.Planillas.Services.Interfaces;
 using AutoMapper;
+using DocumentFormat.OpenXml.Drawing;
 using Domain;
+using Domain.Entities;
+using Infraestructure.Repositories;
 using Infraestructure.Repositories.Interfaces;
 
 namespace Application.Planillas.Services
@@ -15,12 +18,19 @@ namespace Application.Planillas.Services
         private readonly IMapper _mapper;
         private readonly IDetallePlanillaRepositorio _detallePlanillaRepositorio;
         private readonly IAportesPlanillaRepositorio _aportesPlanillaRepositorio;
+        private readonly IHistorialTrabajadorProyectoRepositorio _historialTrabajadorProyectoRepositorio;
+        private readonly ITrabajadorProyectoRepositorio _trabajadorProyectoRepositorio;
 
-        public PlanillaService(IPlanillaRepositorio PlanillaRepositorio, IAportesPlanillaRepositorio aportesPlanillaRepositorio,  IDetallePlanillaRepositorio DetallePlanillaRepositorio, IMapper mapper)
+        public PlanillaService(IPlanillaRepositorio PlanillaRepositorio, IAportesPlanillaRepositorio 
+            aportesPlanillaRepositorio,  IDetallePlanillaRepositorio DetallePlanillaRepositorio, IMapper mapper 
+            , IHistorialTrabajadorProyectoRepositorio historialTrabajadorProyectoRepositorio
+            , ITrabajadorProyectoRepositorio trabajadorProyectoRepositorio)
         {
             _planillaRepositorio = PlanillaRepositorio;
             _detallePlanillaRepositorio = DetallePlanillaRepositorio;
             _aportesPlanillaRepositorio = aportesPlanillaRepositorio;
+            _historialTrabajadorProyectoRepositorio = historialTrabajadorProyectoRepositorio;
+            _trabajadorProyectoRepositorio = trabajadorProyectoRepositorio;
             _mapper = mapper;
         }
 
@@ -103,24 +113,25 @@ namespace Application.Planillas.Services
 
             return _mapper.Map<PlanillaDto>(response);
         }
+
+
         public async Task<OperationResult<PlanillaDto>> CreatePlanillaCompletaAsync(PlanillaFormDataDto dto)
         {
             try
             {
-                // 1️⃣ Crear o actualizar PLANILLA
+
                 var planilla = _mapper.Map<Planilla>(dto.Planilla);
 
                 if (planilla.IdPlanilla > 0)
                 {
-                    // Si existe, actualizar
+                    // 🟡 Si existe, actualizar
                     var existente = await _planillaRepositorio.FindByIdAsync(planilla.IdPlanilla);
                     if (existente == null)
                         return new OperationResult<PlanillaDto> { Success = false, Message = "Planilla no encontrada." };
 
                     _mapper.Map(dto.Planilla, existente);
-                    await _planillaRepositorio.SaveAsync(existente);
 
-                    // 🧹 Eliminar detalles y aportes anteriores
+                    await _planillaRepositorio.SaveAsync(existente);
                     await _detallePlanillaRepositorio.DeleteRangeAsync(planilla.IdPlanilla);
                     await _aportesPlanillaRepositorio.DeleteRangeAsync(planilla.IdPlanilla);
 
@@ -128,28 +139,108 @@ namespace Application.Planillas.Services
                 }
                 else
                 {
-                    // Nueva planilla
+                    // 🆕 Nueva planilla
                     planilla.Estado = 1;
                     planilla.FechaCreacion = DateTime.Now;
                     planilla.UsuarioCreacion ??= "system";
                     await _planillaRepositorio.SaveAsync(planilla);
                 }
 
-                // 2️⃣ Insertar nuevos DETALLES
+
                 foreach (var detalleDto in dto.Detalle)
                 {
+                    // Mapear entidad detalle
                     var detalle = _mapper.Map<DetallePlanilla>(detalleDto);
                     detalle.IdPlanilla = planilla.IdPlanilla;
                     detalle.FechaCreacion = DateTime.Now;
                     detalle.UsuarioCreacion ??= planilla.UsuarioCreacion;
 
+                    // Buscar el TrabajadorProyecto correspondiente
+                    var trabajadorProyecto = await _trabajadorProyectoRepositorio
+                        .FindByIdAsync(detalleDto.IdTrabajadorProyecto);
+
+                    if (trabajadorProyecto == null)
+                        throw new Exception($"No se encontró el TrabajadorProyecto con ID {detalleDto.IdTrabajadorProyecto}");
+
+                    // Buscar si ya existe un historial para este trabajador en este periodo
+                    var historialExistente = await _historialTrabajadorProyectoRepositorio
+                        .FindByTrabajadorProyectoYPlanillaAsync(
+                            trabajadorProyecto.IdTrabajadorProyecto,
+                            planilla.IdPlanilla
+                        );
+
+                    int idHistorial;
+
+                    if (historialExistente != null)
+                    {
+                        // Obtener sueldo base desde la categoría del trabajador
+                        var categoria = trabajadorProyecto.Trabajador.Categoria;
+                        decimal? sueldoBase = null;
+
+                        if (categoria != null)
+                        {
+                            // Buscar concepto tipo "Sueldo Base" o tipoConcepto == 1
+                            var conceptoSueldo = categoria.ConceptosCategoria
+                                .FirstOrDefault(c => c.NombreConcepto.ToLower().Contains("salarioBasico"));
+
+                            if (conceptoSueldo != null)
+                                sueldoBase = conceptoSueldo.Valor;
+                        }
+
+                        // Actualizar historial existente
+                        historialExistente.IdCategoria = trabajadorProyecto.Trabajador.IdCategoria;
+                        historialExistente.SueldoBase = sueldoBase ?? historialExistente.SueldoBase;
+                        historialExistente.Observacion = $"Actualizado por planilla {planilla.IdPlanilla}";
+                        await _historialTrabajadorProyectoRepositorio.SaveAsync(historialExistente);
+                        idHistorial = historialExistente.IdHistorialTrabajadorProyecto;
+                    }
+                    else
+                    {
+                        // ➕ Crear nuevo historial (nuevo periodo o cambio de categoría)
+                        var categoria = trabajadorProyecto.Trabajador.Categoria;
+                        decimal sueldoBase = 0;
+
+                        // Buscar sueldo base desde la categoría y sus conceptos
+                        if (categoria != null && categoria.ConceptosCategoria != null)
+                        {
+                            // Buscar el concepto tipo "Sueldo Base" o tipoConcepto == 1
+                            var conceptoSueldo = categoria.ConceptosCategoria
+                                                         .FirstOrDefault(c => c.NombreConcepto.ToLower().Contains("salarioBasico"));
+
+                            if (conceptoSueldo != null)
+                                sueldoBase = conceptoSueldo.Valor;
+                        }
+
+                        var nuevoHistorial = new HistorialTrabajadorProyecto
+                        {
+                            IdTrabajadorProyecto = trabajadorProyecto.IdTrabajadorProyecto,
+                            IdCategoria = trabajadorProyecto.Trabajador.IdCategoria,
+                            FechaInicio = planilla.PeriodoInicio ?? DateTime.Now,
+                            FechaFin = planilla.PeriodoFin,
+                            SueldoBase = sueldoBase,
+                            Observacion = $"Creado por planilla {planilla.IdPlanilla}",
+                            FechaCreacion = DateTime.Now,
+                            UsuarioCreacion = planilla.UsuarioCreacion
+                        };
+
+                        await _historialTrabajadorProyectoRepositorio.SaveAsync(nuevoHistorial);
+                        idHistorial = nuevoHistorial.IdHistorialTrabajadorProyecto;
+                    }
+
+                    // Asociar el historial al detalle
+                    detalle.IdHistorialTrabajadorProyecto = idHistorial;
+
+                    // Completar valores de totales
                     detalle.TotalMonto = detalle.TotalMonto == 0 ? detalleDto.TotalMonto : detalle.TotalMonto;
                     detalle.TotalHoras = detalle.TotalHoras == 0 ? detalleDto.TotalHoras : detalle.TotalHoras;
                     detalle.TotalDescuentos = detalle.TotalDescuentos == 0 ? detalleDto.TotalDescuentos : detalle.TotalDescuentos;
 
                     await _detallePlanillaRepositorio.SaveAsync(detalle);
                 }
+
+                // =========================================================
                 // 3️⃣ Insertar nuevos APORTES
+                // =========================================================
                 foreach (var aporteDto in dto.Aportes)
                 {
                     var aporte = _mapper.Map<AportesPlanilla>(aporteDto);
@@ -157,11 +248,16 @@ namespace Application.Planillas.Services
                     await _aportesPlanillaRepositorio.SaveAsync(aporte);
                 }
 
+                // =========================================================
+                // 4️⃣ Retornar resultado final
+                // =========================================================
                 var resultDto = _mapper.Map<PlanillaDto>(planilla);
                 return new OperationResult<PlanillaDto>
                 {
                     Success = true,
-                    Message = planilla.IdPlanilla > 0 ? "Planilla actualizada correctamente." : "Planilla registrada correctamente.",
+                    Message = planilla.IdPlanilla > 0
+                        ? "Planilla actualizada correctamente (con historial)."
+                        : "Planilla registrada correctamente (con historial).",
                     Data = resultDto
                 };
             }
@@ -175,14 +271,21 @@ namespace Application.Planillas.Services
             }
         }
 
-        public async Task<PaginadoResponse<PlanillaDto>> BusquedaPaginadoProyectoTrabajador(PaginationRequest dto, int idTrabajador, int idProyecto)
+
+        public async Task<PaginadoResponse<PlanillaDto>> BusquedaPaginadoProyectoTrabajador(
+            PaginationRequest dto,
+            int idTrabajador,
+            int idProyecto,
+            DateTime? fechaInicio = null,
+            DateTime? fechaFin = null)
         {
-            var response = await _planillaRepositorio.BusquedaPaginadoProyectoTrabajador(dto, idTrabajador, idProyecto);
+            var response = await _planillaRepositorio.BusquedaPaginadoProyectoTrabajador(dto, idTrabajador, idProyecto, fechaInicio, fechaFin);
 
             var data = _mapper.Map<ICollection<PlanillaDto>>(response.Data);
 
             return new PaginadoResponse<PlanillaDto>(data, response.Meta);
         }
+
 
         public async Task<BoletaDto?> ObtenerBoletaAsync(int idPlanilla, int idTrabajador)
         {

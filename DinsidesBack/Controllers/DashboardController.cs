@@ -17,12 +17,17 @@ namespace DinsidesBack.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-
-        public async Task<ActionResult<DashboardDto>> GetDashboard()
+        public async Task<ActionResult<DashboardDto>> GetDashboard(
+        [FromQuery] DateTime? fechaInicio,
+        [FromQuery] DateTime? fechaFin)
         {
             try
             {
-                var data = await _dashboardService.GetDashboardAsync();
+                // 📅 Si no se envían fechas, tomar rango del mes actual
+                var inicio = fechaInicio ?? new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+                var fin = fechaFin ?? DateTime.Now;
+
+                var data = await _dashboardService.GetDashboardAsync(inicio, fin);
                 return Ok(data);
             }
             catch (Exception ex)
@@ -30,5 +35,6 @@ namespace DinsidesBack.Controllers
                 return BadRequest(new { message = "Error al obtener dashboard", error = ex.Message });
             }
         }
+
     }
 }

@@ -72,5 +72,10 @@ public class DetallePlanillaConfiguration : IEntityTypeConfiguration<DetallePlan
                .HasForeignKey(dv => dv.IdTrabajadorProyecto)
                .OnDelete(DeleteBehavior.Restrict);
 
+        builder.HasOne(x => x.HistorialTrabajadorProyecto)
+            .WithMany()
+            .HasForeignKey(x => x.IdHistorialTrabajadorProyecto)
+            .OnDelete(DeleteBehavior.Restrict);
+
     }
 }
