@@ -10,5 +10,7 @@ namespace Infraestructure.Core.Repositories.Interfaces
         Task<bool> ExistsAsync(Expression<Func<T, bool>> predicate, int? excludeId = null);
         Task<string> GenerarCodigoAsync(string prefijo, int longitud = 4);
         Task DeleteAsync(int id);
+        Task<int?> GetIdByNameAsync(string value, string propertyName);
+
     }
 }

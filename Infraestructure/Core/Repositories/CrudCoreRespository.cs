@@ -88,17 +88,52 @@ namespace Infraestructure.Core.Repositories
             return $"{prefijo}{numero.ToString($"D{longitud}")}";
         }
 
-
         public async Task DeleteAsync(int id)
         {
-            var entity = await _context.Set<TrabajadorProyecto>()
-                .FirstOrDefaultAsync(x => x.IdTrabajadorProyecto == id);
+            var entityType = _context.Model.FindEntityType(typeof(T));
+            var keyName = entityType?.FindPrimaryKey()?.Properties.First().Name;
 
+            if (keyName == null)
+                throw new InvalidOperationException($"La entidad {typeof(T).Name} no tiene clave primaria.");
+
+            var entity = await _context.Set<T>()
+                .FirstOrDefaultAsync(e => EF.Property<int>(e, keyName) == id);
+            
             if (entity != null)
             {
-                _context.Set<TrabajadorProyecto>().Remove(entity);
+                _context.Set<T>().Remove(entity);
                 await _context.SaveChangesAsync();
             }
+        }
+
+        public async Task<int?> GetIdByNameAsync(string value, string propertyName)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                return null;
+
+            var entityType = typeof(T);
+
+            var prop = entityType.GetProperty(propertyName);
+            if (prop == null)
+                throw new ArgumentException($"La propiedad '{propertyName}' no existe en la entidad '{entityType.Name}'.");
+
+            var entity = await _context.Set<T>()
+                .AsNoTracking()
+                .FirstOrDefaultAsync(e =>
+                    EF.Property<string>(e, propertyName).ToUpper() == value.ToUpper()
+                );
+
+            if (entity == null)
+                return null;
+
+            var keyName = _context.Model.FindEntityType(typeof(T))?
+                .FindPrimaryKey()?
+                .Properties.First().Name;
+
+            if (keyName == null)
+                return null;
+
+            return (int?)entityType.GetProperty(keyName)?.GetValue(entity);
         }
 
     }

@@ -15,11 +15,32 @@ namespace Application.Mantenedores.Services
         private readonly IMapper _mapper;
         private readonly ICuentaBancariaTrabajadorRepositorio _cuentaBancariaTrabajadorRepositorio;
         private readonly ApplicationDbContext _context;
+        private readonly ITrabajadorRepositorio _trabajadorRepo;
+        private readonly ITipoDocumentoRepositorio _tipoDocumentoRepo;
+        private readonly ICategoriaRepositorio _categoriaRepo;
+        private readonly IRegimenPrevisionalRepositorio _regimenRepo;
+        private readonly IBancoRepositorio _bancoRepo;
+        private readonly ICuentaBancariaTrabajadorRepositorio _cuentaRepo;
 
-        public TrabajadorService(ITrabajadorRepositorio trabajadorRepositorio, ICuentaBancariaTrabajadorRepositorio cuentaBancariaTrabajadorRepositorio, IMapper mapper, ApplicationDbContext context)
+        public TrabajadorService(ITrabajadorRepositorio trabajadorRepositorio, ICuentaBancariaTrabajadorRepositorio cuentaBancariaTrabajadorRepositorio,
+               ITrabajadorRepositorio trabajadorRepo,
+                ITipoDocumentoRepositorio tipoDocumentoRepo,
+                ICategoriaRepositorio categoriaRepo,
+                IRegimenPrevisionalRepositorio regimenRepo,
+                IBancoRepositorio bancoRepo,
+                ICuentaBancariaTrabajadorRepositorio cuentaRepo
+            , IMapper mapper, ApplicationDbContext context)
         {
             _trabajadorRepositorio = trabajadorRepositorio;
             _cuentaBancariaTrabajadorRepositorio = cuentaBancariaTrabajadorRepositorio;
+
+            _trabajadorRepo = trabajadorRepo;
+            _tipoDocumentoRepo = tipoDocumentoRepo;
+            _categoriaRepo = categoriaRepo;
+            _regimenRepo = regimenRepo;
+            _bancoRepo = bancoRepo;
+            _cuentaRepo = cuentaRepo;
+
             _mapper = mapper;
             _context = context;
 
@@ -308,6 +329,82 @@ namespace Application.Mantenedores.Services
             var data = _mapper.Map<ICollection<TrabajadorDto>>(response.Data);
 
             return new PaginadoResponse<TrabajadorDto>(data, response.Meta);
+        }
+
+        public async Task<OperationResult<object>> ProcesarCargaMasivaAsync(List<TrabajadorMasivoDto> registros)
+        {
+            int creados = 0;
+            var errores = new List<object>();
+
+            foreach (var item in registros)
+            {
+                var idTipoDoc = await _tipoDocumentoRepo.GetIdByNameAsync(item.TipoDocumento, "Nombre");
+                var idCategoria = await _categoriaRepo.GetIdByNameAsync(item.Categoria, "Nombre");
+                var idRegimen = await _regimenRepo.GetIdByNameAsync(item.Regimen, "Nombre");
+                var idBanco = await _bancoRepo.GetIdByNameAsync(item.Banco, "Nombre");
+
+
+
+                if (idTipoDoc == null || idCategoria == null || idRegimen == null || idBanco == null)
+                {
+                    errores.Add(new { item.NumeroDocumento, error = "No se encontraron IDs para los nombres enviados" });
+                    continue;
+                }
+
+                bool existe = await _trabajadorRepo.ExistsAsync(
+                    x => x.NumeroDocumento == item.NumeroDocumento &&
+                         x.TipoDocumentoId == idTipoDoc.Value
+                );
+
+                if (existe)
+                {
+                    errores.Add(new { item.NumeroDocumento, error = "Trabajador duplicado" });
+                    continue;
+                }
+
+                var trabajador = new Trabajador
+                {
+                    TipoDocumentoId = idTipoDoc.Value,
+                    NumeroDocumento = item.NumeroDocumento,
+                    ApellidosNombres = item.ApellidosNombres,
+                    IdCategoria = idCategoria.Value,
+                    IdRegimen = idRegimen.Value,
+                    FechaNacimiento = item.FechaNacimiento,
+                    Telefono = item.Telefono,
+                    Email = item.Email,
+                    Sexo = item.Sexo,
+                    EstadoCivil = item.EstadoCivil,
+                    Direccion = item.Direccion,
+                    Hijos = item.Hijos,
+                    FechaCreacion = DateTime.Now,
+                    Estado = 1
+                };
+
+                await _trabajadorRepo.SaveAsync(trabajador);
+
+                var cuenta = new CuentaBancariaTrabajador
+                {
+                    IdTrabajador = trabajador.IdTrabajador,
+                    IdBanco = idBanco.Value,
+                    NumeroCuenta = item.NumeroCuenta,
+                    TipoCuenta = item.TipoCuenta,
+                    Moneda = item.Moneda,
+                    Principal = 1,
+                    FechaCreacion = DateTime.Now,
+                    Estado = 1
+                };
+
+                await _cuentaRepo.SaveAsync(cuenta);
+
+                creados++;
+            }
+
+            return new OperationResult<object>
+            {
+                Success = true,
+                Message = $"Carga completada: {creados} trabajadores creados.",
+                Data = new { creados, errores }
+            };
         }
 
 

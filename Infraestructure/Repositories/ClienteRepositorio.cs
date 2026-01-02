@@ -75,12 +75,17 @@ namespace Infraestructure.Repositories
 
         public  async Task<IReadOnlyList<Cliente>> SelectActivo()
         {
-            return await _context.Set<Cliente>()
+            var clientes = await _context.Set<Cliente>()
                                  .AsNoTracking()
                                  .Where(a => a.Estado == 1)
                                  .ToListAsync();
-        }
 
+            return clientes
+             .OrderBy(p => p.NombreCompleto == "SIN CLIENTE" ? 0 : 1)
+             .ThenBy(p => p.NombreCompleto)
+             .ToList();
+        }
+        
 
         public async override Task<Cliente?> FindByIdAsync(int id)
         {

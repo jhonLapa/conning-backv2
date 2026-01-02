@@ -17,11 +17,16 @@ namespace Application.Dashboard.Services
         {
             // 🧾 Totales generales
             var totalVentas = await _context.Set<Venta>()
-                .Where(v => v.Estado == 1 && v.FechaEmision >= fechaInicio && v.FechaEmision <= fechaFin)
-                .SumAsync(v => (decimal?)v.ImporteTotal) ?? 0;
+                    .Where(v => v.Estado == 1
+                        && v.TipoMoneda == "PEN"
+                        && v.FechaEmision >= fechaInicio
+                        && v.FechaEmision <= fechaFin)
+                    .SumAsync(v => (decimal?)v.ImporteTotal) ?? 0;
+
 
             var totalCompras = await _context.Set<Compra>()
-                .Where(c => c.Estado == 1 && c.FechaEmision >= fechaInicio && c.FechaEmision <= fechaFin)
+                .Where(c => c.Estado == 1 && c.TipoMoneda == "PEN"
+                 && c.FechaEmision >= fechaInicio && c.FechaEmision <= fechaFin)
                 .SumAsync(c => (decimal?)c.ImporteTotal) ?? 0;
 
             var totalPlanillas = await _context.Set<Planilla>()

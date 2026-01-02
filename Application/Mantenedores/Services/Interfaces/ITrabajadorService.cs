@@ -15,5 +15,7 @@ namespace Application.Mantenedores.Services.Interfaces
                 PaginationRequest dto,
                 DateTime? fechaInicio = null,
                 DateTime? fechaFin = null);
+
+        Task<OperationResult<object>> ProcesarCargaMasivaAsync(List<TrabajadorMasivoDto> registros);
     }
 }

@@ -16,7 +16,7 @@ namespace Infraestructure.Repositories
 
         public override async Task<IReadOnlyList<CuentaBancariaTrabajador>> FindAllAsync()
         {
-            var response = await _context.Set<CuentaBancariaTrabajador>() // 🚨 Usar Set<T>()
+            var response = await _context.Set<CuentaBancariaTrabajador>()  
                 .Include(e => e.Banco)
                 .ToListAsync();
 
@@ -43,7 +43,7 @@ namespace Infraestructure.Repositories
                 .ToListAsync();
         }
 
-        public async Task DeleteAsync(int id)
+        public  async Task DeleteCuentasAsync(int id)
         {
             var entityToDelete = await _context.Set<CuentaBancariaTrabajador>().FindAsync(id);
 

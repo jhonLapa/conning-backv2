@@ -177,10 +177,14 @@ namespace Infraestructure.Repositories
 
         public async Task<IReadOnlyList<Proyecto>> SelectActivo()
         {
-            return await _context.Set<Proyecto>()
-                                 .AsNoTracking()
-                                 .Where(a => a.Estado == 1)
-                                 .ToListAsync();
+            var proyectos = await _context.Set<Proyecto>()
+                                          .AsNoTracking()
+                                          .Where(a => a.Estado == 1)
+                                          .ToListAsync();
+            return proyectos
+                .OrderBy(p => p.Nombre == "POR DEFINIR" ? 0 : 1)  
+                .ThenBy(p => p.Nombre)                            
+                .ToList();
         }
 
         public async override Task<Proyecto?> FindByIdAsync(int id)

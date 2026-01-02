@@ -18,6 +18,11 @@ using System.Text;
 using DinsidesBack.Filters;
 using DinsidesBack.Middlewares;
 
+
+// EPPLUS – activar licencia NonCommercial
+using OfficeOpenXml;
+ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 var builder = WebApplication.CreateBuilder(args);
 
