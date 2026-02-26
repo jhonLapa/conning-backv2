@@ -19,30 +19,6 @@ namespace DinsidesBack.Controllers
         }
 
 
-        [HttpPut("{id}")]
-        [AllowAnonymous]
-        public async Task<Results<BadRequest, Ok<OperationResult<UserDto>>>> Put(int id, [FromBody] UserRolSaveDto request)
-        {
-
-            var response = await _usuarioService.EditAsync(id, request);
-
-            if (response != null) return TypedResults.Ok(response);
-
-            return TypedResults.BadRequest();
-        }
-
-        [HttpPost]
-        [AllowAnonymous]
-        public async Task<Results<BadRequest, Ok<OperationResult<UserDto>>>> Post([FromBody] UserRolSaveDto request)
-        {
-
-            var response = await _usuarioService.CreateAsync(request);
-
-            if (response != null) return TypedResults.Ok(response);
-
-            return TypedResults.BadRequest();
-        }
-
         [HttpGet("{id}")]
         [AllowAnonymous]
         public async Task<Results<BadRequest, Ok<UserDto>>> Get(int id)

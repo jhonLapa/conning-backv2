@@ -1,22 +1,18 @@
-using Application.Auth.Services;
-using Application.Auth.Services.Interfaces;
 using Application.Context;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
+using DinsidesBack.Filters;
+using DinsidesBack.Middlewares;
 using Infraestructure.Contexts;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Authorization;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using Serilog.Events;
 using System.Text;
-using DinsidesBack.Filters;
-using DinsidesBack.Middlewares;
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 var builder = WebApplication.CreateBuilder(args);
@@ -57,9 +53,7 @@ builder.Services.Configure<PasswordHasherOptions>(options =>
 {
     options.CompatibilityMode = PasswordHasherCompatibilityMode.IdentityV3;
 });
-//ISecurityService
-builder.Services.AddTransient<IJwtServices, JwtServices>();
-//JWT
+
 string jwtSecretKey = builder.Configuration.GetSection("Security:JwtSecretKey").Get<string>();
 builder.Services.AddAuthentication(options =>
 {

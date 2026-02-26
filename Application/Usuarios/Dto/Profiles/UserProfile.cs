@@ -1,5 +1,4 @@
-﻿using Application.Auth.Dto;
-using AutoMapper;
+﻿using AutoMapper;
 using Domain;
 
 namespace Application.Usuarios.Dto.Profiles
